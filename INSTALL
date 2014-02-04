@@ -1,0 +1,36 @@
+perl Makefile.pl [INSTALL_BASE=...]
+make
+make test
+make install
+
+(note: test requires that 'Other Software' listed below has been installed and is available on PATH)
+
+Perl:
+  Minimum version: 5.10.1
+  Tested version: 5.16.3
+
+The following perl modules (and their dependencies) are required:
+  Bio::Perl - covers many other dependancies
+  IPC::System::Simple
+  Const::Fast
+  Try::Tiny
+  File::Which
+  Bio::DB::Sam (requires https://github.com/samtools/samtools/archive/0.1.19.tar.gz)
+  List::Util (1.35+)
+  Capture::Tiny
+
+OS:
+  This distribution will only work on *NIX type systems at present.
+
+Other Software
+  The following software is expected to be present on path:
+    biobambam-0.0.120 - https://github.com/gt1/biobambam/archive/0.0.120-release-20140126202817.tar.gz
+
+    bwa-0.6.2 - https://github.com/lh3/bwa/archive/0.6.2.tar.gz
+      OR
+    bwa-0.7.6a - https://github.com/lh3/bwa/archive/0.7.6a.tar.gz
+
+    NOTE: bwa_aln.pl will only function when 0.6.2 installed
+          bwa_mem.pl will only function when 0.7.6a installed
+          Either will allow successful install, modify path to switch between methods
+
