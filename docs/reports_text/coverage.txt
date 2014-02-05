@@ -15,44 +15,44 @@ Total                                        72.7   32.1   78.3   56.9   67.5
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:52 2014
-Finish:       Tue Feb  4 22:32:52 2014
+Start:        Wed Feb  5 16:23:40 2014
+Finish:       Wed Feb  5 16:23:40 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:53 2014
-Finish:       Tue Feb  4 22:32:55 2014
+Start:        Wed Feb  5 16:23:42 2014
+Finish:       Wed Feb  5 16:23:43 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:56 2014
-Finish:       Tue Feb  4 22:32:56 2014
+Start:        Wed Feb  5 16:23:44 2014
+Finish:       Wed Feb  5 16:23:44 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:57 2014
-Finish:       Tue Feb  4 22:32:57 2014
+Start:        Wed Feb  5 16:23:44 2014
+Finish:       Wed Feb  5 16:23:44 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:58 2014
-Finish:       Tue Feb  4 22:32:58 2014
+Start:        Wed Feb  5 16:23:45 2014
+Finish:       Wed Feb  5 16:23:45 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:59 2014
-Finish:       Tue Feb  4 22:32:59 2014
+Start:        Wed Feb  5 16:23:46 2014
+Finish:       Wed Feb  5 16:23:46 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Tue Feb  4 22:32:59 2014
-Finish:       Tue Feb  4 22:32:59 2014
+Start:        Wed Feb  5 16:23:46 2014
+Finish:       Wed Feb  5 16:23:46 2014
 
 Covered Subroutines
 -------------------

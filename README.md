@@ -1,7 +1,7 @@
 ICGC-TCGA-PCAP
 ==============
 
-NGS reference implementations and helper code for the IGCG/TCGA Pan-Cancer Analysis Project
+NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
 
 This repository contains code to run genomic alignments of paired end data
 and subsequent calling algorithms under a fire and forget model with

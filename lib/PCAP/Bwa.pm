@@ -1,8 +1,8 @@
 package PCAP::Bwa;
 
 ##########LICENCE##########
-# PCAP - NGS reference implementations and helper code for the IGCG/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 IGCG PanCancer Project
+# PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
+# Copyright (C) 2014 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

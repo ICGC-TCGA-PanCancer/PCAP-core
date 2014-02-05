@@ -21,17 +21,17 @@ echo '### Running perl tests ###'
 
 export HARNESS_PERL_SWITCHES=-MDevel::Cover=-db,reports,-ignore,'t/.*\.t'
 rm -rf reports reports_text reports_html
-mkdir reports_text
+mkdir -p docs/reports_text
 prove --nocolor -I ./lib | sed 's/^/  /' # indent output of prove
 if [[ $? -ne 0 ]] ; then
   echo "\n\tERROR: TESTS FAILED\n"
   exit 1
 fi
 cover -coverage branch,condition,subroutine,pod -report html_basic reports -silent > /dev/null
-cover -coverage branch,condition,subroutine,pod -report text reports -silent > reports_text/coverage.txt
+cover -coverage branch,condition,subroutine,pod -report text reports -silent > docs/reports_text/coverage.txt
 rm -rf reports/structure reports/digests reports/cover.13 reports/runs
-mv reports reports_html
-cp reports_html/coverage.html reports_html/index.html
+cp reports/coverage.html reports/index.html
+mv reports docs/reports_html
 unset HARNESS_PERL_SWITCHES
 
 echo '### Generating POD ###'
