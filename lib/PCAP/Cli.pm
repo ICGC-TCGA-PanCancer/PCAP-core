@@ -119,4 +119,22 @@ Checks if provided path is present and writable, if not will attempt to create.
 
 The name of the option is used to aid in generating informative messages to the user.
 
+=item valid_process
+
+Simple function to abstract generic checking of command line process types.
+
+  PCAP::Cli::valid_process('name of thing to check', 'value to check', [valid values]);
+
+Errors if value is invalid
+
+=item valid_index_by_factor
+
+Check an index is within the range for the data being processed.
+
+=item opt_requires_opts
+
+Abstracts checking for options which have dependencies on others
+
+  PCAP::Cli::valid_process('name of option', {option set}, [dependencies]);
+
 =back

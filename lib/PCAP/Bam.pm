@@ -240,6 +240,19 @@ Resulting data structure:
     },
     ...];
 
+=item single_rg_value
+
+  my $sample_name = $bam->single_rg_value('SM');
+
+Gets the value of a single RG tag.  Errors if multiple readgroups detected.
+
+=item check_for_tags
+
+  $bam->check_for_tags([list of required tags]);
+
+Check that all readgroups in this BAM have the specified tags.
+Errors if any are not detected.
+
 =item check_paired
 
   $bam->check_paired;
@@ -304,5 +317,11 @@ Takes BAM or Bio::DB::Sam object as input and returns the string representation 
 Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs
 
 The SAM object is also returned should it be useful for other calls
+
+=item sam_ob
+
+  my $sam_ob = sam_ob('file.bam');
+
+Generate a Bio::DB::Sam object from the provided BAM file.
 
 =back

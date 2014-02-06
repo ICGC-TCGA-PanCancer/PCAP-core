@@ -72,11 +72,11 @@ http://www.pjcj.net
 
 <tr>
 <td class="h">pod</td>
-<td>7</td>
 <td>10</td>
-<td class="c0" title="7 / 10">
+<td>10</td>
+<td class="c3" title="10 / 10">
 
-<a href="lib-PCAP-Bam-pm--subroutine.html"> 70.0 </a>
+<a href="lib-PCAP-Bam-pm--subroutine.html"> 100.0 </a>
 
 </td>
 </tr>
@@ -84,11 +84,11 @@ http://www.pjcj.net
 
 <tr>
 <td class="h">total</td>
-<td>56</td>
+<td>59</td>
 <td>88</td>
-<td class="c0" title="56 / 88">
+<td class="c0" title="59 / 88">
 
-70.5
+73.9
 
 </td>
 </tr>
@@ -5126,9 +5126,9 @@ http://www.pjcj.net
  </a> 
 </td>
 
-<td  class="c0" >
+<td  class="c3" >
  <a href="lib-PCAP-Bam-pm--subroutine.html#157-1"> 
-0
+1
  </a> 
 </td>
 
@@ -5350,9 +5350,9 @@ http://www.pjcj.net
  </a> 
 </td>
 
-<td  class="c0" >
+<td  class="c3" >
  <a href="lib-PCAP-Bam-pm--subroutine.html#164-1"> 
-0
+1
  </a> 
 </td>
 
@@ -5894,9 +5894,9 @@ http://www.pjcj.net
  </a> 
 </td>
 
-<td  class="c0" >
+<td  class="c3" >
  <a href="lib-PCAP-Bam-pm--subroutine.html#181-1"> 
-0
+1
  </a> 
 </td>
 
@@ -7916,7 +7916,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item check_paired</span> </td>
+<td class="s"> <span class="pod">=item single_rg_value</span> </td>
 </tr>
 
 <tr>
@@ -7980,7 +7980,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $bam-&gt;check_paired;</span> </td>
+<td class="s"> <span class="pod">  my $sample_name = $bam-&gt;single_rg_value('SM');</span> </td>
 </tr>
 
 <tr>
@@ -8044,7 +8044,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Will error if BAM file doesn't contain paired reads.</span> </td>
+<td class="s"> <span class="pod">Gets the value of a single RG tag.  Errors if multiple readgroups detected.</span> </td>
 </tr>
 
 <tr>
@@ -8108,7 +8108,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=back</span> </td>
+<td class="s"> <span class="pod">=item check_for_tags</span> </td>
 </tr>
 
 <tr>
@@ -8172,7 +8172,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=head2 Non Object Methods</span> </td>
+<td class="s"> <span class="pod">  $bam-&gt;check_for_tags([list of required tags]);</span> </td>
 </tr>
 
 <tr>
@@ -8236,7 +8236,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=over 4</span> </td>
+<td class="s"> <span class="pod">Check that all readgroups in this BAM have the specified tags.</span> </td>
 </tr>
 
 <tr>
@@ -8268,7 +8268,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Errors if any are not detected.</span> </td>
 </tr>
 
 <tr>
@@ -8300,7 +8300,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item bam_to_grouped_bam</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8332,7 +8332,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">=item check_paired</span> </td>
 </tr>
 
 <tr>
@@ -8364,7 +8364,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  PCAP::Bam::bam_to_grouped_bam($index, $options);</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8396,7 +8396,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  $bam-&gt;check_paired;</span> </td>
 </tr>
 
 <tr>
@@ -8428,7 +8428,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Convert a BAM for a single readgroup to a readname grouped BAM.</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8460,7 +8460,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Will error if BAM file doesn't contain paired reads.</span> </td>
 </tr>
 
 <tr>
@@ -8492,7 +8492,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  index   - Which element of the 'bams' array reference found in options should be processed</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8524,7 +8524,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">              NOTE: index is origin 1</span> </td>
+<td class="s"> <span class="pod">=back</span> </td>
 </tr>
 
 <tr>
@@ -8588,7 +8588,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
+<td class="s"> <span class="pod">=head2 Non Object Methods</span> </td>
 </tr>
 
 <tr>
@@ -8652,7 +8652,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -tmp  : working/output directory depending on application</span> </td>
+<td class="s"> <span class="pod">=over 4</span> </td>
 </tr>
 
 <tr>
@@ -8684,7 +8684,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -bams : array reference to a B&lt;sorted&gt; list of BAM files (to allow resume function)</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8716,7 +8716,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">=item bam_to_grouped_bam</span> </td>
 </tr>
 
 <tr>
@@ -8748,7 +8748,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">On successful completion of a run a file is created in tmp/progress/bamcollate.$index.  If the</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8780,7 +8780,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">program is re-run without clearing of this progress folder the execution of the command is skipped.</span> </td>
+<td class="s"> <span class="pod">  PCAP::Bam::bam_to_grouped_bam($index, $options);</span> </td>
 </tr>
 
 <tr>
@@ -8844,7 +8844,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item merge_and_mark_dup</span> </td>
+<td class="s"> <span class="pod">Convert a BAM for a single readgroup to a readname grouped BAM.</span> </td>
 </tr>
 
 <tr>
@@ -8908,7 +8908,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  PCAP::Bam::merge_and_mark_dup($options);</span> </td>
+<td class="s"> <span class="pod">  index   - Which element of the 'bams' array reference found in options should be processed</span> </td>
 </tr>
 
 <tr>
@@ -8940,7 +8940,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">              NOTE: index is origin 1</span> </td>
 </tr>
 
 <tr>
@@ -8972,7 +8972,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Takes a list of sorted BAM files, marks duplicates and produces single output BAM in one pass.</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9004,7 +9004,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
 </tr>
 
 <tr>
@@ -9036,7 +9036,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9068,7 +9068,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">          -tmp  : working/output directory depending on application</span> </td>
 </tr>
 
 <tr>
@@ -9100,7 +9100,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -tmp      : working/output directory depending on application</span> </td>
+<td class="s"> <span class="pod">          -bams : array reference to a B&lt;sorted&gt; list of BAM files (to allow resume function)</span> </td>
 </tr>
 
 <tr>
@@ -9132,7 +9132,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -bams     : array reference to a B&lt;sorted&gt; list of BAM files (for consistent results)</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9164,7 +9164,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -outdir   : output files written to this folder</span> </td>
+<td class="s"> <span class="pod">On successful completion of a run a file is created in tmp/progress/bamcollate.$index.  If the</span> </td>
 </tr>
 
 <tr>
@@ -9196,7 +9196,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -sample   : prefix of output file</span> </td>
+<td class="s"> <span class="pod">program is re-run without clearing of this progress folder the execution of the command is skipped.</span> </td>
 </tr>
 
 <tr>
@@ -9228,7 +9228,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -threads  : Total threads available to process</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9260,7 +9260,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">=item merge_and_mark_dup</span> </td>
 </tr>
 
 <tr>
@@ -9292,7 +9292,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  returns - path_to_marked_bam</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9324,7 +9324,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  PCAP::Bam::merge_and_mark_dup($options);</span> </td>
 </tr>
 
 <tr>
@@ -9356,7 +9356,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Resulting data is of the form:</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9388,7 +9388,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Takes a list of sorted BAM files, marks duplicates and produces single output BAM in one pass.</span> </td>
 </tr>
 
 <tr>
@@ -9420,7 +9420,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.bam</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9452,7 +9452,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.bam.bai</span> </td>
+<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
 </tr>
 
 <tr>
@@ -9484,7 +9484,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.bam.md5</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9516,7 +9516,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.met</span> </td>
+<td class="s"> <span class="pod">          -tmp      : working/output directory depending on application</span> </td>
 </tr>
 
 <tr>
@@ -9548,7 +9548,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">          -bams     : array reference to a B&lt;sorted&gt; list of BAM files (for consistent results)</span> </td>
 </tr>
 
 <tr>
@@ -9580,7 +9580,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item sample_name</span> </td>
+<td class="s"> <span class="pod">          -outdir   : output files written to this folder</span> </td>
 </tr>
 
 <tr>
@@ -9612,7 +9612,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">          -sample   : prefix of output file</span> </td>
 </tr>
 
 <tr>
@@ -9644,7 +9644,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the sample name found in the header.</span> </td>
+<td class="s"> <span class="pod">          -threads  : Total threads available to process</span> </td>
 </tr>
 
 <tr>
@@ -9708,7 +9708,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
+<td class="s"> <span class="pod">  returns - path_to_marked_bam</span> </td>
 </tr>
 
 <tr>
@@ -9772,7 +9772,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item rg_line_for_output</span> </td>
+<td class="s"> <span class="pod">Resulting data is of the form:</span> </td>
 </tr>
 
 <tr>
@@ -9836,7 +9836,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the string representation for the RG line.</span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.bam</span> </td>
 </tr>
 
 <tr>
@@ -9868,7 +9868,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs</span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.bam.bai</span> </td>
 </tr>
 
 <tr>
@@ -9900,7 +9900,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.bam.md5</span> </td>
 </tr>
 
 <tr>
@@ -9932,7 +9932,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.met</span> </td>
 </tr>
 
 <tr>
@@ -9996,12 +9996,620 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=back</span> </td>
+<td class="s"> <span class="pod">=item sample_name</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
 <a name="309">309</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="310">310</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the sample name found in the header.</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="311">311</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="312">312</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="313">313</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="314">314</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=item rg_line_for_output</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="315">315</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="316">316</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the string representation for the RG line.</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="317">317</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="318">318</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="319">319</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="320">320</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="321">321</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=item sam_ob</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="322">322</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="323">323</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  my $sam_ob = sam_ob('file.bam');</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="324">324</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="325">325</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">Generate a Bio::DB::Sam object from the provided BAM file.</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="326">326</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="327">327</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=back</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="328">328</a>
 </td>
 
 <td >
