@@ -42,6 +42,8 @@ my $test_data = "$Bin/../testData";
 
 my $test_bam = File::Spec->catfile($test_data, 'header.bam');
 my $multi_bam = File::Spec->catfile($test_data, 'multi_sample.bam');
+my $paired_bam = File::Spec->catfile($test_data, 'paired.bam');
+my $unpaired_bam = File::Spec->catfile($test_data, 'unpaired.bam');
 
 subtest 'Initialisation checks' => sub {
   use_ok($MODULE);
@@ -53,6 +55,15 @@ subtest 'rg_line checks' => sub {
   like(exception{ PCAP::Bam::rg_line_for_output($multi_bam) }
       , qr/BAM file appears to contain data for multiple readgroups, not supported:/m
       , 'Fail when multiple readgroups in BAM');
+};
+
+subtest 'paired seq checks' => sub {
+  my $obj = new_ok($MODULE => [$paired_bam]);
+  ok($obj->check_paired, 'Paired bam ok');
+  $obj = new_ok($MODULE => [$unpaired_bam]);
+  like(exception{ $obj->check_paired }
+      , qr/ERROR: Input BAMs should be for paired end sequencing:/m
+      , 'Fail when unpaired sequencing in BAM');
 };
 
 subtest 'header_info checks' => sub {

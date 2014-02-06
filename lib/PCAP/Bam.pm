@@ -193,6 +193,16 @@ sub sam_ob {
   return $sam;
 }
 
+sub check_paired {
+  my $self = shift;
+  my $sam = sam_ob($self->{'bam'});
+  my $bam = $sam->bam;
+  $bam->header;
+  my $read = $bam->read1;
+  die "ERROR: Input BAMs should be for paired end sequencing: $self->{bam}\n" unless(1 & $read->flag);
+  return 1;
+}
+
 1;
 
 __END__
@@ -229,6 +239,12 @@ Resulting data structure:
     { CN => ...
     },
     ...];
+
+=item check_paired
+
+  $bam->check_paired;
+
+Will error if BAM file doesn't contain paired reads.
 
 =back
 

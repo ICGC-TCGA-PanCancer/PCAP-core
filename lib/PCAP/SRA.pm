@@ -41,11 +41,11 @@ use PCAP::Bam;
 const my @REQUIRED_HEADER_TAGS => qw(ID CN PL LB PI SM PU DT);
 const my @VALID_SEQ_TYPES => qw(WGS WXS RNA);
 const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
-                                          'selection' => 'Random'},
+                                          'selection' => 'RANDOM'},
                                 'WXS' => {'source' => 'GENOMIC',
                                           'selection' => 'Hybrid Selection'},
                                 'RNA' => {'source' => 'RNA',
-                                          'selection' => 'Random'},);
+                                          'selection' => 'RANDOM'},);
 
 sub generate_sample_SRA {
   my ($grouped, $options) = @_;
@@ -137,6 +137,7 @@ sub parse_input {
   my @bam_obs;
   for my $file(@{$files}) {
     my $bam = PCAP::Bam->new($file);
+    $bam->check_paired;
     $bam->read_group_info(\@REQUIRED_HEADER_TAGS);
     my %bam_detail;
     for my $tag(@REQUIRED_HEADER_TAGS) {
