@@ -20,7 +20,7 @@ cd $MY_PATH
 echo '### Running perl tests ###'
 
 export HARNESS_PERL_SWITCHES=-MDevel::Cover=-db,reports,-ignore,'t/.*\.t'
-rm -rf reports reports_text reports_html
+rm -rf docs
 mkdir -p docs/reports_text
 prove --nocolor -I ./lib | sed 's/^/  /' # indent output of prove
 if [[ $? -ne 0 ]] ; then
@@ -35,8 +35,8 @@ mv reports docs/reports_html
 unset HARNESS_PERL_SWITCHES
 
 echo '### Generating POD ###'
-mkdir -p docs
-perl -MPod::Simple::HTMLBatch -e 'Pod::Simple::HTMLBatch::go' lib:bin docs/ > /dev/null
+mkdir -p docs/pod_html
+perl -MPod::Simple::HTMLBatch -e 'Pod::Simple::HTMLBatch::go' lib:bin docs/pod_html > /dev/null
 
 # generate manifest, and cleanup
 echo '### Generating MANIFEST ###'

@@ -2,57 +2,57 @@
 File                                         bran   cond    sub    pod  total
 ------------------------------------------ ------ ------ ------ ------ ------
 lib/PCAP.pm                                   n/a    n/a   66.7    0.0   50.0
-lib/PCAP/Bam.pm                              70.0   23.1   95.5   66.7   69.0
+lib/PCAP/Bam.pm                              71.4   23.1   95.7   70.0   70.5
 lib/PCAP/Bwa.pm                              41.7    0.0  100.0   66.7   42.1
 lib/PCAP/Bwa/Meta.pm                        100.0  100.0  100.0  100.0  100.0
 lib/PCAP/Cli.pm                              71.4    0.0   69.2   40.0   60.8
 lib/PCAP/SRA.pm                               0.0    n/a   42.4    6.7   24.2
 lib/PCAP/Threaded.pm                         70.0   64.3   87.0  100.0   75.9
-Total                                        72.7   32.1   78.3   56.9   67.5
+Total                                        73.0   32.1   78.5   57.7   67.8
 ------------------------------------------ ------ ------ ------ ------ ------
 
 
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:40 2014
-Finish:       Wed Feb  5 16:23:40 2014
+Start:        Thu Feb  6 16:07:06 2014
+Finish:       Thu Feb  6 16:07:06 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:42 2014
-Finish:       Wed Feb  5 16:23:43 2014
+Start:        Thu Feb  6 16:07:08 2014
+Finish:       Thu Feb  6 16:07:10 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:44 2014
-Finish:       Wed Feb  5 16:23:44 2014
+Start:        Thu Feb  6 16:07:11 2014
+Finish:       Thu Feb  6 16:07:11 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:44 2014
-Finish:       Wed Feb  5 16:23:44 2014
+Start:        Thu Feb  6 16:07:12 2014
+Finish:       Thu Feb  6 16:07:12 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:45 2014
-Finish:       Wed Feb  5 16:23:45 2014
+Start:        Thu Feb  6 16:07:13 2014
+Finish:       Thu Feb  6 16:07:13 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:46 2014
-Finish:       Wed Feb  5 16:23:46 2014
+Start:        Thu Feb  6 16:07:16 2014
+Finish:       Thu Feb  6 16:07:16 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Wed Feb  5 16:23:46 2014
-Finish:       Wed Feb  5 16:23:46 2014
+Start:        Thu Feb  6 16:07:17 2014
+Finish:       Thu Feb  6 16:07:17 2014
 
 Covered Subroutines
 -------------------
@@ -75,8 +75,8 @@ Branches
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-45           100      2      1   if (defined $bam)
-47    ***     50      0      2   if -e $bam . '.md5'
+45           100      4      1   if (defined $bam)
+47    ***     50      0      4   if -e $bam . '.md5'
 60           100      1      2   if defined $rg_line
 70    ***      0      0      0   if exists $$options{'index'} and $index != $$options{'index'}
 74          -  0     -0     -0   if PCAP::Threaded::success_exists('File::Spec'->catdir($tmp, 'progress'), $index)
@@ -96,8 +96,9 @@ line  err      %   true  false   branch
 }
 , @tags_found)
 176          100      1      1   if scalar @errors > 0
-183   ***     50      0      6   if (ref $bam eq 'Bio::DB::Sam') { }
-      ***     50      6      0   elsif (-e $bam) { }
+183   ***     50      0      8   if (ref $bam eq 'Bio::DB::Sam') { }
+      ***     50      8      0   elsif (-e $bam) { }
+202          100      1      1   unless 1 & $read->flag
 
 
 Conditions
@@ -138,10 +139,11 @@ BEGIN                  2     lib/PCAP/Bam.pm:35
 BEGIN                  2     lib/PCAP/Bam.pm:37 
 __ANON__              34     lib/PCAP/Bam.pm:169
 check_for_tags         2   0 lib/PCAP/Bam.pm:164
-new                    3   1 lib/PCAP/Bam.pm:43 
+check_paired           2   1 lib/PCAP/Bam.pm:197
+new                    5   1 lib/PCAP/Bam.pm:43 
 read_group_info        4   1 lib/PCAP/Bam.pm:119
 rg_line_for_output     2   1 lib/PCAP/Bam.pm:54 
-sam_ob                 6   0 lib/PCAP/Bam.pm:181
+sam_ob                 8   0 lib/PCAP/Bam.pm:181
 sample_name            2   1 lib/PCAP/Bam.pm:106
 
 Uncovered Subroutines
@@ -388,9 +390,9 @@ line  err      %   true  false   branch
 102   ***      0      0      0   unless _check_seq_type($seq_in)
 122   ***      0      0      0   if (defined $in_seq_type) { }
 127   ***      0      0      0   unless _check_seq_type($seq_type)
-321   ***      0      0      0   if (-e $info_file)
-325   ***      0      0      0   if $line eq ''
-326   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
+322   ***      0      0      0   if (-e $info_file)
+326   ***      0      0      0   if $line eq ''
+327   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
 
 
 Covered Subroutines
@@ -420,21 +422,21 @@ Subroutine          Count Pod Location
 ------------------- ----- --- -------------------
 __ANON__                0     lib/PCAP/SRA.pm:108
 _check_seq_type         0     lib/PCAP/SRA.pm:107
-_exp_xml                0     lib/PCAP/SRA.pm:365
-_run_xml                0     lib/PCAP/SRA.pm:376
-analysis_run_xml        0   0 lib/PCAP/SRA.pm:163
-analysis_xml            0   1 lib/PCAP/SRA.pm:180
-experiment              0   0 lib/PCAP/SRA.pm:258
-experiment_sets         0   0 lib/PCAP/SRA.pm:243
-file_xml                0   0 lib/PCAP/SRA.pm:153
+_exp_xml                0     lib/PCAP/SRA.pm:366
+_run_xml                0     lib/PCAP/SRA.pm:377
+analysis_run_xml        0   0 lib/PCAP/SRA.pm:164
+analysis_xml            0   1 lib/PCAP/SRA.pm:181
+experiment              0   0 lib/PCAP/SRA.pm:259
+experiment_sets         0   0 lib/PCAP/SRA.pm:244
+file_xml                0   0 lib/PCAP/SRA.pm:154
 generate_sample_SRA     0   0 lib/PCAP/SRA.pm:51 
-get_md5_from_file       0   0 lib/PCAP/SRA.pm:171
+get_md5_from_file       0   0 lib/PCAP/SRA.pm:172
 group_bams              0   0 lib/PCAP/SRA.pm:112
-info_file_data          0   0 lib/PCAP/SRA.pm:318
+info_file_data          0   0 lib/PCAP/SRA.pm:319
 parse_input             0   0 lib/PCAP/SRA.pm:136
-run                     0   0 lib/PCAP/SRA.pm:343
-run_set                 0   0 lib/PCAP/SRA.pm:333
-sample_descriptor       0   0 lib/PCAP/SRA.pm:299
+run                     0   0 lib/PCAP/SRA.pm:344
+run_set                 0   0 lib/PCAP/SRA.pm:334
+sample_descriptor       0   0 lib/PCAP/SRA.pm:300
 uuid                    0   0 lib/PCAP/SRA.pm:96 
 validate_seq_type       0   0 lib/PCAP/SRA.pm:101
 
