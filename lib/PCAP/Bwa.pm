@@ -55,7 +55,7 @@ sub bwa_mem {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
     else {
-      $rg_line = PCAP::Bam::rg_line_for_output($input->in);
+      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in);
     }
 
     my $bwa = which('bwa') || die "Unable to find 'bwa' in path";
@@ -80,7 +80,8 @@ sub bwa_mem {
     else {
       my $bam2fq = which('bamtofastq') || die "Unable to find 'bwa' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"), $input->in;
-      $bwa .= sprintf $BWA_MEM, ' -p', $rg_line, $options->{'threads'}, $options->{'reference'}, q{ -};
+      $bwa .= sprintf $BWA_MEM, ' -p', qq{'$rg_line'}, $options->{'threads'}, $options->{'reference'};
+      $bwa .= ' -';
       $command = "$bam2fq | $bwa";
     }
 
