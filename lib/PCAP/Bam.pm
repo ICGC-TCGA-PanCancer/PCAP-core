@@ -128,10 +128,8 @@ sub read_group_info {
     return $self->{'rgs'};
   }
 
-  my $sam = sam_ob($self->{'bam'});
   my @rgs;
-  my @header_lines = split /\n/, $sam->header->text;
-  for my $line (@header_lines) {
+  for my $line (@{$self->sam_header}) {
     next unless($line =~ m/^\@RG/);
     my @elements = split /\t/, $line;
     shift @elements; # drop @RG entry
@@ -151,6 +149,24 @@ sub read_group_info {
   $self->{'rgs'} = \@rgs;
   $self->check_for_tags(\@expected_tags) if(defined $required_tags);
   return $self->{'rgs'};
+}
+
+sub comments {
+  my $self = shift;
+  my @comments;
+  for my $line(@{$self->sam_header}) {
+    next unless($line =~ m/^\@CO\t(.*)/);
+    push @comments, $1;
+  }
+  return \@comments;
+}
+
+sub sam_header {
+  my $self = shift;
+  return $self->{'header'} if(exists $self->{'header'});
+  my $sam = sam_ob($self->{'bam'});
+  my @header_lines = split /\n/, $sam->header->text;
+  $self->{'header'} = \@header_lines;
 }
 
 sub single_rg_value {

@@ -49,47 +49,48 @@ const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
 
 sub generate_sample_SRA {
   my ($grouped, $options) = @_;
+  my @cgsubmit_validate;
   my $base_path = $options->{'outdir'};
   for my $seq_type(keys %{$grouped}) {
     for my $sample(keys %{$grouped->{$seq_type}}) {
       for my $lib_id(keys %{$grouped->{$seq_type}->{$sample}}) {
-        my $submission_path = "$base_path/".&uuid;
-        make_path($submission_path);
-
-        my %exps;
-        my %runs;
-        my @all_bams;
         for my $bam_ob(@{$grouped->{$seq_type}->{$sample}->{$lib_id}}) {
+          my $submission_uuid = &uuid;
+          my $submission_path = "$base_path/".$submission_uuid;
+          make_path($submission_path);
+          my %exps;
+          my %runs;
           $exps{$bam_ob->{'exp'}} = $bam_ob unless(exists $exps{$bam_ob->{'exp'}});
           push @{$runs{$bam_ob->{'run'}}}, $bam_ob;
-          push @all_bams, $bam_ob;
-        }
 
-        my $centre = $all_bams[0]->{'CN'};
 
-        my $run_xmls = run($centre, \%runs);
-        my $exp_xml = experiment_sets($centre, $options->{'study'}, $sample, \%exps);
+          my $info = info_file_data($bam_ob);
+          my $run_xmls = run($bam_ob->{'CN'}, \%runs);
+          my $exp_xml = experiment_sets($bam_ob->{'CN'}, $options->{'study'}, $sample, \%exps, $info);
 
-        my $analysis_xml = analysis_xml($centre, $options->{'study'}, $sample, \@all_bams);
-        open my $XML, '>', "$submission_path/analysis.xml";
-        print $XML $analysis_xml;
-        close $XML;
-        my $run_xml = run_set($centre, $run_xmls);
-        open $XML, '>', "$submission_path/run.xml";
-        print $XML $run_xml;
-        close $XML;
-        open $XML, '>', "$submission_path/experiment.xml";
-        print $XML $exp_xml;
-        close $XML;
+          my $analysis_xml = analysis_xml($bam_ob->{'CN'}, $options->{'study'}, $sample, [$bam_ob], $info);
+          open my $XML, '>', "$submission_path/analysis.xml";
+          print $XML $analysis_xml;
+          close $XML;
+          my $run_xml = run_set($bam_ob->{'CN'}, $run_xmls);
+          open $XML, '>', "$submission_path/run.xml";
+          print $XML $run_xml;
+          close $XML;
+          open $XML, '>', "$submission_path/experiment.xml";
+          print $XML $exp_xml;
+          close $XML;
 
-        for (@all_bams) {
-          my ($cleaned_filename, $directories, $suffix) = fileparse($_->{'file'}, '.bam');
+          my ($cleaned_filename, $directories, $suffix) = fileparse($bam_ob->{'file'}, '.bam');
           $cleaned_filename .= '.bam';
-          symlink abs_path($_->{'file'}), "$submission_path/$cleaned_filename";
+          symlink abs_path($bam_ob->{'file'}), "$submission_path/$cleaned_filename";
+          push @cgsubmit_validate, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -vv --validate-only', $submission_uuid , $submission_uuid );
         }
       }
     }
   }
+  print "cd $base_path\n";
+  print join "\n", @cgsubmit_validate;
+  print "\n";
 }
 
 sub uuid {
@@ -113,6 +114,10 @@ sub group_bams {
   my %grouped;
   for my $bam_ob(@{$bam_obs}) {
     my $sm = $bam_ob->{'SM'};
+    if($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/) {
+      $sm = join q{-}, ($1,$2,$3,$4,$5);
+      $bam_ob->{'SM'} = $sm;
+    }
     my $lb = $bam_ob->{'LB'};
     my ($run) = $bam_ob->{'PU'} =~ m/^[[:alpha:]]+:([^_]+)_[^#]+/;
     $bam_ob->{'run'} = sprintf '%s:%s', $bam_ob->{'CN'}, $run;
@@ -145,6 +150,7 @@ sub parse_input {
     }
     $bam_detail{'file'} = $bam->{'bam'};
     $bam_detail{'md5'} = $bam->{'md5'};
+    $bam_detail{'comments'} = $bam->comments;
     push @bam_obs, \%bam_detail
   }
   return \@bam_obs;
@@ -178,7 +184,7 @@ sub get_md5_from_file {
 }
 
 sub analysis_xml {
-  my ($centre_name, $study_name, $aliquot_id, $files) = @_;
+  my ($centre_name, $study_name, $aliquot_id, $files, $info) = @_;
   # if assembly short_name is to be used need to add parameter
   # otherwise need to delete assembly section
   my @tmp_dt;
@@ -233,15 +239,43 @@ sub analysis_xml {
       <FILES>
         %s
       </FILES>
-    </DATA_BLOCK>
+    </DATA_BLOCK>%s
   </ANALYSIS>
 </ANALYSIS_SET>
 ANALYSISXML
-  return sprintf $analysis_xml, $centre_name, $dt, $study_name, (join "\n", @run_xml), $aliquot_id, (join "\n", @file_xml);
+  return sprintf $analysis_xml, $centre_name, $dt, $study_name, (join "\n", @run_xml), $aliquot_id, (join "\n", @file_xml), analysis_attributes($info);
+}
+
+sub analysis_attributes {
+  my $info = shift;
+  my $attr_xml = q{};
+  my @tags = sort keys %{$info};
+  if(scalar @tags > 0) {
+    my @attributes;
+    for my $tag(@tags) {
+      push @attributes, _attribute_xml($tag, $info->{$tag});
+    }
+    $attr_xml = "\n    <ANALYSIS_ATTRIBUTES>\n".
+                (join "\n", @attributes).
+                "\n    </ANALYSIS_ATTRIBUTES>";
+  }
+  return $attr_xml;
+}
+
+sub _attribute_xml {
+  my ($tag, $value) = @_;
+  my $attr_xml = <<ATTRXML;
+      <ANALYSIS_ATTRIBUTE>
+        <TAG>%s</TAG>
+        <VALUE>%s</VALUE>
+      </ANALYSIS_ATTRIBUTE>
+ATTRXML
+  chomp $attr_xml;
+  return sprintf $attr_xml, $tag, $value;
 }
 
 sub experiment_sets {
-  my ($centre, $study, $sample, $exp_set) = @_;
+  my ($centre, $study, $sample, $exp_set, $info) = @_;
   my $experiment_xml = <<EXP_XML;
 <EXPERIMENT_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.experiment.xsd?view=co">
 %s
@@ -250,13 +284,13 @@ EXP_XML
 
   my @experiments;
   for my $exp(keys %{$exp_set}) {
-    push @experiments, experiment($centre, $study, $sample, $exp_set->{$exp});
+    push @experiments, experiment($centre, $study, $sample, $exp_set->{$exp}, $info);
   }
   return sprintf $experiment_xml, (join '', @experiments);
 }
 
 sub experiment {
-  my ($centre, $study, $sample, $lib) = @_;
+  my ($centre, $study, $sample, $lib, $info) = @_;
   my $exp_xml = <<EXPXML;
   <EXPERIMENT center_name="%s" alias="%s">
     <STUDY_REF refcenter="OICR" refname="%s"/>
@@ -287,7 +321,7 @@ warn "sequencer model artificial\n";
   return sprintf $exp_xml , $centre
                           , $lib->{'exp'}
                           , $study
-                          , sample_descriptor($lib)
+                          , sample_descriptor($lib, $info, $centre)
                           , $lib->{'LB'} # definition on NCBI is incorrect
                           , $lib->{'type'} # WGS, WXS, RNA-Seq
                           , $ABBREV_TO_SOURCE{$lib->{'type'}}->{'source'} # GENOMIC
@@ -297,22 +331,20 @@ warn "sequencer model artificial\n";
 }
 
 sub sample_descriptor {
-  my $bam_ob = shift;
-  my $info = info_file_data($bam_ob);
+  my ($bam_ob, $info, $centre) = @_;
   my $local_sample = q{};
-warn "submitter_id skipped\n";
-#  if(exists $info->{'INTERNAL_SAMPLE'}) {
-#    $local_sample = qq{\n          <SUBMITTER_ID>$info->{INTERNAL_SAMPLE}</SUBMITTER_ID>};
-#  }
+  if(exists $info->{'submitter_sample_id'}) {
+    $local_sample = qq{<SUBMITTER_ID namespace="$centre">$info->{submitter_sample_id}</SUBMITTER_ID>\n          };
+  }
   my $samp_desc = <<SAMPXML;
       <SAMPLE_DESCRIPTOR refcenter="OICR" refname="%s">
         <IDENTIFIERS>
-          <UUID>%s</UUID>%s
+          %s<UUID>%s</UUID>
         </IDENTIFIERS>
       </SAMPLE_DESCRIPTOR>
 SAMPXML
   chomp $samp_desc;
-  return sprintf $samp_desc, $bam_ob->{'SM'}, $bam_ob->{'SM'}, $local_sample;
+  return sprintf $samp_desc, $bam_ob->{'SM'}, $local_sample, $bam_ob->{'SM'};
 }
 
 sub info_file_data {
@@ -325,7 +357,18 @@ sub info_file_data {
       chomp $line;
       next if($line eq q{});
       $info{$1} = $2 if($line =~ m/^([^:]+):(.*)$/);
+      die "$info_file has more that one entry for $1" if(exists $info{$1});
     }
+  }
+  # also check the bam header
+  for my $comment(@{$bam_ob->{'comments'}}) {
+    next unless($comment =~ m/^([^:]+):(.*)/);
+    my ($key, $value) = ($1, $2);
+    die "$bam_ob->{file} has more that one entry for $1 (or entry is also in *.info file)" if(exists $info{$key});
+    if($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/) {
+      $value = join q{-}, ($1,$2,$3,$4,$5);
+    }
+    $info{$key} = $value
   }
   return \%info;
 }
