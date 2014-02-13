@@ -1,73 +1,73 @@
 ------------------------------------------ ------ ------ ------ ------ ------
 File                                         bran   cond    sub    pod  total
 ------------------------------------------ ------ ------ ------ ------ ------
-lib/PCAP.pm                                   n/a    n/a   66.7  100.0   75.0
-lib/PCAP/Bam.pm                              71.4   23.1   95.7  100.0   73.9
+lib/PCAP.pm                                   n/a    n/a  100.0  100.0  100.0
+lib/PCAP/Bam.pm                              78.3   23.1  100.0  100.0   79.2
 lib/PCAP/Bwa.pm                              41.7    0.0  100.0  100.0   43.9
 lib/PCAP/Bwa/Meta.pm                        100.0  100.0  100.0  100.0  100.0
 lib/PCAP/Cli.pm                              71.4    0.0   69.2  100.0   66.7
-lib/PCAP/SRA.pm                               0.0    n/a   42.4    6.7   24.2
+lib/PCAP/SRA.pm                               0.0    n/a   40.0    6.2   19.0
 lib/PCAP/Threaded.pm                         70.0   64.3   87.0  100.0   75.9
-Total                                        73.0   32.1   78.5   73.1   69.6
+Total                                        70.0   32.1   79.1   72.7   68.5
 ------------------------------------------ ------ ------ ------ ------ ------
 
 
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:30:59 2014
-Finish:       Thu Feb  6 16:30:59 2014
+Start:        Thu Feb 13 09:28:19 2014
+Finish:       Thu Feb 13 09:28:19 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:31:01 2014
-Finish:       Thu Feb  6 16:31:02 2014
+Start:        Thu Feb 13 09:28:20 2014
+Finish:       Thu Feb 13 09:28:22 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:31:03 2014
-Finish:       Thu Feb  6 16:31:03 2014
+Start:        Thu Feb 13 09:28:22 2014
+Finish:       Thu Feb 13 09:28:22 2014
+
+Run:          t/pcap.t
+Perl version: 5.16.3
+OS:           linux
+Start:        Thu Feb 13 09:28:23 2014
+Finish:       Thu Feb 13 09:28:23 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:31:03 2014
-Finish:       Thu Feb  6 16:31:04 2014
+Start:        Thu Feb 13 09:28:23 2014
+Finish:       Thu Feb 13 09:28:23 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:31:04 2014
-Finish:       Thu Feb  6 16:31:04 2014
+Start:        Thu Feb 13 09:28:24 2014
+Finish:       Thu Feb 13 09:28:24 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:31:05 2014
-Finish:       Thu Feb  6 16:31:05 2014
+Start:        Thu Feb 13 09:28:25 2014
+Finish:       Thu Feb 13 09:28:25 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb  6 16:31:06 2014
-Finish:       Thu Feb  6 16:31:06 2014
+Start:        Thu Feb 13 09:28:25 2014
+Finish:       Thu Feb 13 09:28:25 2014
 
 Covered Subroutines
 -------------------
 
 Subroutine Count Pod Location      
 ---------- ----- --- --------------
-BEGIN          5     lib/PCAP.pm:23
-BEGIN          5     lib/PCAP.pm:24
-
-Uncovered Subroutines
----------------------
-
-Subroutine Count Pod Location      
----------- ----- --- --------------
-license        0   1 lib/PCAP.pm:36
+BEGIN          6     lib/PCAP.pm:23
+BEGIN          6     lib/PCAP.pm:24
+license        1   1 lib/PCAP.pm:36
 
 
 Branches
@@ -75,30 +75,32 @@ Branches
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-45           100      4      1   if (defined $bam)
-47    ***     50      0      4   if -e $bam . '.md5'
+45           100      7      1   if (defined $bam)
+47    ***     50      0      7   if -e $bam . '.md5'
 60           100      1      2   if defined $rg_line
 70    ***      0      0      0   if exists $$options{'index'} and $index != $$options{'index'}
 74          -  0     -0     -0   if PCAP::Threaded::success_exists('File::Spec'->catdir($tmp, 'progress'), $index)
 92          -  0     -0     -0   if $helper_threads < 1
 112          100      1      2   if defined $sample and $sample ne $new_sample
-124          100      2      2   if defined $required_tags
-126          100      2      2   if (exists $$self{'rgs'})
+124          100      4      2   if defined $required_tags
+126          100      2      4   if (exists $$self{'rgs'})
 127   ***     50      2      0   if defined $required_tags
-135          100     52      3   unless $line =~ /^\@RG/
-142   ***     50      0     24   if $element eq ''
-145   ***     50      0     24   unless defined $tag and defined $value
-150   ***     50      0      2   if scalar @rgs == 0
-152   ***     50      0      2   if defined $required_tags
-159   ***      0      0      0   if scalar @{$rgs;} > 1
-169          100      2      4   unless (first sub {
+133          100    108      6   unless $line =~ /^\@RG/
+140   ***     50      0     48   if $element eq ''
+143   ***     50      0     48   unless defined $tag and defined $value
+148   ***     50      0      4   if scalar @rgs == 0
+150          100      2      2   if defined $required_tags
+158          100     27      2   unless $line =~ /^\@CO\t(.*)/
+166   ***     50      0      5   if exists $$self{'header'}
+176          100      1      1   if scalar @{$rgs;} > 1
+186          100      2      7   unless (first sub {
 	$$sorted_tags[$i] eq $_;
 }
 , @tags_found)
-176          100      1      1   if scalar @errors > 0
-183   ***     50      0      8   if (ref $bam eq 'Bio::DB::Sam') { }
-      ***     50      8      0   elsif (-e $bam) { }
-202          100      1      1   unless 1 & $read->flag
+193          100      1      3   if scalar @errors > 0
+200   ***     50      0     11   if (ref $bam eq 'Bio::DB::Sam') { }
+      ***     50     11      0   elsif (-e $bam) { }
+219          100      1      1   unless 1 & $read->flag
 
 
 Conditions
@@ -110,7 +112,7 @@ line  err      %     !l  l&&!r   l&&r   expr
 ----- --- ------ ------ ------ ------   ----
 70    ***      0      0      0      0   exists $$options{'index'} and $index != $$options{'index'}
 112   ***     66      2      0      1   defined $sample and $sample ne $new_sample
-145   ***     33      0      0     24   defined $tag and defined $value
+143   ***     33      0      0     48   defined $tag and defined $value
 
 or 2 conditions
 
@@ -137,14 +139,17 @@ BEGIN                  2     lib/PCAP/Bam.pm:33
 BEGIN                  2     lib/PCAP/Bam.pm:34 
 BEGIN                  2     lib/PCAP/Bam.pm:35 
 BEGIN                  2     lib/PCAP/Bam.pm:37 
-__ANON__              34     lib/PCAP/Bam.pm:169
-check_for_tags         2   1 lib/PCAP/Bam.pm:164
-check_paired           2   1 lib/PCAP/Bam.pm:197
-new                    5   1 lib/PCAP/Bam.pm:43 
-read_group_info        4   1 lib/PCAP/Bam.pm:119
+__ANON__              49     lib/PCAP/Bam.pm:186
+check_for_tags         4   1 lib/PCAP/Bam.pm:181
+check_paired           2   1 lib/PCAP/Bam.pm:214
+comments               1   1 lib/PCAP/Bam.pm:155
+new                    8   1 lib/PCAP/Bam.pm:43 
+read_group_info        6   1 lib/PCAP/Bam.pm:119
 rg_line_for_output     2   1 lib/PCAP/Bam.pm:54 
-sam_ob                 8   1 lib/PCAP/Bam.pm:181
+sam_header             5   1 lib/PCAP/Bam.pm:165
+sam_ob                11   1 lib/PCAP/Bam.pm:198
 sample_name            2   1 lib/PCAP/Bam.pm:106
+single_rg_value        2   1 lib/PCAP/Bam.pm:174
 
 Uncovered Subroutines
 ---------------------
@@ -153,7 +158,6 @@ Subroutine         Count Pod Location
 ------------------ ----- --- -------------------
 bam_to_grouped_bam    -0   1 lib/PCAP/Bam.pm:69 
 merge_and_mark_dup    -0   1 lib/PCAP/Bam.pm:84 
-single_rg_value        0   1 lib/PCAP/Bam.pm:157
 
 
 Branches
@@ -166,13 +170,13 @@ line  err      %   true  false   branch
 67          -  0     -0     -0   if ($input->fastq) { }
 69    ***      0      0      0   unless $input->paired_fq
 71    ***      0      0      0   if ($input->paired_fq) { }
-88    ***      0      0      0   if $$options{'threads'} > 3
-113   ***      0      0      0   if defined $$options{'index'} and $index_counter != $$options{'index'}
-116         -  0     -0     -0   if PCAP::Threaded::success_exists('File::Spec'->catdir($tmp, 'progress'), $input_counter, $end)
-122         -  0     -0     -0   if ($input->fastq) { }
-142   ***      0      0      0   if exists $$options{'index'} and $index != $$options{'index'}
-145         -  0     -0     -0   if PCAP::Threaded::success_exists('File::Spec'->catdir($tmp, 'progress'), $index)
-154         -  0     -0     -0   if (defined $fastq) { }
+93    ***      0      0      0   if $$options{'threads'} > 3
+118   ***      0      0      0   if defined $$options{'index'} and $index_counter != $$options{'index'}
+121         -  0     -0     -0   if PCAP::Threaded::success_exists('File::Spec'->catdir($tmp, 'progress'), $input_counter, $end)
+127         -  0     -0     -0   if ($input->fastq) { }
+147   ***      0      0      0   if exists $$options{'index'} and $index != $$options{'index'}
+150         -  0     -0     -0   if PCAP::Threaded::success_exists('File::Spec'->catdir($tmp, 'progress'), $index)
+159         -  0     -0     -0   if (defined $fastq) { }
 
 
 Conditions
@@ -182,8 +186,8 @@ and 3 conditions
 
 line  err      %     !l  l&&!r   l&&r   expr
 ----- --- ------ ------ ------ ------   ----
-113   ***      0      0      0      0   defined $$options{'index'} and $index_counter != $$options{'index'}
-142   ***      0      0      0      0   exists $$options{'index'} and $index != $$options{'index'}
+118   ***      0      0      0      0   defined $$options{'index'} and $index_counter != $$options{'index'}
+147   ***      0      0      0      0   exists $$options{'index'} and $index != $$options{'index'}
 
 or 2 conditions
 
@@ -191,10 +195,10 @@ line  err      %      l     !l   expr
 ----- --- ------ ------ ------   ----
 61    ***      0      0      0   which('bwa') || die(q[Unable to find 'bwa' in path])
 81    ***      0      0      0   which('bamtofastq') || die(q[Unable to find 'bwa' in path])
-90    ***      0      0      0   which('bamsort') || die("Unable to find 'bamsort' in path\n")
-118   ***      0      0      0   which('bwa') || die(q[Unable to find 'bwa' in path])
-150   ***      0      0      0   which('bwa') || die(q[Unable to find 'bwa' in path])
-151   ***      0      0      0   which('bamsort') || die(q[Unable to find 'bwa' in bamsort])
+95    ***      0      0      0   which('bamsort') || die("Unable to find 'bamsort' in path\n")
+123   ***      0      0      0   which('bwa') || die(q[Unable to find 'bwa' in path])
+155   ***      0      0      0   which('bwa') || die(q[Unable to find 'bwa' in path])
+156   ***      0      0      0   which('bamsort') || die(q[Unable to find 'bwa' in bamsort])
 
 
 Covered Subroutines
@@ -217,9 +221,9 @@ Uncovered Subroutines
 
 Subroutine Count Pod Location           
 ---------- ----- --- -------------------
-bwa_aln       -0   1 lib/PCAP/Bwa.pm:104
+bwa_aln       -0   1 lib/PCAP/Bwa.pm:109
 bwa_mem       -0   1 lib/PCAP/Bwa.pm:44 
-sampe         -0   1 lib/PCAP/Bwa.pm:137
+sampe         -0   1 lib/PCAP/Bwa.pm:142
 
 
 Branches
@@ -387,12 +391,19 @@ Branches
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
 63    ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
-102   ***      0      0      0   unless _check_seq_type($seq_in)
-122   ***      0      0      0   if (defined $in_seq_type) { }
-127   ***      0      0      0   unless _check_seq_type($seq_type)
-322   ***      0      0      0   if (-e $info_file)
-326   ***      0      0      0   if $line eq ''
-327   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
+103   ***      0      0      0   unless _check_seq_type($seq_in)
+117   ***      0      0      0   if ($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+127   ***      0      0      0   if (defined $in_seq_type) { }
+132   ***      0      0      0   unless _check_seq_type($seq_type)
+254   ***      0      0      0   if (scalar @tags > 0)
+337   ***      0      0      0   if (exists $$info{'submitter_sample_id'})
+355   ***      0      0      0   if (-e $info_file)
+359   ***      0      0      0   if $line eq ''
+360   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
+361   ***      0      0      0   if exists $info{$1}
+366   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
+368   ***      0      0      0   if exists $info{$key}
+369   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
 
 
 Covered Subroutines
@@ -420,25 +431,27 @@ Uncovered Subroutines
 
 Subroutine          Count Pod Location           
 ------------------- ----- --- -------------------
-__ANON__                0     lib/PCAP/SRA.pm:108
-_check_seq_type         0     lib/PCAP/SRA.pm:107
-_exp_xml                0     lib/PCAP/SRA.pm:366
-_run_xml                0     lib/PCAP/SRA.pm:377
-analysis_run_xml        0   0 lib/PCAP/SRA.pm:164
-analysis_xml            0   1 lib/PCAP/SRA.pm:181
-experiment              0   0 lib/PCAP/SRA.pm:259
-experiment_sets         0   0 lib/PCAP/SRA.pm:244
-file_xml                0   0 lib/PCAP/SRA.pm:154
+__ANON__                0     lib/PCAP/SRA.pm:109
+_attribute_xml          0     lib/PCAP/SRA.pm:267
+_check_seq_type         0     lib/PCAP/SRA.pm:108
+_exp_xml                0     lib/PCAP/SRA.pm:410
+_run_xml                0     lib/PCAP/SRA.pm:421
+analysis_attributes     0   0 lib/PCAP/SRA.pm:251
+analysis_run_xml        0   0 lib/PCAP/SRA.pm:170
+analysis_xml            0   1 lib/PCAP/SRA.pm:188
+experiment              0   0 lib/PCAP/SRA.pm:294
+experiment_sets         0   0 lib/PCAP/SRA.pm:279
+file_xml                0   0 lib/PCAP/SRA.pm:160
 generate_sample_SRA     0   0 lib/PCAP/SRA.pm:51 
-get_md5_from_file       0   0 lib/PCAP/SRA.pm:172
-group_bams              0   0 lib/PCAP/SRA.pm:112
-info_file_data          0   0 lib/PCAP/SRA.pm:319
-parse_input             0   0 lib/PCAP/SRA.pm:136
-run                     0   0 lib/PCAP/SRA.pm:344
-run_set                 0   0 lib/PCAP/SRA.pm:334
-sample_descriptor       0   0 lib/PCAP/SRA.pm:300
-uuid                    0   0 lib/PCAP/SRA.pm:96 
-validate_seq_type       0   0 lib/PCAP/SRA.pm:101
+get_md5_from_file       0   0 lib/PCAP/SRA.pm:179
+group_bams              0   0 lib/PCAP/SRA.pm:113
+info_file_data          0   0 lib/PCAP/SRA.pm:352
+parse_input             0   0 lib/PCAP/SRA.pm:141
+run                     0   0 lib/PCAP/SRA.pm:388
+run_set                 0   0 lib/PCAP/SRA.pm:378
+sample_descriptor       0   0 lib/PCAP/SRA.pm:335
+uuid                    0   0 lib/PCAP/SRA.pm:97 
+validate_seq_type       0   0 lib/PCAP/SRA.pm:102
 
 
 Branches

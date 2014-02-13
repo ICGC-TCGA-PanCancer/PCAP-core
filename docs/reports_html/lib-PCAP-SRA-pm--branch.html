@@ -37,8 +37,8 @@ http://www.pjcj.net
 <tr>
 <td class="h">branch</td>
 <td>0</td>
-<td>14</td>
-<td class="c0" title="0 / 14">
+<td>28</td>
+<td class="c0" title="0 / 28">
 
 <a href="lib-PCAP-SRA-pm--branch.html">  0.0 </a>
 
@@ -72,7 +72,7 @@ http://www.pjcj.net
 <a name=""> </a>
 <tr>
 <td class="h">
-<a href="lib-PCAP-SRA-pm.html#102">102</a>
+<a href="lib-PCAP-SRA-pm.html#103">103</a>
 </td>
 
 <td class="c0"> 0 </td>
@@ -85,14 +85,14 @@ http://www.pjcj.net
 <a name=""> </a>
 <tr>
 <td class="h">
-<a href="lib-PCAP-SRA-pm.html#122">122</a>
+<a href="lib-PCAP-SRA-pm.html#117">117</a>
 </td>
 
 <td class="c0"> 0 </td>
 
 <td class="c0"> 0 </td>
 
-<td class="s"> <span class="keyword">if</span>&nbsp;<span class="structure">(</span><span class="core">defined</span> <span class="symbol">$in_seq_type</span><span class="structure">)</span> <span class="structure">{</span> <span class="structure">}</span> </td>
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="structure">(</span><span class="symbol">$sm</span> <span class="operator">=~</span> <span class="match">/^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/</span><span class="structure">)</span> </td>
 </tr>
 
 <a name=""> </a>
@@ -105,13 +105,52 @@ http://www.pjcj.net
 
 <td class="c0"> 0 </td>
 
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="structure">(</span><span class="core">defined</span> <span class="symbol">$in_seq_type</span><span class="structure">)</span> <span class="structure">{</span> <span class="structure">}</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#132">132</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
 <td class="s"> <span class="keyword">unless</span>&nbsp;<span class="word">_check_seq_type</span><span class="structure">(</span><span class="symbol">$seq_type</span><span class="structure">)</span> </td>
 </tr>
 
 <a name=""> </a>
 <tr>
 <td class="h">
-<a href="lib-PCAP-SRA-pm.html#322">322</a>
+<a href="lib-PCAP-SRA-pm.html#254">254</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="structure">(</span><span class="word">scalar</span> <span class="symbol">@tags</span> <span class="operator">&gt;</span> <span class="number">0</span><span class="structure">)</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#337">337</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="structure">(</span><span class="word">exists</span> <span class="cast">$</span><span class="symbol">$info</span><span class="structure">{</span><span class="single">'submitter_sample_id'</span><span class="structure">})</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#355">355</a>
 </td>
 
 <td class="c0"> 0 </td>
@@ -124,7 +163,7 @@ http://www.pjcj.net
 <a name=""> </a>
 <tr>
 <td class="h">
-<a href="lib-PCAP-SRA-pm.html#326">326</a>
+<a href="lib-PCAP-SRA-pm.html#359">359</a>
 </td>
 
 <td class="c0"> 0 </td>
@@ -137,7 +176,7 @@ http://www.pjcj.net
 <a name=""> </a>
 <tr>
 <td class="h">
-<a href="lib-PCAP-SRA-pm.html#327">327</a>
+<a href="lib-PCAP-SRA-pm.html#360">360</a>
 </td>
 
 <td class="c0"> 0 </td>
@@ -145,6 +184,58 @@ http://www.pjcj.net
 <td class="c0"> 0 </td>
 
 <td class="s"> <span class="keyword">if</span>&nbsp;<span class="symbol">$line</span> <span class="operator">=~</span> <span class="match">/^([^:]+):(.*)$/</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#361">361</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="word">exists</span> <span class="symbol">$info</span><span class="structure">{</span><span class="magic">$1</span><span class="structure">}</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#366">366</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">unless</span>&nbsp;<span class="symbol">$comment</span> <span class="operator">=~</span> <span class="match">/^([^:]+):(.*)/</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#368">368</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="word">exists</span> <span class="symbol">$info</span><span class="structure">{</span><span class="symbol">$key</span><span class="structure">}</span> </td>
+</tr>
+
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-SRA-pm.html#369">369</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">if</span>&nbsp;<span class="structure">(</span><span class="symbol">$value</span> <span class="operator">=~</span> <span class="match">/^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/</span><span class="structure">)</span> </td>
 </tr>
 
 </table>

@@ -75,6 +75,7 @@ README.md
 t/1_pm_compile.t
 t/2_pl_compile.t
 t/3_external_progs.t
+t/pcap.t
 t/pcapBam.t
 t/pcapBwaMeta.t
 t/pcapCli.t

@@ -7,6 +7,8 @@ use Const::Fast qw(const);
 
 
 const my $MODULE => 'PCAP::Bam';
+const my $COMMENT_COUNT => 2;
+const my $EXPECTED_RG_PL => 'HiSeq';
 const my $EXPECTED_RGLINE => q{@RG\tID:1\tPL:HiSeq\tPU:1_1\tLB:SAMPLE_LIBRARY\tPI:500\tDS:short\tSM:SAMPLE_NAME\tCN:SANGER};
 const my $EXPECTED_SAMPLE => 'SAMPLE_NAME';
 const my $EXPECTED_SINGLE_RG => [{'CN' => 'SANGER',
@@ -40,6 +42,12 @@ const my $EXPECTED_MULTI_RG => [ {'CN' => 'SANGER',
 use FindBin qw($Bin);
 my $test_data = "$Bin/../testData";
 
+# if you need to change the header.bam
+# edit header.sam then:
+# samcat -b header.sam > header.bam
+# bamaddtrailer header.bam
+## these commands are part of samcat project, queried if new samtools rc2 can handled this
+
 my $test_bam = File::Spec->catfile($test_data, 'header.bam');
 my $multi_bam = File::Spec->catfile($test_data, 'multi_sample.bam');
 my $paired_bam = File::Spec->catfile($test_data, 'paired.bam');
@@ -49,13 +57,27 @@ subtest 'Initialisation checks' => sub {
   use_ok($MODULE);
 };
 
-subtest 'rg_line checks' => sub {
+subtest 'co line checks' => sub {
+  my $obj = new_ok($MODULE => [$test_bam]);
+  my @comments = @{$obj->comments};
+  is(scalar @comments, $COMMENT_COUNT, 'Expected number of comment lines');
+  unlike($comments[0], qr/\@CO/, 'Leading tag removed');
+};
+
+subtest 'rg line checks' => sub {
   my ($rg_line, $bio_db_sam) = PCAP::Bam::rg_line_for_output($test_bam);
   is($rg_line, $EXPECTED_RGLINE, 'Retreived single RG line');
   like(exception{ PCAP::Bam::rg_line_for_output($multi_bam) }
       , qr/BAM file appears to contain data for multiple readgroups, not supported:/m
       , 'Fail when multiple readgroups in BAM');
+  my $obj = new_ok($MODULE => [$test_bam]);
+  is($obj->single_rg_value('PL'), $EXPECTED_RG_PL, 'Tag successfully retrieved');
+  $obj = new_ok($MODULE => [$multi_bam]);
+  like(exception{$obj->single_rg_value('PL')}
+      , qr/ERROR: This BAM includes multiple readgroups/m
+      , 'single_rg_value not suitable for multiple RGs');
 };
+
 
 subtest 'paired seq checks' => sub {
   my $obj = new_ok($MODULE => [$paired_bam]);

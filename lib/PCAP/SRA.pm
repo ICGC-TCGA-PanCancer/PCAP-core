@@ -167,10 +167,11 @@ sub file_xml {
 }
 
 sub analysis_run_xml {
-  my $bam = shift;
-  return sprintf '<RUN data_block_name="%s" read_group_label="%s" refcenter="WTSI" refname="%s"/>'
+  my ($bam, $centre_name) = @_;
+  return sprintf '<RUN data_block_name="%s" read_group_label="%s" refcenter="%s" refname="%s"/>'
                   , $bam->{'LB'}
                   , $bam->{'ID'}
+                  , $centre_name
                   , $bam->{'run'};
 }
 
@@ -193,7 +194,7 @@ sub analysis_xml {
   for(@{$files}) {
     push @tmp_dt, $_->{'DT'};
     push @file_xml, file_xml($_);
-    push @run_xml, analysis_run_xml($_);
+    push @run_xml, analysis_run_xml($_, $centre_name);
   }
   @tmp_dt = sort @tmp_dt;
   my $dt = $tmp_dt[-1];

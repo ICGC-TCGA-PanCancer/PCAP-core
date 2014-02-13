@@ -167,6 +167,7 @@ sub sam_header {
   my $sam = sam_ob($self->{'bam'});
   my @header_lines = split /\n/, $sam->header->text;
   $self->{'header'} = \@header_lines;
+  return $self->{'header'};
 }
 
 sub single_rg_value {
@@ -274,6 +275,19 @@ Errors if any are not detected.
   $bam->check_paired;
 
 Will error if BAM file doesn't contain paired reads.
+
+=item comments
+
+  my @comments = @{$bam->comments};
+
+Returns an array ref of the value of each comment line.
+'@CO\t' is pre-stripped.
+
+=item sam_header
+
+  my @header_lines = @{$bam->sam_header};
+
+Returns array ref of all header lines.  One entry perl line.
 
 =back
 
