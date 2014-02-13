@@ -49,7 +49,7 @@ const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
 
 sub generate_sample_SRA {
   my ($grouped, $options) = @_;
-  my @cgsubmit_validate;
+  my (@cgsubmit_validate, @cgsubmit, @gtupload);
   my $base_path = $options->{'outdir'};
   for my $seq_type(keys %{$grouped}) {
     for my $sample(keys %{$grouped->{$seq_type}}) {
@@ -83,13 +83,20 @@ sub generate_sample_SRA {
           my ($cleaned_filename, $directories, $suffix) = fileparse($bam_ob->{'file'}, '.bam');
           $cleaned_filename .= '.bam';
           symlink abs_path($bam_ob->{'file'}), "$submission_path/$cleaned_filename";
-          push @cgsubmit_validate, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -vv --validate-only', $submission_uuid , $submission_uuid );
+          push @cgsubmit_validate, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s --validate-only', $submission_uuid , $submission_uuid );
+          push @cgsubmit, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -c $GNOS_PERM', $submission_uuid , $submission_uuid );
+          push @gtupload, (sprintf 'gtupload -v -c ~/gnostest.pem -u %s/manifest.xml >& %s.upload.log&', $submission_uuid, $submission_uuid);
         }
       }
     }
   }
+  print "## Executing the following will complete the submission/upload process:\n";
   print "cd $base_path\n";
   print join "\n", @cgsubmit_validate;
+  print "\n## if successful\n";
+  print join "\n", @cgsubmit;
+  print "\n## if successful\n";
+  print join "\n", @gtupload;
   print "\n";
 }
 

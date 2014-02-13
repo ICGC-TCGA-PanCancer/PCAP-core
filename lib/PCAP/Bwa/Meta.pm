@@ -33,6 +33,8 @@ use Const::Fast qw(const);
 use List::Util qw(first);
 use File::Spec;
 
+use PCAP::Bam;
+
 const my @INIT_KEYS => qw(in temp fastq paired_fq);
 const my @REQUIRED_KEYS => qw(in temp);
 const my @REQUIRED_RG_ELEMENTS => qw(SM);
@@ -99,18 +101,35 @@ sub rg {
   return $self->{'rg'};
 }
 
+sub rg_index {
+}
+
 sub rg_header {
   my ($self, $separator, $elements) = @_;
   if(exists $self->{'rg_header'}) {
     croak "'rg_header' has already been set" if(defined $elements);
   }
   else {
+    # use the BAM object to grab existing header
+    unless(exists $self->{'fastq'}) {
+      my $bam = PCAP::Bam->new($self->{'in'});
+      my $header_set = $bam->read_group_info->[0];
+      $elements = $header_set;
+    }
+
     for my $required(@REQUIRED_RG_ELEMENTS) {
       croak "'$required' is manditory for RG header" unless(exists $elements->{$required});
     }
 
-    my @elements = ('@RG', 'ID:'.$self->rg);
+    my @elements = ('@RG');
+    if(exists $elements->{'ID'}) {
+      push @elements, 'ID:'.$elements->{'ID'};
+    }
+    else {
+      push @elements, 'ID:'.$self->rg;
+    }
     for my $key(sort keys %{$elements}) {
+      next if($key eq 'ID');
       push @elements, sprintf '%s:%s', $key, $elements->{$key};
     }
     $self->{'rg_header'} = \@elements;
@@ -134,7 +153,7 @@ sub reset_rg_index {
 }
 
 sub files_to_meta {
-  my ($tmp, $files) = @_;
+  my ($tmp, $files, $sample) = @_;
   croak "Requires tmpdir and array-ref of files" unless(defined $tmp && defined $files);
   croak "Directory must exist: $tmp" unless(-d $tmp);
   croak '\$files must be an array-ref' unless(ref $files eq 'ARRAY');
@@ -186,7 +205,14 @@ sub files_to_meta {
       die "ERROR: BAM, paired FASTQ and interleaved FASTQ file types cannot be mixed, please choose one type\n";
     }
 
-    push @meta_files, PCAP::Bwa::Meta->new($meta);
+    my $meta_ob = PCAP::Bwa::Meta->new($meta);
+    push @meta_files, $meta_ob;
+
+    if(exists $meta_ob->{'fastq'}) {
+      # until we have proper meta file support need to add sample
+      $meta_ob->rg_header('.', { 'SM' => $sample }) if(defined $sample);
+    }
+
   }
   return \@meta_files;
 }

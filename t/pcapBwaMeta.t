@@ -13,8 +13,8 @@ const my $REF_INIT => { 'in'    => 'somefile',
                         'temp' => 'somepath',};
 const my $SET_RG_VAL => 5;
 const my $RG_TAGS => {'SM' => 'wibble', 'LB' => 'wobble', };
-const my $RG_STRING => q{@RG\tID:1\tLB:wobble\tSM:wibble};
-const my $RG_PRINT => qq{\@RG\tID:1\tLB:wobble\tSM:wibble};
+const my $RG_STRING => q{@RG\tID:1\tCN:SANGER\tDS:short\tLB:SAMPLE_LIBRARY\tPI:500\tPL:HiSeq\tPU:1_1\tSM:SAMPLE_NAME};
+const my $RG_PRINT => qq{\@RG\tID:1\tCN:SANGER\tDS:short\tLB:SAMPLE_LIBRARY\tPI:500\tPL:HiSeq\tPU:1_1\tSM:SAMPLE_NAME};
 const my @VALID_FASTQ_EXT => qw(fastq fq fastq.gz fq.gz);
 
 
@@ -106,55 +106,64 @@ subtest 'Objects from file list' => sub {
   like( exception {PCAP::Bwa::Meta::files_to_meta($tmp, []) }
       , qr/Some files must be provided/
       , 'Check $files is not empty array-ref');
-
   is(PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, 'not_really_a.bam')])->[0]->{'fastq'}
     , undef, 'Bam not seen as fastq');
-  is(PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1.fq')])->[0]->{'fastq'}
+  is(PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1.fq')], 'sample')->[0]->{'fastq'}
     , 'fq', 'Interleaved fq identified as fastq');
-  is(PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1.fq')])->[0]->{'paired_fq'}
+  is(PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1.fq')], 'sample')->[0]->{'paired_fq'}
     , undef, 'Interleaved fq identified as not paired');
   is(PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, '1_1.fq')
-                                               , File::Spec->catfile($test_data, '1_2.fq')])->[0]->{'paired_fq'}
+                                          , File::Spec->catfile($test_data, '1_2.fq')], 'sample')->[0]->{'paired_fq'}
     , 1, 'Paired fq identified as paired');
   like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp
-                                                      , [ File::Spec->catfile($test_data, '2_1.fq')
-                                                        , File::Spec->catfile($test_data, '2_2.fq')]) }
+                                                  , [ File::Spec->catfile($test_data, '2_1.fq')
+                                                    , File::Spec->catfile($test_data, '2_2.fq')]
+                                                  , 'sample') }
       , qr/Unable to find file for read 2, for /
       , 'Fail when file for second end missing');
   like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp
                                                       , [ File::Spec->catfile($test_data, '3_1.fq')
-                                                        , File::Spec->catfile($test_data, '3_2.fq')])}
+                                                        , File::Spec->catfile($test_data, '3_2.fq')]
+                                                      , 'sample')}
       , qr/Unable to find file for read 1, for /
       , 'Fail when file for first end missing');
   like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp
                                                       , [ File::Spec->catfile($test_data, 'empty_r1_1.fq')
-                                                        , File::Spec->catfile($test_data, 'empty_r1_2.fq')]) }
+                                                        , File::Spec->catfile($test_data, 'empty_r1_2.fq')]
+                                                      , 'sample') }
       , qr/File for read 1 is empty: /
       , 'Fail when file for first end is empty');
   like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp
                                                       , [ File::Spec->catfile($test_data, 'empty_r2_1.fq')
-                                                        , File::Spec->catfile($test_data, 'empty_r2_2.fq')]) }
+                                                        , File::Spec->catfile($test_data, 'empty_r2_2.fq')]
+                                                      , 'sample') }
       , qr/File for read 2 is empty: /
       , 'Fail when file for second end is empty');
-  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'missing.fq')]) }
+  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'missing.fq')]
+                                                      , 'sample') }
       , qr/File does not exist: /
       , 'Fail when interleaved fastq not found');
-  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'empty.fq')]) }
+  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'empty.fq')]
+                                                      , 'sample') }
       , qr/File is empty: /
       , 'Fail when interleaved fastq empty');
   is( exception{ PCAP::Bwa::Meta::files_to_meta($tmp
                                                     , [ File::Spec->catfile($test_data, '1_1.fq')
                                                       , File::Spec->catfile($test_data, '1_2.fq')
-                                                      , File::Spec->catfile($test_data, '1.fq')]) }
+                                                      , File::Spec->catfile($test_data, '1.fq')]
+                                                      , 'sample') }
       , qq{ERROR: BAM, paired FASTQ and interleaved FASTQ file types cannot be mixed, please choose one type\n}
       , 'Fail when inputs are mixed file types');
-  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'wibble.wobble')]) }
+  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'wibble.wobble')]
+                                                      , 'sample') }
       , qr/.+ is not an expected input file type.\n/m
       , 'Fail for unexpected filetype');
-  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'missing.bam')]) }
+  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'missing.bam')]
+                                                      , 'sample') }
       , qr/File does not exist: /
       , 'Fail when bam not found');
-  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'empty.bam')]) }
+  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'empty.bam')]
+                                                      , 'sample') }
       , qr/File is empty: /
       , 'Fail when bam is empty');
 };
@@ -164,7 +173,7 @@ subtest 'Accessors' => sub {
   my $tmp = tempdir( CLEANUP => 1 );
   my $tstub = File::Spec->catfile($tmp, '1');
   is(&PCAP::Bwa::Meta::reset_rg_index, -1, q{Reset of rg_index}); # the rest will fail if this hasn't worked
-  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq')]);
+  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq')], 'sample');
   $meta = $meta_set->[0];
   is($meta->in, File::Spec->catfile($test_data, '1'), 'Expected in');
   like( exception { $meta->in(1) }
@@ -195,6 +204,8 @@ subtest 'Accessors' => sub {
 };
 
 subtest 'rg_header checks' => sub {
+  $meta = new_ok($MODULE => [{ 'in'    => File::Spec->catfile($test_data, 'header.bam'),
+                                          'temp' => 'somepath',}]);
   is($meta->rg_header(q{\t}, $RG_TAGS), $RG_STRING, 'RG header constructed correctly');
 
   like( exception { $meta->rg_header(q{\t}, $RG_TAGS) }
@@ -205,8 +216,10 @@ subtest 'rg_header checks' => sub {
   is($meta->rg_header(qq{\t}), $RG_PRINT, 'RG header retrieved for print');
 
   # clear header for further tests
-  delete $meta->{'rg_header'};
-  like( exception{ $meta->rg_header({}) }
+  my $tmp = tempdir( CLEANUP => 1 );
+  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq')]);
+  $meta = $meta_set->[0];
+  like( exception{ $meta->rg_header('.') }
       , qr/'.+' is manditory for RG header/
       , 'Fail if manditory elements of RG are missing');
 };

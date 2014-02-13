@@ -1772,7 +1772,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@cgsubmit_validate</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">@cgsubmit_validate</span><span class="operator">,</span> <span class="symbol">@cgsubmit</span><span class="operator">,</span> <span class="symbol">@gtupload</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -2860,7 +2860,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@cgsubmit_validate</span><span class="operator">,</span> <span class="structure">(</span><span class="word">sprintf</span> <span class="single">'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -vv --validate-only'</span><span class="operator">,</span> <span class="symbol">$submission_uuid</span> <span class="operator">,</span> <span class="symbol">$submission_uuid</span> <span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@cgsubmit_validate</span><span class="operator">,</span> <span class="structure">(</span><span class="word">sprintf</span> <span class="single">'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s --validate-only'</span><span class="operator">,</span> <span class="symbol">$submission_uuid</span> <span class="operator">,</span> <span class="symbol">$submission_uuid</span> <span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -2892,7 +2892,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@cgsubmit</span><span class="operator">,</span> <span class="structure">(</span><span class="word">sprintf</span> <span class="single">'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -c $GNOS_PERM'</span><span class="operator">,</span> <span class="symbol">$submission_uuid</span> <span class="operator">,</span> <span class="symbol">$submission_uuid</span> <span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -2924,7 +2924,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@gtupload</span><span class="operator">,</span> <span class="structure">(</span><span class="word">sprintf</span> <span class="single">'gtupload -v -c ~/gnostest.pem -u %s/manifest.xml &gt;&amp; %s.upload.log&amp;'</span><span class="operator">,</span> <span class="symbol">$submission_uuid</span><span class="operator">,</span> <span class="symbol">$submission_uuid</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -2956,7 +2956,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -2988,7 +2988,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3020,7 +3020,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;cd $base_path\n&quot;</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3052,7 +3052,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@cgsubmit_validate</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3084,7 +3084,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;\n&quot;</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;## Executing the following will complete the submission/upload process:\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3116,7 +3116,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;cd $base_path\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3148,7 +3148,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@cgsubmit_validate</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3180,7 +3180,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">uuid</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;\n## if successful\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3200,19 +3200,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#97-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#97-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$ug</span><span class="operator">=</span> <span class="word">new</span> <span class="word">Data::UUID</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@cgsubmit</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3244,7 +3244,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">lc</span> <span class="symbol">$ug</span><span class="operator">-&gt;</span><span class="word">create_str</span><span class="structure">();</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;\n## if successful\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3276,7 +3276,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@gtupload</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3308,7 +3308,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">print</span> <span class="double">&quot;\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3340,7 +3340,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">validate_seq_type</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3360,19 +3360,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#102-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#102-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$seq_in</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -3380,12 +3380,6 @@ n/a
 <a name="103">103</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#103-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -3404,7 +3398,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;ERROR: '$seq_in' is not a recognised sequencing/library type\n&quot;</span> <span class="word">unless</span><span class="structure">(</span><span class="word">_check_seq_type</span><span class="structure">(</span><span class="symbol">$seq_in</span><span class="structure">));</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">uuid</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -3424,19 +3424,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#104-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#104-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$ug</span><span class="operator">=</span> <span class="word">new</span> <span class="word">Data::UUID</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3468,7 +3468,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">lc</span> <span class="symbol">$ug</span><span class="operator">-&gt;</span><span class="word">create_str</span><span class="structure">();</span> </td>
 </tr>
 
 <tr>
@@ -3500,7 +3500,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3532,7 +3532,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_check_seq_type</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -3552,10 +3552,10 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#108-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
 <td >
@@ -3564,7 +3564,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$seq_in</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">validate_seq_type</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -3590,13 +3590,13 @@ n/a
  </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#109-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">first</span> <span class="structure">{</span><span class="symbol">$seq_in</span> <span class="operator">eq</span> <span class="magic">$_</span><span class="structure">}</span> <span class="symbol">@VALID_SEQ_TYPES</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$seq_in</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3604,10 +3604,10 @@ n/a
 <a name="110">110</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#110-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -3628,7 +3628,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;ERROR: '$seq_in' is not a recognised sequencing/library type\n&quot;</span> <span class="word">unless</span><span class="structure">(</span><span class="word">_check_seq_type</span><span class="structure">(</span><span class="symbol">$seq_in</span><span class="structure">));</span> </td>
 </tr>
 
 <tr>
@@ -3660,7 +3660,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3692,7 +3692,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">group_bams</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3712,19 +3712,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#113-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#113-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$bam_obs</span><span class="operator">,</span> <span class="symbol">$in_seq_type</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -3756,7 +3756,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%grouped</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_check_seq_type</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -3776,10 +3776,10 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#115-1"> 
+0
+ </a> 
 </td>
 
 <td >
@@ -3788,7 +3788,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$bam_ob</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$bam_obs</span><span class="structure">})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$seq_in</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3808,29 +3808,9 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sm</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">};</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="117">117</a>
-</td>
-
 <td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#117-1"> 
-  0
+ <a href="lib-PCAP-SRA-pm--subroutine.html#116-1"> 
+0
  </a> 
 </td>
 
@@ -3840,6 +3820,20 @@ n/a
 
 </td>
 
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">first</span> <span class="structure">{</span><span class="symbol">$seq_in</span> <span class="operator">eq</span> <span class="magic">$_</span><span class="structure">}</span> <span class="symbol">@VALID_SEQ_TYPES</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="117">117</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
 <td >
 
 &nbsp;
@@ -3852,7 +3846,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="symbol">$sm</span> <span class="operator">=~</span> <span class="match">/^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -3884,7 +3884,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$sm</span> <span class="operator">=</span> <span class="word">join</span> <span class="literal">q{-}</span><span class="operator">,</span> <span class="structure">(</span><span class="magic">$1</span><span class="operator">,</span><span class="magic">$2</span><span class="operator">,</span><span class="magic">$3</span><span class="operator">,</span><span class="magic">$4</span><span class="operator">,</span><span class="magic">$5</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -3916,7 +3916,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$sm</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">group_bams</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -3936,19 +3936,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#120-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#120-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$bam_obs</span><span class="operator">,</span> <span class="symbol">$in_seq_type</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -3980,7 +3980,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$lb</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'LB'</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%grouped</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4012,7 +4012,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$run</span><span class="structure">)</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PU'</span><span class="structure">}</span> <span class="operator">=~</span> <span class="match">m/^[[:alpha:]]+:([^_]+)_[^#]+/</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$bam_ob</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$bam_obs</span><span class="structure">})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4044,7 +4044,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'run'</span><span class="structure">}</span> <span class="operator">=</span> <span class="word">sprintf</span> <span class="single">'%s:%s'</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'CN'</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$run</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sm</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -4052,10 +4052,10 @@ n/a
 <a name="124">124</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#124-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -4076,7 +4076,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$lib_id</span><span class="structure">)</span> <span class="operator">=</span> <span class="symbol">$lb</span> <span class="operator">=~</span> <span class="match">m/^[[:alpha:]]+:[[:alpha:]]+:(.*)$/</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="symbol">$sm</span> <span class="operator">=~</span> <span class="match">/^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4108,7 +4108,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'exp'</span><span class="structure">}</span> <span class="operator">=</span> <span class="word">sprintf</span> <span class="single">'%s:%s'</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'run'</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$lib_id</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$sm</span> <span class="operator">=</span> <span class="word">join</span> <span class="literal">q{-}</span><span class="operator">,</span> <span class="structure">(</span><span class="magic">$1</span><span class="operator">,</span><span class="magic">$2</span><span class="operator">,</span><span class="magic">$3</span><span class="operator">,</span><span class="magic">$4</span><span class="operator">,</span><span class="magic">$5</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -4140,7 +4140,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$seq_type</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$sm</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4148,12 +4148,6 @@ n/a
 <a name="127">127</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#127-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -4172,7 +4166,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="core">defined</span> <span class="symbol">$in_seq_type</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4204,7 +4204,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$seq_type</span> <span class="operator">=</span> <span class="symbol">$in_seq_type</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$lb</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'LB'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -4236,7 +4236,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$run</span><span class="structure">)</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PU'</span><span class="structure">}</span> <span class="operator">=~</span> <span class="match">m/^[[:alpha:]]+:([^_]+)_[^#]+/</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4268,7 +4268,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'run'</span><span class="structure">}</span> <span class="operator">=</span> <span class="word">sprintf</span> <span class="single">'%s:%s'</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'CN'</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$run</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4300,7 +4300,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">(</span><span class="symbol">$seq_type</span><span class="structure">)</span> <span class="operator">=</span> <span class="symbol">$lb</span> <span class="operator">=~</span> <span class="match">m/^([^\:]+)/</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$lib_id</span><span class="structure">)</span> <span class="operator">=</span> <span class="symbol">$lb</span> <span class="operator">=~</span> <span class="match">m/^[[:alpha:]]+:[[:alpha:]]+:(.*)$/</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4308,12 +4308,6 @@ n/a
 <a name="132">132</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#132-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -4332,7 +4326,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;Valid library type is not encoded in readgroup LB tag: $lb\n&quot;</span> <span class="word">unless</span><span class="structure">(</span><span class="word">_check_seq_type</span><span class="structure">(</span><span class="symbol">$seq_type</span><span class="structure">));</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'exp'</span><span class="structure">}</span> <span class="operator">=</span> <span class="word">sprintf</span> <span class="single">'%s:%s'</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'run'</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$lib_id</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4364,7 +4364,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$seq_type</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4372,10 +4372,10 @@ n/a
 <a name="134">134</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#134-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -4396,7 +4396,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$seq_type</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="core">defined</span> <span class="symbol">$in_seq_type</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4428,7 +4428,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$grouped</span><span class="structure">{</span><span class="symbol">$seq_type</span><span class="structure">}{</span><span class="symbol">$sm</span><span class="structure">}{</span><span class="symbol">$lib_id</span><span class="structure">}}</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$seq_type</span> <span class="operator">=</span> <span class="symbol">$in_seq_type</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4460,7 +4460,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4492,7 +4492,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">%grouped</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">else</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4524,7 +4524,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">(</span><span class="symbol">$seq_type</span><span class="structure">)</span> <span class="operator">=</span> <span class="symbol">$lb</span> <span class="operator">=~</span> <span class="match">m/^([^\:]+)/</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4532,10 +4532,10 @@ n/a
 <a name="139">139</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#139-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -4556,7 +4556,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;Valid library type is not encoded in readgroup LB tag: $lb\n&quot;</span> <span class="word">unless</span><span class="structure">(</span><span class="word">_check_seq_type</span><span class="structure">(</span><span class="symbol">$seq_type</span><span class="structure">));</span> </td>
 </tr>
 
 <tr>
@@ -4588,7 +4588,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">parse_input</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4608,19 +4608,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#141-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#141-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$files</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$seq_type</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4652,7 +4652,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@bam_obs</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$grouped</span><span class="structure">{</span><span class="symbol">$seq_type</span><span class="structure">}{</span><span class="symbol">$sm</span><span class="structure">}{</span><span class="symbol">$lib_id</span><span class="structure">}}</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4684,7 +4684,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$file</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$files</span><span class="structure">})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4716,7 +4716,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="word">PCAP::Bam</span><span class="operator">-&gt;</span><span class="word">new</span><span class="structure">(</span><span class="symbol">$file</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">%grouped</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4748,7 +4748,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">check_paired</span><span class="structure">;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4780,7 +4780,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">read_group_info</span><span class="structure">(</span><span class="cast">\</span><span class="symbol">@REQUIRED_HEADER_TAGS</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -4812,7 +4812,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%bam_detail</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">parse_input</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4832,19 +4832,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#148-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#148-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$tag</span><span class="structure">(</span><span class="symbol">@REQUIRED_HEADER_TAGS</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$files</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4876,7 +4876,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="symbol">$tag</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">single_rg_value</span><span class="structure">(</span><span class="symbol">$tag</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@bam_obs</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4908,7 +4908,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$file</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$files</span><span class="structure">})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4940,7 +4940,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'bam'</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="word">PCAP::Bam</span><span class="operator">-&gt;</span><span class="word">new</span><span class="structure">(</span><span class="symbol">$file</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -4972,7 +4972,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="single">'md5'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'md5'</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">check_paired</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5004,7 +5004,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">comments</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">read_group_info</span><span class="structure">(</span><span class="cast">\</span><span class="symbol">@REQUIRED_HEADER_TAGS</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5036,7 +5036,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@bam_obs</span><span class="operator">,</span> <span class="cast">\</span><span class="symbol">%bam_detail</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%bam_detail</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5068,7 +5068,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$tag</span><span class="structure">(</span><span class="symbol">@REQUIRED_HEADER_TAGS</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5100,7 +5100,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">@bam_obs</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="symbol">$tag</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">single_rg_value</span><span class="structure">(</span><span class="symbol">$tag</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5132,7 +5132,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5164,7 +5164,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'bam'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -5196,7 +5196,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">file_xml</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="single">'md5'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'md5'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -5216,19 +5216,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#160-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#160-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$bam_detail</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">comments</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5260,7 +5260,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$md5</span> <span class="operator">=</span> <span class="word">get_md5_from_file</span><span class="structure">(</span><span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span><span class="operator">.</span><span class="single">'.md5'</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@bam_obs</span><span class="operator">,</span> <span class="cast">\</span><span class="symbol">%bam_detail</span> </td>
 </tr>
 
 <tr>
@@ -5292,7 +5292,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$cleaned_filename</span><span class="operator">,</span> <span class="symbol">$directories</span><span class="operator">,</span> <span class="symbol">$suffix</span><span class="structure">)</span> <span class="operator">=</span> <span class="word">fileparse</span><span class="structure">(</span><span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span><span class="operator">,</span> <span class="single">'.bam'</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5324,7 +5324,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="symbol">$cleaned_filename</span> <span class="operator">.=</span> <span class="single">'.bam'</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">@bam_obs</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5356,7 +5356,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="single">'&lt;FILE checksum=&quot;%s&quot; checksum_method=&quot;MD5&quot; filename=&quot;%s&quot; filetype=&quot;bam&quot;/&gt;'</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5388,7 +5388,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$md5</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -5420,7 +5420,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$cleaned_filename</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">file_xml</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5440,19 +5440,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#167-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#167-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5484,7 +5484,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$md5</span> <span class="operator">=</span> <span class="word">get_md5_from_file</span><span class="structure">(</span><span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span><span class="operator">.</span><span class="single">'.md5'</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5516,7 +5516,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">analysis_run_xml</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$cleaned_filename</span><span class="operator">,</span> <span class="symbol">$directories</span><span class="operator">,</span> <span class="symbol">$suffix</span><span class="structure">)</span> <span class="operator">=</span> <span class="word">fileparse</span><span class="structure">(</span><span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span><span class="operator">,</span> <span class="single">'.bam'</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5536,19 +5536,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#170-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#170-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$bam</span><span class="operator">,</span> <span class="symbol">$centre_name</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="symbol">$cleaned_filename</span> <span class="operator">.=</span> <span class="single">'.bam'</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5580,7 +5580,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="single">'&lt;RUN data_block_name=&quot;%s&quot; read_group_label=&quot;%s&quot; refcenter=&quot;%s&quot; refname=&quot;%s&quot;/&gt;'</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="single">'&lt;FILE checksum=&quot;%s&quot; checksum_method=&quot;MD5&quot; filename=&quot;%s&quot; filetype=&quot;bam&quot;/&gt;'</span> </td>
 </tr>
 
 <tr>
@@ -5612,7 +5612,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'LB'</span><span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$md5</span> </td>
 </tr>
 
 <tr>
@@ -5644,7 +5644,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'ID'</span><span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$cleaned_filename</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5676,7 +5676,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$centre_name</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5708,7 +5708,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'run'</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -5740,7 +5740,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">analysis_run_xml</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5760,19 +5760,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#177-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#177-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$bam</span><span class="operator">,</span> <span class="symbol">$centre_name</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5804,7 +5804,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">get_md5_from_file</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="single">'&lt;RUN data_block_name=&quot;%s&quot; read_group_label=&quot;%s&quot; refcenter=&quot;%s&quot; refname=&quot;%s&quot;/&gt;'</span> </td>
 </tr>
 
 <tr>
@@ -5824,19 +5824,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#179-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#179-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$file</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'LB'</span><span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5868,7 +5868,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">open</span> <span class="word">my</span> <span class="symbol">$IN</span><span class="operator">,</span> <span class="single">'&lt;'</span><span class="operator">,</span> <span class="symbol">$file</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'ID'</span><span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5900,7 +5900,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$md5</span> <span class="operator">=</span> <span class="readline">&lt;$IN&gt;</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$centre_name</span> </td>
 </tr>
 
 <tr>
@@ -5932,7 +5932,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">close</span> <span class="symbol">$IN</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'run'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -5964,7 +5964,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$md5</span><span class="structure">;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5996,7 +5996,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$md5</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -6028,7 +6028,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">get_md5_from_file</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -6048,19 +6048,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#186-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#186-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$file</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6092,7 +6092,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">analysis_xml</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">open</span> <span class="word">my</span> <span class="symbol">$IN</span><span class="operator">,</span> <span class="single">'&lt;'</span><span class="operator">,</span> <span class="symbol">$file</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6112,19 +6112,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#188-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#188-1"> 
-1
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre_name</span><span class="operator">,</span> <span class="symbol">$study_name</span><span class="operator">,</span> <span class="symbol">$aliquot_id</span><span class="operator">,</span> <span class="symbol">$files</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$md5</span> <span class="operator">=</span> <span class="readline">&lt;$IN&gt;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6156,7 +6156,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="comment">  # if assembly short_name is to be used need to add parameter</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">close</span> <span class="symbol">$IN</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6188,7 +6188,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="comment">  # otherwise need to delete assembly section</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$md5</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6220,7 +6220,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@tmp_dt</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$md5</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6252,7 +6252,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@file_xml</span><span class="structure">;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -6284,7 +6284,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@run_xml</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -6316,7 +6316,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$files</span><span class="structure">})</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">analysis_xml</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -6336,19 +6336,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#195-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#195-1"> 
+1
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@tmp_dt</span><span class="operator">,</span> <span class="magic">$_</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'DT'</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre_name</span><span class="operator">,</span> <span class="symbol">$study_name</span><span class="operator">,</span> <span class="symbol">$aliquot_id</span><span class="operator">,</span> <span class="symbol">$files</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6380,7 +6380,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@file_xml</span><span class="operator">,</span> <span class="word">file_xml</span><span class="structure">(</span><span class="magic">$_</span><span class="structure">);</span> </td>
+<td class="s"> <span class="comment">  # if assembly short_name is to be used need to add parameter</span> </td>
 </tr>
 
 <tr>
@@ -6412,7 +6412,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@run_xml</span><span class="operator">,</span> <span class="word">analysis_run_xml</span><span class="structure">(</span><span class="magic">$_</span><span class="operator">,</span> <span class="symbol">$centre_name</span><span class="structure">);</span> </td>
+<td class="s"> <span class="comment">  # otherwise need to delete assembly section</span> </td>
 </tr>
 
 <tr>
@@ -6444,7 +6444,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@tmp_dt</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6476,7 +6476,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="symbol">@tmp_dt</span> <span class="operator">=</span> <span class="word">sort</span> <span class="symbol">@tmp_dt</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@file_xml</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6508,7 +6508,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$dt</span> <span class="operator">=</span> <span class="symbol">$tmp_dt</span><span class="structure">[</span><span class="number">-1</span><span class="structure">];</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@run_xml</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6540,7 +6540,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$analysis_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;ANALYSISXML</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$files</span><span class="structure">})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -6572,7 +6572,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">&lt;ANALYSIS_SET xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.analysis.xsd?view=co&quot;&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@tmp_dt</span><span class="operator">,</span> <span class="magic">$_</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'DT'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -6604,7 +6604,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">  &lt;ANALYSIS center_name=&quot;%s&quot; analysis_date=&quot;%s&quot; &gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@file_xml</span><span class="operator">,</span> <span class="word">file_xml</span><span class="structure">(</span><span class="magic">$_</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -6636,7 +6636,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;TITLE&gt;&lt;/TITLE&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@run_xml</span><span class="operator">,</span> <span class="word">analysis_run_xml</span><span class="structure">(</span><span class="magic">$_</span><span class="operator">,</span> <span class="symbol">$centre_name</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -6668,7 +6668,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;STUDY_REF refcenter=&quot;OICR&quot; refname=&quot;%s&quot;/&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -6700,7 +6700,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;DESCRIPTION&gt;NA&lt;/DESCRIPTION&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="symbol">@tmp_dt</span> <span class="operator">=</span> <span class="word">sort</span> <span class="symbol">@tmp_dt</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6732,7 +6732,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;ANALYSIS_TYPE&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$dt</span> <span class="operator">=</span> <span class="symbol">$tmp_dt</span><span class="structure">[</span><span class="number">-1</span><span class="structure">];</span> </td>
 </tr>
 
 <tr>
@@ -6764,7 +6764,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;REFERENCE_ALIGNMENT&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$analysis_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;ANALYSISXML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6796,7 +6796,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;ASSEMBLY&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">&lt;ANALYSIS_SET xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.analysis.xsd?view=co&quot;&gt;</span> </td>
 </tr>
 
 <tr>
@@ -6828,7 +6828,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;STANDARD short_name=&quot;unaligned&quot;/&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">  &lt;ANALYSIS center_name=&quot;%s&quot; analysis_date=&quot;%s&quot; &gt;</span> </td>
 </tr>
 
 <tr>
@@ -6860,7 +6860,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;/ASSEMBLY&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;TITLE&gt;&lt;/TITLE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -6892,7 +6892,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;RUN_LABELS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;STUDY_REF refcenter=&quot;OICR&quot; refname=&quot;%s&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -6924,7 +6924,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          %s</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;DESCRIPTION&gt;NA&lt;/DESCRIPTION&gt;</span> </td>
 </tr>
 
 <tr>
@@ -6956,7 +6956,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;/RUN_LABELS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;ANALYSIS_TYPE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -6988,7 +6988,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;SEQ_LABELS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;REFERENCE_ALIGNMENT&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7020,7 +7020,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;SEQUENCE accession=&quot;NA&quot; data_block_name=&quot;NA&quot; seq_label=&quot;NA&quot;/&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;ASSEMBLY&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7052,7 +7052,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;/SEQ_LABELS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;STANDARD short_name=&quot;unaligned&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7084,7 +7084,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;PROCESSING&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;/ASSEMBLY&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7116,7 +7116,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;DIRECTIVES&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;RUN_LABELS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7148,7 +7148,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">            &lt;alignment_includes_unaligned_reads&gt;true&lt;/alignment_includes_unaligned_reads&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          %s</span> </td>
 </tr>
 
 <tr>
@@ -7180,7 +7180,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">            &lt;alignment_marks_duplicate_reads&gt;false&lt;/alignment_marks_duplicate_reads&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;/RUN_LABELS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7212,7 +7212,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">            &lt;alignment_includes_failed_reads&gt;false&lt;/alignment_includes_failed_reads&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;SEQ_LABELS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7244,7 +7244,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;/DIRECTIVES&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;SEQUENCE accession=&quot;NA&quot; data_block_name=&quot;NA&quot; seq_label=&quot;NA&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7276,7 +7276,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;PIPELINE&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;/SEQ_LABELS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7308,7 +7308,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">            &lt;PIPE_SECTION&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;PROCESSING&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7340,7 +7340,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">              &lt;STEP_INDEX&gt;NA&lt;/STEP_INDEX&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;DIRECTIVES&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7372,7 +7372,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">              &lt;PREV_STEP_INDEX&gt;NA&lt;/PREV_STEP_INDEX&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">            &lt;alignment_includes_unaligned_reads&gt;true&lt;/alignment_includes_unaligned_reads&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7404,7 +7404,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">              &lt;PROGRAM&gt;BIOBAMBAM&lt;/PROGRAM&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">            &lt;alignment_marks_duplicate_reads&gt;false&lt;/alignment_marks_duplicate_reads&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7436,7 +7436,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">              &lt;VERSION&gt;0.0.120&lt;/VERSION&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">            &lt;alignment_includes_failed_reads&gt;false&lt;/alignment_includes_failed_reads&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7468,7 +7468,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">              &lt;NOTES&gt;VENDOR FAILED READS REMOVED BEFORE UPLOAD&lt;/NOTES&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;/DIRECTIVES&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7500,7 +7500,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">            &lt;/PIPE_SECTION&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;PIPELINE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7532,7 +7532,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;/PIPELINE&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">            &lt;PIPE_SECTION&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7564,7 +7564,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;/PROCESSING&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">              &lt;STEP_INDEX&gt;NA&lt;/STEP_INDEX&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7596,7 +7596,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/REFERENCE_ALIGNMENT&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">              &lt;PREV_STEP_INDEX&gt;NA&lt;/PREV_STEP_INDEX&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7628,7 +7628,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;/ANALYSIS_TYPE&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">              &lt;PROGRAM&gt;BIOBAMBAM&lt;/PROGRAM&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7660,7 +7660,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;TARGETS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">              &lt;VERSION&gt;0.0.120&lt;/VERSION&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7692,7 +7692,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;TARGET refcenter=&quot;TCGA&quot; refname=&quot;%s&quot; sra_object_type=&quot;SAMPLE&quot;/&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">              &lt;NOTES&gt;VENDOR FAILED READS REMOVED BEFORE UPLOAD&lt;/NOTES&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7724,7 +7724,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;/TARGETS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">            &lt;/PIPE_SECTION&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7756,7 +7756,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;DATA_BLOCK&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;/PIPELINE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7788,7 +7788,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;FILES&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;/PROCESSING&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7820,7 +7820,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        %s</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;/REFERENCE_ALIGNMENT&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7852,7 +7852,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/FILES&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;/ANALYSIS_TYPE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7884,7 +7884,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;/DATA_BLOCK&gt;%s</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;TARGETS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7916,7 +7916,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">  &lt;/ANALYSIS&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;TARGET refcenter=&quot;TCGA&quot; refname=&quot;%s&quot; sra_object_type=&quot;SAMPLE&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7948,7 +7948,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">&lt;/ANALYSIS_SET&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;/TARGETS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -7980,7 +7980,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">ANALYSISXML</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;DATA_BLOCK&gt;</span> </td>
 </tr>
 
 <tr>
@@ -8012,7 +8012,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$analysis_xml</span><span class="operator">,</span> <span class="symbol">$centre_name</span><span class="operator">,</span> <span class="symbol">$dt</span><span class="operator">,</span> <span class="symbol">$study_name</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@run_xml</span><span class="structure">)</span><span class="operator">,</span> <span class="symbol">$aliquot_id</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@file_xml</span><span class="structure">)</span><span class="operator">,</span> <span class="word">analysis_attributes</span><span class="structure">(</span><span class="symbol">$info</span><span class="structure">);</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;FILES&gt;</span> </td>
 </tr>
 
 <tr>
@@ -8044,7 +8044,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_content">        %s</span> </td>
 </tr>
 
 <tr>
@@ -8076,7 +8076,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">      &lt;/FILES&gt;</span> </td>
 </tr>
 
 <tr>
@@ -8108,7 +8108,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">analysis_attributes</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;/DATA_BLOCK&gt;%s</span> </td>
 </tr>
 
 <tr>
@@ -8128,19 +8128,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#251-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#251-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$info</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_content">  &lt;/ANALYSIS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -8172,7 +8172,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$attr_xml</span> <span class="operator">=</span> <span class="literal">q{}</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_content">&lt;/ANALYSIS_SET&gt;</span> </td>
 </tr>
 
 <tr>
@@ -8204,7 +8204,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@tags</span> <span class="operator">=</span> <span class="word">sort</span> <span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$info</span><span class="structure">};</span> </td>
+<td class="s"> <span class="heredoc_terminator">ANALYSISXML</span> </td>
 </tr>
 
 <tr>
@@ -8212,12 +8212,6 @@ n/a
 <a name="254">254</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#254-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -8236,7 +8230,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="word">scalar</span> <span class="symbol">@tags</span> <span class="operator">&gt;</span> <span class="number">0</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$analysis_xml</span><span class="operator">,</span> <span class="symbol">$centre_name</span><span class="operator">,</span> <span class="symbol">$dt</span><span class="operator">,</span> <span class="symbol">$study_name</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@run_xml</span><span class="structure">)</span><span class="operator">,</span> <span class="symbol">$aliquot_id</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@file_xml</span><span class="structure">)</span><span class="operator">,</span> <span class="word">analysis_attributes</span><span class="structure">(</span><span class="symbol">$info</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -8268,7 +8268,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@attributes</span><span class="structure">;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -8300,7 +8300,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$tag</span><span class="structure">(</span><span class="symbol">@tags</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -8332,7 +8332,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@attributes</span><span class="operator">,</span> <span class="word">_attribute_xml</span><span class="structure">(</span><span class="symbol">$tag</span><span class="operator">,</span> <span class="symbol">$info</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$tag</span><span class="structure">});</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">analysis_attributes</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -8352,19 +8352,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#258-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#258-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$info</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8396,7 +8396,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$attr_xml</span> <span class="operator">=</span> <span class="double">&quot;\n    &lt;ANALYSIS_ATTRIBUTES&gt;\n&quot;</span><span class="operator">.</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$attr_xml</span> <span class="operator">=</span> <span class="literal">q{}</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8428,7 +8428,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@attributes</span><span class="structure">)</span><span class="operator">.</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@tags</span> <span class="operator">=</span> <span class="word">sort</span> <span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$info</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -8436,10 +8436,10 @@ n/a
 <a name="261">261</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#261-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -8460,7 +8460,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="double">&quot;\n    &lt;/ANALYSIS_ATTRIBUTES&gt;&quot;</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="word">scalar</span> <span class="symbol">@tags</span> <span class="operator">&gt;</span> <span class="number">0</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -8492,7 +8492,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@attributes</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8524,7 +8524,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$attr_xml</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$tag</span><span class="structure">(</span><span class="symbol">@tags</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -8556,7 +8556,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@attributes</span><span class="operator">,</span> <span class="word">_attribute_xml</span><span class="structure">(</span><span class="symbol">$tag</span><span class="operator">,</span> <span class="symbol">$info</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$tag</span><span class="structure">});</span> </td>
 </tr>
 
 <tr>
@@ -8588,7 +8588,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -8620,7 +8620,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_attribute_xml</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$attr_xml</span> <span class="operator">=</span> <span class="double">&quot;\n    &lt;ANALYSIS_ATTRIBUTES&gt;\n&quot;</span><span class="operator">.</span> </td>
 </tr>
 
 <tr>
@@ -8640,10 +8640,10 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#267-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
 <td >
@@ -8652,7 +8652,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$tag</span><span class="operator">,</span> <span class="symbol">$value</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@attributes</span><span class="structure">)</span><span class="operator">.</span> </td>
 </tr>
 
 <tr>
@@ -8684,7 +8684,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$attr_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;ATTRXML</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="double">&quot;\n    &lt;/ANALYSIS_ATTRIBUTES&gt;&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8716,7 +8716,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;ANALYSIS_ATTRIBUTE&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -8748,7 +8748,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;TAG&gt;%s&lt;/TAG&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$attr_xml</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8780,7 +8780,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;VALUE&gt;%s&lt;/VALUE&gt;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -8812,7 +8812,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/ANALYSIS_ATTRIBUTE&gt;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -8844,7 +8844,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">ATTRXML</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_attribute_xml</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -8864,10 +8864,10 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#274-1"> 
+0
+ </a> 
 </td>
 
 <td >
@@ -8876,7 +8876,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$attr_xml</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$tag</span><span class="operator">,</span> <span class="symbol">$value</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8908,7 +8908,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$attr_xml</span><span class="operator">,</span> <span class="symbol">$tag</span><span class="operator">,</span> <span class="symbol">$value</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$attr_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;ATTRXML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -8940,7 +8940,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;ANALYSIS_ATTRIBUTE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -8972,7 +8972,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">        &lt;TAG&gt;%s&lt;/TAG&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9004,7 +9004,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">experiment_sets</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;VALUE&gt;%s&lt;/VALUE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9024,19 +9024,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#279-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#279-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$study</span><span class="operator">,</span> <span class="symbol">$sample</span><span class="operator">,</span> <span class="symbol">$exp_set</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;/ANALYSIS_ATTRIBUTE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9068,7 +9068,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$experiment_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;EXP_XML</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_terminator">ATTRXML</span> </td>
 </tr>
 
 <tr>
@@ -9100,7 +9100,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">&lt;EXPERIMENT_SET xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.experiment.xsd?view=co&quot;&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$attr_xml</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9132,7 +9132,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">%s</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$attr_xml</span><span class="operator">,</span> <span class="symbol">$tag</span><span class="operator">,</span> <span class="symbol">$value</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9164,7 +9164,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">&lt;/EXPERIMENT_SET&gt;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -9196,7 +9196,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">EXP_XML</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -9228,7 +9228,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">experiment_sets</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -9248,19 +9248,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#286-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#286-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@experiments</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$study</span><span class="operator">,</span> <span class="symbol">$sample</span><span class="operator">,</span> <span class="symbol">$exp_set</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9292,7 +9292,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$exp</span><span class="structure">(</span><span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$exp_set</span><span class="structure">})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$experiment_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;EXP_XML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9324,7 +9324,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@experiments</span><span class="operator">,</span> <span class="word">experiment</span><span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$study</span><span class="operator">,</span> <span class="symbol">$sample</span><span class="operator">,</span> <span class="symbol">$exp_set</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$exp</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">);</span> </td>
+<td class="s"> <span class="heredoc_content">&lt;EXPERIMENT_SET xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.experiment.xsd?view=co&quot;&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9356,7 +9356,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_content">%s</span> </td>
 </tr>
 
 <tr>
@@ -9388,7 +9388,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$experiment_xml</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="single">''</span><span class="operator">,</span> <span class="symbol">@experiments</span><span class="structure">);</span> </td>
+<td class="s"> <span class="heredoc_content">&lt;/EXPERIMENT_SET&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9420,7 +9420,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_terminator">EXP_XML</span> </td>
 </tr>
 
 <tr>
@@ -9484,7 +9484,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">experiment</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@experiments</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9504,19 +9504,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#294-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#294-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$study</span><span class="operator">,</span> <span class="symbol">$sample</span><span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$exp</span><span class="structure">(</span><span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$exp_set</span><span class="structure">})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -9548,7 +9548,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$exp_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;EXPXML</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@experiments</span><span class="operator">,</span> <span class="word">experiment</span><span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$study</span><span class="operator">,</span> <span class="symbol">$sample</span><span class="operator">,</span> <span class="symbol">$exp_set</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$exp</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -9580,7 +9580,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">  &lt;EXPERIMENT center_name=&quot;%s&quot; alias=&quot;%s&quot;&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -9612,7 +9612,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;STUDY_REF refcenter=&quot;OICR&quot; refname=&quot;%s&quot;/&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$experiment_xml</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="single">''</span><span class="operator">,</span> <span class="symbol">@experiments</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -9644,7 +9644,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;DESIGN&gt;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -9676,7 +9676,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;DESIGN_DESCRIPTION&gt;NA&lt;/DESIGN_DESCRIPTION&gt;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -9708,7 +9708,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">%s</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">experiment</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -9728,19 +9728,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#301-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#301-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;LIBRARY_DESCRIPTOR&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$study</span><span class="operator">,</span> <span class="symbol">$sample</span><span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">,</span> <span class="symbol">$info</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9772,7 +9772,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_NAME&gt;%s&lt;/LIBRARY_NAME&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$exp_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;EXPXML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -9804,7 +9804,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_STRATEGY&gt;%s&lt;/LIBRARY_STRATEGY&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">  &lt;EXPERIMENT center_name=&quot;%s&quot; alias=&quot;%s&quot;&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9836,7 +9836,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_SOURCE&gt;%s&lt;/LIBRARY_SOURCE&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;STUDY_REF refcenter=&quot;OICR&quot; refname=&quot;%s&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9868,7 +9868,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_SELECTION&gt;%s&lt;/LIBRARY_SELECTION&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;DESIGN&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9900,7 +9900,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_LAYOUT&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;DESIGN_DESCRIPTION&gt;NA&lt;/DESIGN_DESCRIPTION&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9932,7 +9932,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          &lt;PAIRED NOMINAL_LENGTH=&quot;%s&quot;/&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">%s</span> </td>
 </tr>
 
 <tr>
@@ -9964,7 +9964,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;/LIBRARY_LAYOUT&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;LIBRARY_DESCRIPTOR&gt;</span> </td>
 </tr>
 
 <tr>
@@ -9996,7 +9996,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/LIBRARY_DESCRIPTOR&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_NAME&gt;%s&lt;/LIBRARY_NAME&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10028,7 +10028,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;/DESIGN&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_STRATEGY&gt;%s&lt;/LIBRARY_STRATEGY&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10060,7 +10060,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;PLATFORM&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_SOURCE&gt;%s&lt;/LIBRARY_SOURCE&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10092,7 +10092,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;ILLUMINA&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_SELECTION&gt;%s&lt;/LIBRARY_SELECTION&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10124,7 +10124,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;INSTRUMENT_MODEL&gt;%s&lt;/INSTRUMENT_MODEL&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;LIBRARY_LAYOUT&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10156,7 +10156,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/ILLUMINA&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">          &lt;PAIRED NOMINAL_LENGTH=&quot;%s&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10188,7 +10188,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;/PLATFORM&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;/LIBRARY_LAYOUT&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10220,7 +10220,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">  &lt;/EXPERIMENT&gt;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;/LIBRARY_DESCRIPTOR&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10252,7 +10252,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">EXPXML</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;/DESIGN&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10284,7 +10284,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$exp_xml</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;PLATFORM&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10316,7 +10316,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">      &lt;ILLUMINA&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10348,7 +10348,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="word">warn</span>&nbsp;<span class="double">&quot;sequencer model artificial\n&quot;</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;INSTRUMENT_MODEL&gt;%s&lt;/INSTRUMENT_MODEL&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10380,7 +10380,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">      &lt;/ILLUMINA&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10412,7 +10412,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$exp_xml</span> <span class="operator">,</span> <span class="symbol">$centre</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;/PLATFORM&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10444,7 +10444,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'exp'</span><span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_content">  &lt;/EXPERIMENT&gt;</span> </td>
 </tr>
 
 <tr>
@@ -10476,7 +10476,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$study</span> </td>
+<td class="s"> <span class="heredoc_terminator">EXPXML</span> </td>
 </tr>
 
 <tr>
@@ -10508,7 +10508,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="word">sample_descriptor</span><span class="structure">(</span><span class="symbol">$lib</span><span class="operator">,</span> <span class="symbol">$info</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="structure">)</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$exp_xml</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -10540,7 +10540,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'LB'</span><span class="structure">}</span> <span class="comment"># definition on NCBI is incorrect</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -10572,7 +10572,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}</span> <span class="comment"># WGS, WXS, RNA-Seq</span> </td>
+<td class="s"> <span class="word">warn</span>&nbsp;<span class="double">&quot;sequencer model artificial\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -10604,7 +10604,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$ABBREV_TO_SOURCE</span><span class="structure">{</span><span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'source'</span><span class="structure">}</span> <span class="comment"># GENOMIC</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -10636,7 +10636,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$ABBREV_TO_SOURCE</span><span class="structure">{</span><span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'selection'</span><span class="structure">}</span> <span class="comment"># Random, Hybrid selection</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$exp_xml</span> <span class="operator">,</span> <span class="symbol">$centre</span> </td>
 </tr>
 
 <tr>
@@ -10668,7 +10668,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PI'</span><span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'exp'</span><span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -10700,7 +10700,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="single">'Illumina HiSeq 2000'</span><span class="structure">;</span><span class="comment">#$lib-&gt;{'PM'};</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$study</span> </td>
 </tr>
 
 <tr>
@@ -10732,7 +10732,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="word">sample_descriptor</span><span class="structure">(</span><span class="symbol">$lib</span><span class="operator">,</span> <span class="symbol">$info</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="structure">)</span> </td>
 </tr>
 
 <tr>
@@ -10764,7 +10764,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'LB'</span><span class="structure">}</span> <span class="comment"># definition on NCBI is incorrect</span> </td>
 </tr>
 
 <tr>
@@ -10796,7 +10796,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">sample_descriptor</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}</span> <span class="comment"># WGS, WXS, RNA-Seq</span> </td>
 </tr>
 
 <tr>
@@ -10816,19 +10816,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#335-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#335-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$bam_ob</span><span class="operator">,</span> <span class="symbol">$info</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$ABBREV_TO_SOURCE</span><span class="structure">{</span><span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'source'</span><span class="structure">}</span> <span class="comment"># GENOMIC</span> </td>
 </tr>
 
 <tr>
@@ -10860,7 +10860,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$local_sample</span> <span class="operator">=</span> <span class="literal">q{}</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$ABBREV_TO_SOURCE</span><span class="structure">{</span><span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'type'</span><span class="structure">}}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'selection'</span><span class="structure">}</span> <span class="comment"># Random, Hybrid selection</span> </td>
 </tr>
 
 <tr>
@@ -10868,12 +10868,6 @@ n/a
 <a name="337">337</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#337-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -10892,7 +10886,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$info</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'submitter_sample_id'</span><span class="structure">})</span> <span class="structure">{</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="symbol">$lib</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PI'</span><span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -10924,7 +10924,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$local_sample</span> <span class="operator">=</span> <span class="interpolate">qq{&lt;SUBMITTER_ID namespace=&quot;$centre&quot;&gt;$info-&gt;{submitter_sample_id}&lt;/SUBMITTER_ID&gt;\n          }</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="operator">,</span> <span class="single">'Illumina HiSeq 2000'</span><span class="structure">;</span><span class="comment">#$lib-&gt;{'PM'};</span> </td>
 </tr>
 
 <tr>
@@ -10956,7 +10956,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -10988,7 +10988,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$samp_desc</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;SAMPXML</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -11020,7 +11020,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;SAMPLE_DESCRIPTOR refcenter=&quot;OICR&quot; refname=&quot;%s&quot;&gt;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">sample_descriptor</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -11040,19 +11040,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#342-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#342-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;IDENTIFIERS&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$bam_ob</span><span class="operator">,</span> <span class="symbol">$info</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11084,7 +11084,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">          %s&lt;UUID&gt;%s&lt;/UUID&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$local_sample</span> <span class="operator">=</span> <span class="literal">q{}</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11092,10 +11092,10 @@ n/a
 <a name="344">344</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#344-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -11116,7 +11116,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">        &lt;/IDENTIFIERS&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$info</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'submitter_sample_id'</span><span class="structure">})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -11148,7 +11148,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/SAMPLE_DESCRIPTOR&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$local_sample</span> <span class="operator">=</span> <span class="interpolate">qq{&lt;SUBMITTER_ID namespace=&quot;$centre&quot;&gt;$info-&gt;{submitter_sample_id}&lt;/SUBMITTER_ID&gt;\n          }</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11180,7 +11180,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">SAMPXML</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -11212,7 +11212,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$samp_desc</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$samp_desc</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;SAMPXML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11244,7 +11244,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$samp_desc</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$local_sample</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">};</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;SAMPLE_DESCRIPTOR refcenter=&quot;OICR&quot; refname=&quot;%s&quot;&gt;</span> </td>
 </tr>
 
 <tr>
@@ -11276,7 +11276,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;IDENTIFIERS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -11308,7 +11308,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">          %s&lt;UUID&gt;%s&lt;/UUID&gt;</span> </td>
 </tr>
 
 <tr>
@@ -11340,7 +11340,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">info_file_data</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="heredoc_content">        &lt;/IDENTIFIERS&gt;</span> </td>
 </tr>
 
 <tr>
@@ -11360,19 +11360,19 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#352-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#352-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam_ob</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;/SAMPLE_DESCRIPTOR&gt;</span> </td>
 </tr>
 
 <tr>
@@ -11404,7 +11404,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$info_file</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span><span class="operator">.</span><span class="single">'.info'</span><span class="structure">;</span> </td>
+<td class="s"> <span class="heredoc_terminator">SAMPXML</span> </td>
 </tr>
 
 <tr>
@@ -11436,7 +11436,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%info</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$samp_desc</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11444,12 +11444,6 @@ n/a
 <a name="355">355</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#355-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -11468,7 +11462,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="operator">-e</span> <span class="symbol">$info_file</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$samp_desc</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">}</span><span class="operator">,</span> <span class="symbol">$local_sample</span><span class="operator">,</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'SM'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -11500,7 +11500,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">open</span> <span class="word">my</span> <span class="symbol">$IN</span><span class="operator">,</span> <span class="single">'&lt;'</span><span class="operator">,</span> <span class="symbol">$info_file</span><span class="structure">;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -11532,7 +11532,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span> <span class="structure">(</span><span class="keyword">my</span> <span class="symbol">$line</span> <span class="operator">=</span> <span class="readline">&lt;$IN&gt;</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -11564,7 +11564,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$line</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">info_file_data</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -11572,31 +11572,31 @@ n/a
 <a name="359">359</a>
 </td>
 
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
 <td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#359-1"> 
-  0
+ <a href="lib-PCAP-SRA-pm--subroutine.html#359-1"> 
+0
  </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#359-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span> <span class="word">if</span><span class="structure">(</span><span class="symbol">$line</span> <span class="operator">eq</span> <span class="literal">q{}</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam_ob</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11604,12 +11604,6 @@ n/a
 <a name="360">360</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#360-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -11628,7 +11622,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$info</span><span class="structure">{</span><span class="magic">$1</span><span class="structure">}</span> <span class="operator">=</span> <span class="magic">$2</span> <span class="word">if</span><span class="structure">(</span><span class="symbol">$line</span> <span class="operator">=~</span> <span class="match">m/^([^:]+):(.*)$/</span><span class="structure">);</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$info_file</span> <span class="operator">=</span> <span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'file'</span><span class="structure">}</span><span class="operator">.</span><span class="single">'.info'</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11636,8 +11636,40 @@ n/a
 <a name="361">361</a>
 </td>
 
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%info</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="362">362</a>
+</td>
+
 <td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#361-1"> 
+ <a href="lib-PCAP-SRA-pm--branch.html#362-1"> 
   0
  </a> 
 </td>
@@ -11660,39 +11692,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;$info_file has more that one entry for $1&quot;</span> <span class="word">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$info</span><span class="structure">{</span><span class="magic">$1</span><span class="structure">});</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="362">362</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="operator">-e</span> <span class="symbol">$info_file</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -11724,7 +11724,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">open</span> <span class="word">my</span> <span class="symbol">$IN</span><span class="operator">,</span> <span class="single">'&lt;'</span><span class="operator">,</span> <span class="symbol">$info_file</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11756,7 +11756,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="comment">  # also check the bam header</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">while</span> <span class="structure">(</span><span class="keyword">my</span> <span class="symbol">$line</span> <span class="operator">=</span> <span class="readline">&lt;$IN&gt;</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -11788,7 +11788,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$comment</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">}})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$line</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -11820,7 +11820,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span> <span class="word">unless</span><span class="structure">(</span><span class="symbol">$comment</span> <span class="operator">=~</span> <span class="match">m/^([^:]+):(.*)/</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span> <span class="word">if</span><span class="structure">(</span><span class="symbol">$line</span> <span class="operator">eq</span> <span class="literal">q{}</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -11828,10 +11828,10 @@ n/a
 <a name="367">367</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#367-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -11852,7 +11852,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$key</span><span class="operator">,</span> <span class="symbol">$value</span><span class="structure">)</span> <span class="operator">=</span> <span class="structure">(</span><span class="magic">$1</span><span class="operator">,</span> <span class="magic">$2</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$info</span><span class="structure">{</span><span class="magic">$1</span><span class="structure">}</span> <span class="operator">=</span> <span class="magic">$2</span> <span class="word">if</span><span class="structure">(</span><span class="symbol">$line</span> <span class="operator">=~</span> <span class="match">m/^([^:]+):(.*)$/</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -11884,7 +11884,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;$bam_ob-&gt;{file} has more that one entry for $1 (or entry is also in *.info file)&quot;</span> <span class="word">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$info</span><span class="structure">{</span><span class="symbol">$key</span><span class="structure">});</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;$info_file has more that one entry for $1&quot;</span> <span class="word">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$info</span><span class="structure">{</span><span class="magic">$1</span><span class="structure">});</span> </td>
 </tr>
 
 <tr>
@@ -11892,12 +11892,6 @@ n/a
 <a name="369">369</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--branch.html#369-1"> 
-  0
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -11916,7 +11910,13 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="symbol">$value</span> <span class="operator">=~</span> <span class="match">/^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -11948,7 +11948,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$value</span> <span class="operator">=</span> <span class="word">join</span> <span class="literal">q{-}</span><span class="operator">,</span> <span class="structure">(</span><span class="magic">$1</span><span class="operator">,</span><span class="magic">$2</span><span class="operator">,</span><span class="magic">$3</span><span class="operator">,</span><span class="magic">$4</span><span class="operator">,</span><span class="magic">$5</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -11980,7 +11980,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> <span class="comment">  # also check the bam header</span> </td>
 </tr>
 
 <tr>
@@ -12012,7 +12012,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$info</span><span class="structure">{</span><span class="symbol">$key</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$value</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$comment</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$bam_ob</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">}})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -12020,10 +12020,10 @@ n/a
 <a name="373">373</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#373-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -12044,7 +12044,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span> <span class="word">unless</span><span class="structure">(</span><span class="symbol">$comment</span> <span class="operator">=~</span> <span class="match">m/^([^:]+):(.*)/</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -12076,7 +12076,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">%info</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$key</span><span class="operator">,</span> <span class="symbol">$value</span><span class="structure">)</span> <span class="operator">=</span> <span class="structure">(</span><span class="magic">$1</span><span class="operator">,</span> <span class="magic">$2</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -12084,10 +12084,10 @@ n/a
 <a name="375">375</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#375-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -12108,7 +12108,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;$bam_ob-&gt;{file} has more that one entry for $1 (or entry is also in *.info file)&quot;</span> <span class="word">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$info</span><span class="structure">{</span><span class="symbol">$key</span><span class="structure">});</span> </td>
 </tr>
 
 <tr>
@@ -12116,10 +12116,10 @@ n/a
 <a name="376">376</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--branch.html#376-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -12140,7 +12140,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="symbol">$value</span> <span class="operator">=~</span> <span class="match">/^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -12172,588 +12172,12 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">run_set</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$value</span> <span class="operator">=</span> <span class="word">join</span> <span class="literal">q{-}</span><span class="operator">,</span> <span class="structure">(</span><span class="magic">$1</span><span class="operator">,</span><span class="magic">$2</span><span class="operator">,</span><span class="magic">$3</span><span class="operator">,</span><span class="magic">$4</span><span class="operator">,</span><span class="magic">$5</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
 <a name="378">378</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#378-1"> 
-0
- </a> 
-</td>
-
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#378-1"> 
-0
- </a> 
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre_name</span><span class="operator">,</span> <span class="symbol">$runs</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="379">379</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$run_set_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;RUN_SET_XML</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="380">380</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="heredoc_content">&lt;RUN_SET xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.run.xsd?view=co&quot;&gt;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="381">381</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="heredoc_content">%s</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="382">382</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="heredoc_content">&lt;/RUN_SET&gt;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="383">383</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="heredoc_terminator">RUN_SET_XML</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="384">384</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$run_set_xml</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$runs</span><span class="structure">});</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="385">385</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="structure">}</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="386">386</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp; </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="387">387</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">run</span> <span class="structure">{</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="388">388</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#388-1"> 
-0
- </a> 
-</td>
-
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#388-1"> 
-0
- </a> 
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$run_sets</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="389">389</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@run_xmls</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="390">390</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$run</span><span class="structure">(</span><span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$run_sets</span><span class="structure">})</span> <span class="structure">{</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="391">391</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="comment">    # collate experiments within run</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="392">392</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%exps</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="393">393</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@exp_xmls</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="394">394</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$bam</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$run_sets</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$run</span><span class="structure">}})</span> <span class="structure">{</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="395">395</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$exps</span><span class="structure">{</span><span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'exp'</span><span class="structure">}}}</span><span class="operator">,</span> <span class="symbol">$bam</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="396">396</a>
 </td>
 
 <td >
@@ -12785,6 +12209,582 @@ n/a
 
 <tr>
 <td  class="h" >
+<a name="379">379</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$info</span><span class="structure">{</span><span class="symbol">$key</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$value</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="380">380</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="381">381</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">%info</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="382">382</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="structure">}</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="383">383</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp; </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="384">384</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">run_set</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="385">385</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#385-1"> 
+0
+ </a> 
+</td>
+
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#385-1"> 
+0
+ </a> 
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre_name</span><span class="operator">,</span> <span class="symbol">$runs</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="386">386</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$run_set_xml</span> <span class="operator">=</span> <span class="heredoc">&lt;&lt;RUN_SET_XML</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="387">387</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="heredoc_content">&lt;RUN_SET xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:noNamespaceSchemaLocation=&quot;http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.run.xsd?view=co&quot;&gt;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="388">388</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="heredoc_content">%s</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="389">389</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="heredoc_content">&lt;/RUN_SET&gt;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="390">390</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="heredoc_terminator">RUN_SET_XML</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="391">391</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$run_set_xml</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$runs</span><span class="structure">});</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="392">392</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="structure">}</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="393">393</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp; </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="394">394</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">run</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="395">395</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#395-1"> 
+0
+ </a> 
+</td>
+
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#395-1"> 
+0
+ </a> 
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$run_sets</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="396">396</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@run_xmls</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
 <a name="397">397</a>
 </td>
 
@@ -12812,7 +12812,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$exp</span><span class="structure">(</span><span class="word">keys</span> <span class="symbol">%exps</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$run</span><span class="structure">(</span><span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$run_sets</span><span class="structure">})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -12844,7 +12844,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@file_xmls</span><span class="structure">;</span> </td>
+<td class="s"> <span class="comment">    # collate experiments within run</span> </td>
 </tr>
 
 <tr>
@@ -12876,7 +12876,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$bam</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$exps</span><span class="structure">{</span><span class="symbol">$exp</span><span class="structure">}})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">%exps</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -12908,7 +12908,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@file_xmls</span><span class="operator">,</span> <span class="word">file_xml</span><span class="structure">(</span><span class="symbol">$bam</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@exp_xmls</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -12940,7 +12940,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$bam</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$run_sets</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$run</span><span class="structure">}})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -12972,7 +12972,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@exp_xmls</span><span class="operator">,</span> <span class="word">sprintf</span> <span class="symbol">&amp;_exp_xml</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$exp</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="interpolate">qq{\n}</span><span class="operator">,</span> <span class="symbol">@file_xmls</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$exps</span><span class="structure">{</span><span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'exp'</span><span class="structure">}}}</span><span class="operator">,</span> <span class="symbol">$bam</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -13036,7 +13036,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@run_xmls</span><span class="operator">,</span> <span class="word">sprintf</span> <span class="symbol">&amp;_run_xml</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$run</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="interpolate">qq{\n}</span><span class="operator">,</span> <span class="symbol">@exp_xmls</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$exp</span><span class="structure">(</span><span class="word">keys</span> <span class="symbol">%exps</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -13068,7 +13068,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@file_xmls</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -13100,7 +13100,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">@run_xmls</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$bam</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$exps</span><span class="structure">{</span><span class="symbol">$exp</span><span class="structure">}})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -13132,7 +13132,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@file_xmls</span><span class="operator">,</span> <span class="word">file_xml</span><span class="structure">(</span><span class="symbol">$bam</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -13164,7 +13164,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -13196,7 +13196,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_exp_xml</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@exp_xmls</span><span class="operator">,</span> <span class="word">sprintf</span> <span class="symbol">&amp;_exp_xml</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$exp</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="interpolate">qq{\n}</span><span class="operator">,</span> <span class="symbol">@file_xmls</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -13216,10 +13216,10 @@ n/a
 
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#410-1"> 
-0
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
 <td >
@@ -13228,7 +13228,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="heredoc">&lt;&lt;EXPXML</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -13260,7 +13260,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;EXPERIMENT_REF refcenter=&quot;%s&quot; refname=&quot;%s&quot;/&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@run_xmls</span><span class="operator">,</span> <span class="word">sprintf</span> <span class="symbol">&amp;_run_xml</span><span class="operator">,</span> <span class="symbol">$centre</span><span class="operator">,</span> <span class="symbol">$run</span><span class="operator">,</span> <span class="structure">(</span><span class="word">join</span> <span class="interpolate">qq{\n}</span><span class="operator">,</span> <span class="symbol">@exp_xmls</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -13292,7 +13292,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;DATA_BLOCK&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -13324,7 +13324,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;FILES&gt;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">@run_xmls</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -13356,7 +13356,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">%s</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -13388,7 +13388,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">      &lt;/FILES&gt;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -13420,7 +13420,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">    &lt;/DATA_BLOCK&gt;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_exp_xml</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -13440,10 +13440,10 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#417-1"> 
+0
+ </a> 
 </td>
 
 <td >
@@ -13452,7 +13452,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">EXPXML</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="heredoc">&lt;&lt;EXPXML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -13484,7 +13484,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> <span class="heredoc_content">    &lt;EXPERIMENT_REF refcenter=&quot;%s&quot; refname=&quot;%s&quot;/&gt;</span> </td>
 </tr>
 
 <tr>
@@ -13516,7 +13516,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">    &lt;DATA_BLOCK&gt;</span> </td>
 </tr>
 
 <tr>
@@ -13548,76 +13548,12 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_run_xml</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="heredoc_content">      &lt;FILES&gt;</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
 <a name="421">421</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td  class="c0" >
- <a href="lib-PCAP-SRA-pm--subroutine.html#421-1"> 
-0
- </a> 
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="heredoc">&lt;&lt;RUNXML</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="422">422</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> <span class="heredoc_content">  &lt;RUN center_name=&quot;%s&quot; alias=&quot;%s&quot;&gt;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="423">423</a>
 </td>
 
 <td >
@@ -13649,6 +13585,70 @@ n/a
 
 <tr>
 <td  class="h" >
+<a name="422">422</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="heredoc_content">      &lt;/FILES&gt;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="423">423</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="heredoc_content">    &lt;/DATA_BLOCK&gt;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
 <a name="424">424</a>
 </td>
 
@@ -13676,7 +13676,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_content">  &lt;/RUN&gt;</span> </td>
+<td class="s"> <span class="heredoc_terminator">EXPXML</span> </td>
 </tr>
 
 <tr>
@@ -13708,7 +13708,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="heredoc_terminator">RUNXML</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -13740,7 +13740,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -13772,7 +13772,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">_run_xml</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -13792,10 +13792,10 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-SRA-pm--subroutine.html#428-1"> 
+0
+ </a> 
 </td>
 
 <td >
@@ -13804,7 +13804,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="number">1</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="heredoc">&lt;&lt;RUNXML</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -13836,7 +13836,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> <span class="heredoc_content">  &lt;RUN center_name=&quot;%s&quot; alias=&quot;%s&quot;&gt;</span> </td>
 </tr>
 
 <tr>
@@ -13868,7 +13868,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="separator">__END__</span> </td>
+<td class="s"> <span class="heredoc_content">%s</span> </td>
 </tr>
 
 <tr>
@@ -13900,7 +13900,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="end"></span> </td>
+<td class="s"> <span class="heredoc_content">  &lt;/RUN&gt;</span> </td>
 </tr>
 
 <tr>
@@ -13932,7 +13932,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=head2 Methods</span> </td>
+<td class="s"> <span class="heredoc_terminator">RUNXML</span> </td>
 </tr>
 
 <tr>
@@ -13964,7 +13964,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -13996,7 +13996,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=over 4</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -14028,7 +14028,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="number">1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -14060,7 +14060,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=item analysis_xml</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -14092,7 +14092,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="separator">__END__</span> </td>
 </tr>
 
 <tr>
@@ -14124,7 +14124,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  Takes list of values in this order</span> </td>
+<td class="s"> <span class="end"></span> </td>
 </tr>
 
 <tr>
@@ -14156,7 +14156,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">=head2 Methods</span> </td>
 </tr>
 
 <tr>
@@ -14188,7 +14188,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  center_name from BAM RG header CN tag</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -14220,7 +14220,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  analysis_date from BAM RG header DT tag</span> </td>
+<td class="s"> <span class="pod">=over 4</span> </td>
 </tr>
 
 <tr>
@@ -14252,7 +14252,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  study_name</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -14284,7 +14284,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  ??short_name=&quot;TODO:Reference Genome&quot; ## possibly dropped??</span> </td>
+<td class="s"> <span class="pod">=item analysis_xml</span> </td>
 </tr>
 
 <tr>
@@ -14316,7 +14316,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  aliquot_id from BAM RG header SM tag</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -14348,7 +14348,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  BAM md5</span> </td>
+<td class="s"> <span class="pod">  Takes list of values in this order</span> </td>
 </tr>
 
 <tr>
@@ -14380,7 +14380,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  bam filename</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -14412,7 +14412,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  center_name from BAM RG header CN tag</span> </td>
 </tr>
 
 <tr>
@@ -14444,12 +14444,236 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=back</span> </td>
+<td class="s"> <span class="pod">  analysis_date from BAM RG header DT tag</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
 <a name="449">449</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  study_name</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="450">450</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  ??short_name=&quot;TODO:Reference Genome&quot; ## possibly dropped??</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="451">451</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  aliquot_id from BAM RG header SM tag</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="452">452</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  BAM md5</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="453">453</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  bam filename</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="454">454</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="455">455</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=back</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="456">456</a>
 </td>
 
 <td >
