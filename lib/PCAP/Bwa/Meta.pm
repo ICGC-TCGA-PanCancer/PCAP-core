@@ -101,9 +101,6 @@ sub rg {
   return $self->{'rg'};
 }
 
-sub rg_index {
-}
-
 sub rg_header {
   my ($self, $separator, $elements) = @_;
   if(exists $self->{'rg_header'}) {
