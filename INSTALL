@@ -24,7 +24,11 @@ OS:
 
 Other Software
   The following software is expected to be present on path:
-    biobambam-0.0.120 - https://github.com/gt1/biobambam/archive/0.0.120-release-20140126202817.tar.gz
+    biobambam-0.0.125 - https://github.com/gt1/biobambam/archive/0.0.125-release-20140221093621.tar.gz
+      - Dependancy on libmaus: https://github.com/gt1/libmaus
+        which in turn requires installation of snappy and io_lib
+        which are described on the libmaus page.
+
 
     bwa-0.6.2 - https://github.com/lh3/bwa/archive/0.6.2.tar.gz
       OR
