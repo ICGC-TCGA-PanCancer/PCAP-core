@@ -14,18 +14,25 @@ who may have little IT support.
 Some elements of this repository are specific to the ICGC/TCGA PanCancer project
 data submissions process.
 
-###Programs
+##Dependancies
+Some of the code included in this package has dependencies on [biobambam](https://github.com/gt1/biobambam).  This also requires the library [libmaus](https://github.com/gt1/libmaus).  Please ensure that you compile libmaus with **snappy** and **io_lib** to enable the relevant features.  These are described on the libmaus page.
 
+###Programs
 ####bwa_aln.pl
-Perform paired end alignment of data using bwa backtrack algorithm - Requires BWA 0.6.2 (final stable release for this method)
+Perform paired end alignment of data using bwa backtrack algorithm - Requires [BWA 0.6.2](https://github.com/lh3/bwa/archive/0.6.2.tar.gz) (final stable release for this method).
 
 ####bwa_mem.pl
-Perform paired end alignment of data using bwa mem algorithm - Requires BWA 0.7.6a+
+Perform paired end alignment of data using bwa mem algorithm - Requires BWA 0.7.6a+.
+Please see the [BWA releases](https://github.com/lh3/bwa/releases) for the current stable release.
 
+###PanCancer specific
+####bam\_to\_sra\_sub.pl
+Generate SRA XML required for GNOS submissions.
+
+###Utilities
 ####diff_bams.pl
 Compare two bam files ignoring differences in header information which have no effect on mapping result. @SQ number and order are expected to match.
 
-###Utilities
 ####monitor.py
 Utility script which can be used to monitor CPU, memory etc for any program, e.g.
 
@@ -34,7 +41,3 @@ Utility script which can be used to monitor CPU, memory etc for any program, e.g
 Please be aware that all commands under this are also prefixed with:
 
     numactl --interleave=all
-
-###PanCancer specific
-####bam\_to\_sra\_sub.pl
-Generate SRA XML required for GNOS submissions.
