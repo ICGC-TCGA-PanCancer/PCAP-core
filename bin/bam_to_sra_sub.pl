@@ -45,8 +45,8 @@ use PCAP::SRA;
   my $bam_obs = PCAP::SRA::parse_input($options->{'raw_files'});
   # groups data into sample/library
   my $grouped_bams = PCAP::SRA::group_bams($bam_obs, $options->{'type'});
-  PCAP::SRA::generate_sample_SRA($grouped_bams, $options)
-#warn Dumper($grouped_bams);
+  my $data_path = dirname(abs_path($0)).'/../data';
+  PCAP::SRA::generate_sample_SRA($grouped_bams, $options, $data_path)
 }
 
 
