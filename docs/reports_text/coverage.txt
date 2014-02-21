@@ -4,69 +4,75 @@ File                                         bran   cond    sub    pod  total
 lib/PCAP.pm                                   n/a    n/a  100.0  100.0  100.0
 lib/PCAP/Bam.pm                              78.3   23.1  100.0  100.0   79.2
 lib/PCAP/Bwa.pm                              41.7    0.0  100.0  100.0   43.9
-lib/PCAP/Bwa/Meta.pm                        100.0  100.0   96.0   92.3   98.4
+lib/PCAP/Bwa/Meta.pm                        100.0  100.0  100.0  100.0  100.0
 lib/PCAP/Cli.pm                              71.4    0.0   69.2  100.0   66.7
-lib/PCAP/SRA.pm                               0.0    n/a   40.0    6.2   19.0
+lib/PCAP/SRA.pm                              20.0   66.7   50.0  100.0   47.5
 lib/PCAP/Threaded.pm                         70.0   64.3   87.0  100.0   75.9
-Total                                        71.2   32.1   78.7   71.4   68.9
+Total                                        71.0   33.9   81.2  100.0   72.7
 ------------------------------------------ ------ ------ ------ ------ ------
 
 
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:12:59 2014
-Finish:       Thu Feb 13 16:13:00 2014
+Start:        Fri Feb 21 16:05:08 2014
+Finish:       Fri Feb 21 16:05:09 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:01 2014
-Finish:       Thu Feb 13 16:13:02 2014
+Start:        Fri Feb 21 16:05:10 2014
+Finish:       Fri Feb 21 16:05:12 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:02 2014
-Finish:       Thu Feb 13 16:13:03 2014
+Start:        Fri Feb 21 16:05:13 2014
+Finish:       Fri Feb 21 16:05:13 2014
 
 Run:          t/pcap.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:03 2014
-Finish:       Thu Feb 13 16:13:03 2014
+Start:        Fri Feb 21 16:05:13 2014
+Finish:       Fri Feb 21 16:05:13 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:03 2014
-Finish:       Thu Feb 13 16:13:04 2014
+Start:        Fri Feb 21 16:05:14 2014
+Finish:       Fri Feb 21 16:05:15 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:04 2014
-Finish:       Thu Feb 13 16:13:05 2014
+Start:        Fri Feb 21 16:05:16 2014
+Finish:       Fri Feb 21 16:05:16 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:05 2014
-Finish:       Thu Feb 13 16:13:05 2014
+Start:        Fri Feb 21 16:05:17 2014
+Finish:       Fri Feb 21 16:05:17 2014
+
+Run:          t/pcapSra.t
+Perl version: 5.16.3
+OS:           linux
+Start:        Fri Feb 21 16:05:18 2014
+Finish:       Fri Feb 21 16:05:18 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Feb 13 16:13:06 2014
-Finish:       Thu Feb 13 16:13:06 2014
+Start:        Fri Feb 21 16:05:19 2014
+Finish:       Fri Feb 21 16:05:19 2014
 
 Covered Subroutines
 -------------------
 
 Subroutine Count Pod Location      
 ---------- ----- --- --------------
-BEGIN          6     lib/PCAP.pm:23
-BEGIN          6     lib/PCAP.pm:24
+BEGIN          7     lib/PCAP.pm:23
+BEGIN          7     lib/PCAP.pm:24
 license        1   1 lib/PCAP.pm:36
 
 
@@ -127,18 +133,18 @@ Covered Subroutines
 
 Subroutine         Count Pod Location           
 ------------------ ----- --- -------------------
-BEGIN                  3     lib/PCAP/Bam.pm:23 
-BEGIN                  3     lib/PCAP/Bam.pm:26 
-BEGIN                  3     lib/PCAP/Bam.pm:27 
-BEGIN                  3     lib/PCAP/Bam.pm:28 
-BEGIN                  3     lib/PCAP/Bam.pm:29 
-BEGIN                  3     lib/PCAP/Bam.pm:30 
-BEGIN                  3     lib/PCAP/Bam.pm:31 
-BEGIN                  3     lib/PCAP/Bam.pm:32 
-BEGIN                  3     lib/PCAP/Bam.pm:33 
-BEGIN                  3     lib/PCAP/Bam.pm:34 
-BEGIN                  3     lib/PCAP/Bam.pm:35 
-BEGIN                  3     lib/PCAP/Bam.pm:37 
+BEGIN                  4     lib/PCAP/Bam.pm:23 
+BEGIN                  4     lib/PCAP/Bam.pm:26 
+BEGIN                  4     lib/PCAP/Bam.pm:27 
+BEGIN                  4     lib/PCAP/Bam.pm:28 
+BEGIN                  4     lib/PCAP/Bam.pm:29 
+BEGIN                  4     lib/PCAP/Bam.pm:30 
+BEGIN                  4     lib/PCAP/Bam.pm:31 
+BEGIN                  4     lib/PCAP/Bam.pm:32 
+BEGIN                  4     lib/PCAP/Bam.pm:33 
+BEGIN                  4     lib/PCAP/Bam.pm:34 
+BEGIN                  4     lib/PCAP/Bam.pm:35 
+BEGIN                  4     lib/PCAP/Bam.pm:37 
 __ANON__              49     lib/PCAP/Bam.pm:186
 check_for_tags         4   1 lib/PCAP/Bam.pm:181
 check_paired           2   1 lib/PCAP/Bam.pm:214
@@ -247,35 +253,35 @@ line  err      %   true  false   branch
 93           100      1      1   if scalar @_ > 0
 99           100      1     18   if scalar @_ > 0
 100          100      9      9   unless exists $$self{'rg'}
-109          100      3      7   if (exists $$self{'rg_header'}) { }
-110          100      1      2   if defined $elements
-114          100      1      6   unless (exists $$self{'fastq'})
-121          100      1      6   unless exists $$elements{$required}
-125          100      1      5   if (exists $$elements{'ID'}) { }
-132          100      1     12   if $key eq 'ID'
-145          100      1      8   unless defined $idx
-146          100      4      4   if not $idx =~ /^[[:digit:]]+$/msx or $idx < 1
-157          100      3     19   unless defined $tmp and defined $files
-158          100      1     18   unless -d $tmp
-159          100      1     17   unless ref $files eq 'ARRAY'
-160          100      1     16   unless scalar @{$files;} > 0
-171          100     15      4   if (defined $fq_ext) { }
+106          100      3      7   if (exists $$self{'rg_header'}) { }
+107          100      1      2   if defined $elements
+111          100      1      6   unless (exists $$self{'fastq'})
+118          100      1      6   unless exists $$elements{$required}
+122          100      1      5   if (exists $$elements{'ID'}) { }
+129          100      1     12   if $key eq 'ID'
+142          100      1      8   unless defined $idx
+143          100      4      4   if not $idx =~ /^[[:digit:]]+$/msx or $idx < 1
+154          100      3     19   unless defined $tmp and defined $files
+155          100      1     18   unless -d $tmp
+156          100      1     17   unless ref $files eq 'ARRAY'
+157          100      1     16   unless scalar @{$files;} > 0
+168          100     15      4   if (defined $fq_ext) { }
              100      3      1   elsif ($file =~ /\.bam$/) { }
-173          100     10      5   if (defined $end) { }
-175          100      2      8   if exists $seen_paired_stub{$fq_stub}
-177          100      1      7   unless -e "${fq_stub}_1.$fq_ext"
-178          100      1      6   unless -e "${fq_stub}_2.$fq_ext"
-179          100      1      5   unless -s "${fq_stub}_1.$fq_ext"
-180          100      1      4   unless -s "${fq_stub}_2.$fq_ext"
-185          100      1      4   unless -e "$fq_stub.$fq_ext"
-186          100      1      3   unless -s "$fq_stub.$fq_ext"
-195          100      1      2   unless -e $file
-196          100      1      1   unless -s $file
-204          100      1      7   if ($are_bams + $are_paired_fq + $are_inter_fq > 1)
-211          100      6      1   if (exists $$meta_ob{'fastq'})
-213          100      5      1   if defined $sample
-223          100     19      5   if ($file =~ s/\.(f(?:ast)?q(?:\.gz)?)$//)
-232          100     12      7   if ($fastq =~ s/_([12])$//)
+170          100     10      5   if (defined $end) { }
+172          100      2      8   if exists $seen_paired_stub{$fq_stub}
+174          100      1      7   unless -e "${fq_stub}_1.$fq_ext"
+175          100      1      6   unless -e "${fq_stub}_2.$fq_ext"
+176          100      1      5   unless -s "${fq_stub}_1.$fq_ext"
+177          100      1      4   unless -s "${fq_stub}_2.$fq_ext"
+182          100      1      4   unless -e "$fq_stub.$fq_ext"
+183          100      1      3   unless -s "$fq_stub.$fq_ext"
+192          100      1      2   unless -e $file
+193          100      1      1   unless -s $file
+201          100      1      7   if ($are_bams + $are_paired_fq + $are_inter_fq > 1)
+208          100      6      1   if (exists $$meta_ob{'fastq'})
+210          100      5      1   if defined $sample
+220          100     19      5   if ($file =~ s/\.(f(?:ast)?q(?:\.gz)?)$//)
+229          100     12      7   if ($fastq =~ s/_([12])$//)
 
 
 Conditions
@@ -285,13 +291,13 @@ and 3 conditions
 
 line  err      %     !l  l&&!r   l&&r   expr
 ----- --- ------ ------ ------ ------   ----
-157          100      2      1     19   defined $tmp and defined $files
+154          100      2      1     19   defined $tmp and defined $files
 
 or 3 conditions
 
 line  err      %      l  !l&&r !l&&!r   expr
 ----- --- ------ ------ ------ ------   ----
-146          100      3      1      4   not $idx =~ /^[[:digit:]]+$/msx or $idx < 1
+143          100      3      1      4   not $idx =~ /^[[:digit:]]+$/msx or $idx < 1
 
 
 Covered Subroutines
@@ -312,24 +318,17 @@ BEGIN                    2     lib/PCAP/Bwa/Meta.pm:36
 __ANON__                70     lib/PCAP/Bwa/Meta.pm:57 
 _init                   15     lib/PCAP/Bwa/Meta.pm:53 
 fastq                    2   1 lib/PCAP/Bwa/Meta.pm:86 
-files_to_meta           22   1 lib/PCAP/Bwa/Meta.pm:156
+files_to_meta           22   1 lib/PCAP/Bwa/Meta.pm:153
 in                       2   1 lib/PCAP/Bwa/Meta.pm:73 
-is_fastq_ext            24   1 lib/PCAP/Bwa/Meta.pm:221
+is_fastq_ext            24   1 lib/PCAP/Bwa/Meta.pm:218
 new                      9   1 lib/PCAP/Bwa/Meta.pm:45 
 paired_fq                2   1 lib/PCAP/Bwa/Meta.pm:92 
-parse_fastq_filename    19   1 lib/PCAP/Bwa/Meta.pm:230
-reset_rg_index           2   1 lib/PCAP/Bwa/Meta.pm:152
+parse_fastq_filename    19   1 lib/PCAP/Bwa/Meta.pm:227
+reset_rg_index           2   1 lib/PCAP/Bwa/Meta.pm:149
 rg                      19   1 lib/PCAP/Bwa/Meta.pm:98 
-rg_header               10   1 lib/PCAP/Bwa/Meta.pm:108
-set_rg_index             9   1 lib/PCAP/Bwa/Meta.pm:144
+rg_header               10   1 lib/PCAP/Bwa/Meta.pm:105
+set_rg_index             9   1 lib/PCAP/Bwa/Meta.pm:141
 tstub                    3   1 lib/PCAP/Bwa/Meta.pm:79 
-
-Uncovered Subroutines
----------------------
-
-Subroutine           Count Pod Location                
--------------------- ----- --- ------------------------
-rg_index                 0   0 lib/PCAP/Bwa/Meta.pm:104
 
 
 Branches
@@ -403,20 +402,39 @@ Branches
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-63    ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
-110   ***      0      0      0   unless _check_seq_type($seq_in)
-124   ***      0      0      0   if ($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
-134   ***      0      0      0   if (defined $in_seq_type) { }
-139   ***      0      0      0   unless _check_seq_type($seq_type)
-261   ***      0      0      0   if (scalar @tags > 0)
-344   ***      0      0      0   if (exists $$info{'submitter_sample_id'})
-362   ***      0      0      0   if (-e $info_file)
-366   ***      0      0      0   if $line eq ''
-367   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
-368   ***      0      0      0   if exists $info{$1}
-373   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
-375   ***      0      0      0   if exists $info{$key}
-376   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+105   ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
+149          100      1     15   unless -e $cv_file
+150          100      1     14   unless -s _
+154          100     14   3588   if $CV_MAPPINGS{$cv_field}{'header'} and $PCAP::SRA::INPUT_LINE_NUMBER == 1
+168   ***      0      0      0   unless exists $$cv_lookup{$key}
+169   ***      0      0      0   unless first sub {
+	$info{$key} eq $_;
+}
+, @{$$cv_lookup{$key};}
+172   ***      0      0      0   unless exists $info{$req}
+184          100      1      1   unless _check_seq_type($seq_in)
+198   ***      0      0      0   if ($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+208   ***      0      0      0   if (defined $in_seq_type) { }
+213   ***      0      0      0   unless _check_seq_type($seq_type)
+331   ***      0      0      0   if (scalar @tags > 0)
+412   ***      0      0      0   if (exists $$bam_ob{'info'}{'submitter_aliquot_id'})
+429   ***      0      0      0   if (-e $info_file)
+433   ***      0      0      0   if $line eq ''
+434   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
+435   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
+440   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
+442   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
+443   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+
+
+Conditions
+----------
+
+and 3 conditions
+
+line  err      %     !l  l&&!r   l&&r   expr
+----- --- ------ ------ ------ ------   ----
+154   ***     66      0   3588     14   $CV_MAPPINGS{$cv_field}{'header'} and $PCAP::SRA::INPUT_LINE_NUMBER == 1
 
 
 Covered Subroutines
@@ -424,47 +442,50 @@ Covered Subroutines
 
 Subroutine          Count Pod Location           
 ------------------- ----- --- -------------------
-BEGIN                   1     lib/PCAP/SRA.pm:23 
-BEGIN                   1     lib/PCAP/SRA.pm:26 
-BEGIN                   1     lib/PCAP/SRA.pm:27 
-BEGIN                   1     lib/PCAP/SRA.pm:28 
-BEGIN                   1     lib/PCAP/SRA.pm:29 
-BEGIN                   1     lib/PCAP/SRA.pm:30 
-BEGIN                   1     lib/PCAP/SRA.pm:31 
-BEGIN                   1     lib/PCAP/SRA.pm:32 
-BEGIN                   1     lib/PCAP/SRA.pm:33 
-BEGIN                   1     lib/PCAP/SRA.pm:34 
-BEGIN                   1     lib/PCAP/SRA.pm:35 
-BEGIN                   1     lib/PCAP/SRA.pm:36 
-BEGIN                   1     lib/PCAP/SRA.pm:37 
-BEGIN                   1     lib/PCAP/SRA.pm:39 
+BEGIN                   2     lib/PCAP/SRA.pm:23 
+BEGIN                   2     lib/PCAP/SRA.pm:26 
+BEGIN                   2     lib/PCAP/SRA.pm:27 
+BEGIN                   2     lib/PCAP/SRA.pm:28 
+BEGIN                   2     lib/PCAP/SRA.pm:29 
+BEGIN                   2     lib/PCAP/SRA.pm:30 
+BEGIN                   2     lib/PCAP/SRA.pm:31 
+BEGIN                   2     lib/PCAP/SRA.pm:32 
+BEGIN                   2     lib/PCAP/SRA.pm:33 
+BEGIN                   2     lib/PCAP/SRA.pm:34 
+BEGIN                   2     lib/PCAP/SRA.pm:35 
+BEGIN                   2     lib/PCAP/SRA.pm:36 
+BEGIN                   2     lib/PCAP/SRA.pm:37 
+BEGIN                   2     lib/PCAP/SRA.pm:39 
+__ANON__                4     lib/PCAP/SRA.pm:190
+_check_seq_type         2     lib/PCAP/SRA.pm:189
+create_cv_lookups       3   1 lib/PCAP/SRA.pm:145
+uuid                    1   1 lib/PCAP/SRA.pm:178
+validate_seq_type       2   1 lib/PCAP/SRA.pm:183
 
 Uncovered Subroutines
 ---------------------
 
 Subroutine          Count Pod Location           
 ------------------- ----- --- -------------------
-__ANON__                0     lib/PCAP/SRA.pm:116
-_attribute_xml          0     lib/PCAP/SRA.pm:274
-_check_seq_type         0     lib/PCAP/SRA.pm:115
-_exp_xml                0     lib/PCAP/SRA.pm:417
-_run_xml                0     lib/PCAP/SRA.pm:428
-analysis_attributes     0   0 lib/PCAP/SRA.pm:258
-analysis_run_xml        0   0 lib/PCAP/SRA.pm:177
-analysis_xml            0   1 lib/PCAP/SRA.pm:195
-experiment              0   0 lib/PCAP/SRA.pm:301
-experiment_sets         0   0 lib/PCAP/SRA.pm:286
-file_xml                0   0 lib/PCAP/SRA.pm:167
-generate_sample_SRA     0   0 lib/PCAP/SRA.pm:51 
-get_md5_from_file       0   0 lib/PCAP/SRA.pm:186
-group_bams              0   0 lib/PCAP/SRA.pm:120
-info_file_data          0   0 lib/PCAP/SRA.pm:359
-parse_input             0   0 lib/PCAP/SRA.pm:148
-run                     0   0 lib/PCAP/SRA.pm:395
-run_set                 0   0 lib/PCAP/SRA.pm:385
-sample_descriptor       0   0 lib/PCAP/SRA.pm:342
-uuid                    0   0 lib/PCAP/SRA.pm:104
-validate_seq_type       0   0 lib/PCAP/SRA.pm:109
+__ANON__                0     lib/PCAP/SRA.pm:169
+_attribute_xml          0     lib/PCAP/SRA.pm:344
+_exp_xml                0     lib/PCAP/SRA.pm:484
+_run_xml                0     lib/PCAP/SRA.pm:497
+analysis_attributes     0   1 lib/PCAP/SRA.pm:328
+analysis_run_xml        0   1 lib/PCAP/SRA.pm:251
+analysis_xml            0   1 lib/PCAP/SRA.pm:269
+experiment              0   1 lib/PCAP/SRA.pm:371
+experiment_sets         0   1 lib/PCAP/SRA.pm:356
+file_xml                0   1 lib/PCAP/SRA.pm:241
+generate_sample_SRA     0   1 lib/PCAP/SRA.pm:85 
+get_md5_from_file       0   1 lib/PCAP/SRA.pm:260
+group_bams              0   1 lib/PCAP/SRA.pm:194
+info_file_data          0   1 lib/PCAP/SRA.pm:427
+parse_input             0   1 lib/PCAP/SRA.pm:222
+run                     0   1 lib/PCAP/SRA.pm:462
+run_set                 0   1 lib/PCAP/SRA.pm:452
+sample_descriptor       0   1 lib/PCAP/SRA.pm:410
+validate_info           0   1 lib/PCAP/SRA.pm:165
 
 
 Branches
@@ -472,7 +493,7 @@ Branches
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-39    ***     50      4      0   if ($PCAP::Threaded::Config{'useithreads'})
+39    ***     50      5      0   if ($PCAP::Threaded::Config{'useithreads'})
 44    ***     50      0      4   unless ($PCAP::Threaded::Config{'useithreads'})
 48           100      1      3   unless (defined $max_threads)
 52           100      1      3   unless $max_threads =~ /^[[:digit:]]+$/msx
@@ -523,20 +544,20 @@ Covered Subroutines
 
 Subroutine               Count Pod Location                
 ------------------------ ----- --- ------------------------
-BEGIN                        4     lib/PCAP/Threaded.pm:23 
-BEGIN                        4     lib/PCAP/Threaded.pm:26 
-BEGIN                        4     lib/PCAP/Threaded.pm:27 
-BEGIN                        4     lib/PCAP/Threaded.pm:28 
-BEGIN                        4     lib/PCAP/Threaded.pm:29 
-BEGIN                        4     lib/PCAP/Threaded.pm:30 
-BEGIN                        4     lib/PCAP/Threaded.pm:31 
-BEGIN                        4     lib/PCAP/Threaded.pm:32 
-BEGIN                        4     lib/PCAP/Threaded.pm:33 
-BEGIN                        4     lib/PCAP/Threaded.pm:34 
-BEGIN                        4     lib/PCAP/Threaded.pm:35 
-BEGIN                        4     lib/PCAP/Threaded.pm:36 
-BEGIN                        4     lib/PCAP/Threaded.pm:39 
-BEGIN                        4     lib/PCAP/Threaded.pm:39 
+BEGIN                        5     lib/PCAP/Threaded.pm:23 
+BEGIN                        5     lib/PCAP/Threaded.pm:26 
+BEGIN                        5     lib/PCAP/Threaded.pm:27 
+BEGIN                        5     lib/PCAP/Threaded.pm:28 
+BEGIN                        5     lib/PCAP/Threaded.pm:29 
+BEGIN                        5     lib/PCAP/Threaded.pm:30 
+BEGIN                        5     lib/PCAP/Threaded.pm:31 
+BEGIN                        5     lib/PCAP/Threaded.pm:32 
+BEGIN                        5     lib/PCAP/Threaded.pm:33 
+BEGIN                        5     lib/PCAP/Threaded.pm:34 
+BEGIN                        5     lib/PCAP/Threaded.pm:35 
+BEGIN                        5     lib/PCAP/Threaded.pm:36 
+BEGIN                        5     lib/PCAP/Threaded.pm:39 
+BEGIN                        5     lib/PCAP/Threaded.pm:39 
 _suitable_threads            7     lib/PCAP/Threaded.pm:114
 add_function                 6   1 lib/PCAP/Threaded.pm:59 
 new                          4   1 lib/PCAP/Threaded.pm:43 
