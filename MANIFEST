@@ -89,6 +89,7 @@ t/2_pl_compile.t
 t/3_external_progs.t
 t/pcap.t
 t/pcapBam.t
+t/pcapBwa.t
 t/pcapBwaMeta.t
 t/pcapCli.t
 t/pcapSra.t

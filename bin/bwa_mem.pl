@@ -41,6 +41,7 @@ use PCAP::Cli;
 use PCAP::Bam;
 use PCAP::Bwa;
 use PCAP::Bwa::Meta;
+use version;
 
 my @mod_list = keys %INC;
 exit 0 if(first {$_ =~ m|^Devel/Cover| } @mod_list);
@@ -85,6 +86,9 @@ sub setup {
 
   pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'h'});
   pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'m'});
+
+  my $version = PCAP::Bwa::bwa_version();
+  die "bwa mem can only be used with bwa version 0.7+, the version found in path is: $version\n" unless(version->parse($version) >= version->parse('0.7.0'));
 
   # then check for no args:
   my $defined;

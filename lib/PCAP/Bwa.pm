@@ -30,6 +30,7 @@ use warnings FATAL => 'all';
 use Const::Fast qw(const);
 use File::Spec;
 use File::Which qw(which);
+use Capture::Tiny qw(capture);
 
 use PCAP::Bwa::Meta;
 
@@ -38,6 +39,17 @@ const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY T=%s S=%s O=%s O
 const my $BWA_MEM => q{ mem%s -T 0 -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
 const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s};
+
+sub bwa_version {
+  my $bwa = which('bwa');
+  my $version;
+  {
+    no autodie qw(system);
+    my ($stdout, $stderr, $exit) = capture{ system($bwa); };
+    ($version) = $stderr =~ /Version: ([[:digit:]\.]+)/m;
+  }
+  return $version;
+}
 
 sub bwa_mem {
   # uncoverable subroutine

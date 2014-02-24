@@ -95,8 +95,13 @@ sub setup {
               'i|index=i' => \$opts{'index'},
   ) or pod2usage(2);
 
+  my $version = PCAP::Bwa::bwa_version();
+  die "bwa aln can only be used with bwa version 0.6.2, the version found in path is: $version\n" unless($version eq '0.6.2');
+
   pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'h'});
   pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'m'});
+
+
 
   # then check for no args:
   my $defined;
