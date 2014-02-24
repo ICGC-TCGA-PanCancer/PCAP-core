@@ -34,6 +34,9 @@ use File::Path qw(make_path);
 use File::Basename;
 use Cwd 'abs_path';
 use Data::UUID;
+
+use File::ShareDir qw(module_dir);
+
 use Data::Dumper;
 
 use PCAP::Bam;
@@ -82,8 +85,8 @@ const my %CV_MAPPINGS => ('analyte_code'     => { 'file' => 'cv_tables/TCGA/port
                           );
 
 sub generate_sample_SRA {
-  my ($grouped, $options, $data_path) = @_;
-  my $cv_lookups = create_cv_lookups($data_path);
+  my ($grouped, $options) = @_;
+  my $cv_lookups = create_cv_lookups();
   my (@cgsubmit_validate, @cgsubmit, @gtupload);
   my $base_path = $options->{'outdir'};
   for my $seq_type(keys %{$grouped}) {
@@ -95,6 +98,7 @@ sub generate_sample_SRA {
       for my $lib_id(keys %{$grouped->{$seq_type}->{$sample}}) {
         for my $bam_ob(@{$grouped->{$seq_type}->{$sample}->{$lib_id}}) {
           info_file_data($bam_ob);
+          $bam_ob->{'info'}->{'total_lanes'} = $total_bams;
           validate_info($cv_lookups, $bam_ob);
 
           my $submission_uuid = &uuid;
@@ -105,7 +109,6 @@ sub generate_sample_SRA {
           $exps{$bam_ob->{'exp'}} = $bam_ob unless(exists $exps{$bam_ob->{'exp'}});
           push @{$runs{$bam_ob->{'run'}}}, $bam_ob;
 
-          $bam_ob->{'info'}->{'total_lanes'} = $total_bams;
           my $run_xmls = run($bam_ob->{'CN'}, \%runs);
           my $exp_xml = experiment_sets($options->{'study'}, $sample, \%exps);
 
@@ -142,8 +145,15 @@ sub generate_sample_SRA {
 }
 
 sub create_cv_lookups {
-  my $data_path = shift;
+  my $data_path = shift; # only for use by test cases
   my %cv_lookup;
+  # default to location of running code, if not present
+  # likely that module has been installed
+  # so try installed area
+  unless(defined $data_path && -e $data_path) {
+    $data_path = dirname(abs_path($0)).'/../share';
+    $data_path = module_dir('PCAP::SRA') unless(-e $data_path);
+  }
   for my $cv_field(keys %CV_MAPPINGS) {
     my $cv_file = "$data_path/$CV_MAPPINGS{$cv_field}{file}";
     die "ERROR: Unable to find controlled vocabulary file for $cv_field: $cv_file\n" unless(-e $cv_file);

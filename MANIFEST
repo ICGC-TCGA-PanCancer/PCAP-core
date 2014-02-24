@@ -4,17 +4,6 @@ bin/bwa_mem.pl
 bin/diff_bams.pl
 bin/monitor.pl
 Changes
-data/cv_tables/ICGC/dcc_donor_gender.txt
-data/cv_tables/ICGC/dcc_primary_site.txt
-data/cv_tables/ICGC/dcc_project_code.txt
-data/cv_tables/ICGC/dcc_project_name.txt
-data/cv_tables/ICGC/dcc_specimen_type.txt
-data/cv_tables/ICGC/dcc_tumour_subtype.txt
-data/cv_tables/ICGC/dcc_tumour_type.txt
-data/cv_tables/TCGA/diseaseStudy.txt
-data/cv_tables/TCGA/portionAnalyte.txt
-data/cv_tables/TCGA/sampleType.txt
-data/cv_tables/TCGA/tissueSourceSite.txt
 docs/pod_html/_blkbluw.css
 docs/pod_html/_blkcynw.css
 docs/pod_html/_blkgrng.css
@@ -84,6 +73,17 @@ Makefile.PL
 MANIFEST			This list of files
 prerelease.sh
 README.md
+share/cv_tables/ICGC/dcc_donor_gender.txt
+share/cv_tables/ICGC/dcc_primary_site.txt
+share/cv_tables/ICGC/dcc_project_code.txt
+share/cv_tables/ICGC/dcc_project_name.txt
+share/cv_tables/ICGC/dcc_specimen_type.txt
+share/cv_tables/ICGC/dcc_tumour_subtype.txt
+share/cv_tables/ICGC/dcc_tumour_type.txt
+share/cv_tables/TCGA/diseaseStudy.txt
+share/cv_tables/TCGA/portionAnalyte.txt
+share/cv_tables/TCGA/sampleType.txt
+share/cv_tables/TCGA/tissueSourceSite.txt
 t/1_pm_compile.t
 t/2_pl_compile.t
 t/3_external_progs.t

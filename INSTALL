@@ -10,6 +10,7 @@ Perl:
   Tested version: 5.16.3
 
 The following perl modules (and their dependencies) are required:
+  File::ShareDir::Install
   Bio::Perl - covers many other dependancies
   IPC::System::Simple
   Const::Fast

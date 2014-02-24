@@ -6,7 +6,7 @@ use File::Temp qw(tempdir);
 
 const my $MODULE => 'PCAP::SRA';
 use FindBin qw($Bin);
-my $real_data = "$Bin/../data";
+my $real_data = "$Bin/../share";
 
 
 my $obj;
