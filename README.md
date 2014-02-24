@@ -52,7 +52,7 @@ Please be aware that all commands under this are also prefixed with:
 
 ##Creating a release
 ####Preparation
-* Commit all relevant changes.
+* Commit/push all relevant changes.
 * Pull a clean version of the repo and use this for the following steps.
 
 ####Cutting the release
