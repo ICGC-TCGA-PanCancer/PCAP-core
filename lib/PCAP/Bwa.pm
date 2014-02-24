@@ -206,6 +206,12 @@ PCAP::Bwa - Generate BWA mappings
 
 =over 4
 
+=item bwa_version
+
+  my $version = PCAP::Bwa::bwa_version();
+
+Not a prefect representation of version as any text has to be removed to allow comparison.
+
 =item bwa_aln
 
   PCAP::Bwa::bwa_aln($options);

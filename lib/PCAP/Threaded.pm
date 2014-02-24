@@ -151,14 +151,6 @@ sub external_process_handler {
   my $out = File::Spec->catfile($tmp, "$caller.$suffix.out");
   my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
-#  my $wrapped_command = "($command > $out) 2> $err";
-#  warn "Starting: $wrapped_command\n";
-#  try {
-#    system($wrapped_command);
-#  } catch {
-#    die "\nProcess died: $_\n\tSee error log: $err\n" if($_);
-#  };
-
   my $out_fh = IO::File->new($out, "w+");
   my $err_fh = IO::File->new($err, "w+");
   try {
@@ -167,7 +159,7 @@ sub external_process_handler {
   } catch {
     die $_ if($_);
   };
-
+  return 1;
 }
 
 1;
