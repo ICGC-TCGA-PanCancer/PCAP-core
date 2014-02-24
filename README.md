@@ -14,8 +14,14 @@ who may have little IT support.
 Some elements of this repository are specific to the ICGC/TCGA PanCancer project
 data submissions process.
 
-##Dependancies
+---
+
+###Dependencies
 Some of the code included in this package has dependencies on [biobambam](https://github.com/gt1/biobambam).  This also requires the library [libmaus](https://github.com/gt1/libmaus).  Please ensure that you compile libmaus with **snappy** and **io_lib** to enable the relevant features.  These are described on the libmaus page.
+
+Please see the `INSTALL` file for full list of dependencies.
+
+---
 
 ###Programs
 ####bwa_aln.pl
@@ -41,3 +47,18 @@ Utility script which can be used to monitor CPU, memory etc for any program, e.g
 Please be aware that all commands under this are also prefixed with:
 
     numactl --interleave=all
+
+---
+
+##Creating a release
+####Preparation
+* Commit all relevant changes.
+* Pull a clean version of the repo and use this for the following steps.
+
+####Cutting the release
+1. Update `lib/PCAP.pm` to the correct version (adding rc/beta to end if applicable).
+2. Run `./prerelease.sh`
+3. Check all tests and coverage reports are acceptable.
+4. Commit the updated docs tree and updated module/version.
+5. Push commits.
+6. Use the GitHub tools to draft a release.
