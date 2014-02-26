@@ -43,6 +43,7 @@ WriteMakefile(
                      'Try::Tiny' => 0.19,
                      'File::Which' => 0.05,
                      'List::Util' => 1.38,
+                     'Proc::ProcessTable' => 0.50,
                    }
 );
 
