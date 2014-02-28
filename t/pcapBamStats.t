@@ -23,7 +23,7 @@ use Test::Fatal;
 use Const::Fast qw(const);
 use File::Spec;
 use FindBin qw($Bin);
-use File::Temp qw(tempdir);
+use File::Temp qw/ :seekable /;
 use Data::Dumper;
 
 use Bio::DB::Sam;
@@ -32,6 +32,7 @@ const my $MODULE => 'PCAP::Bam::Stats';
 
 my $test_data = "$Bin/../testData";
 my $test_bam_file = join('/',$test_data,'Stats.bam');
+my $test_bas_file = join('/',$test_data,'Stats.bam.bas');
 
 ## expected data... prolly needs to be const
 my ($rgAnon, $rg1, $rg2) = ('.','29976','29978');
@@ -267,6 +268,35 @@ subtest 'Object funcions' => sub {
   };
 
 };
+
+subtest 'integration_test' => sub {
+  my $tmp;
+  my $test_obj = _create_test_object();
+
+  eval{
+    $tmp = File::Temp->new(TEMPLATE => '/tmp/Bam_StatsXXXXXX', SUFFIX => '.bas.tmp');
+    $tmp->unlink_on_destroy( 1 );
+    my $path = $tmp->filename();
+    $test_obj->bas($path);
+    $tmp->seek( 0, 0 );
+
+
+    open (my $ref_fh, "<", $test_bas_file) or fail "Could not open $test_bas_file for reading: $!";
+
+    my @test_string = <$tmp>;
+    my @ref_string = <$ref_fh>;
+    close($ref_fh);
+    close($tmp);
+
+    is_deeply(\@test_string,\@ref_string,"integration_test compare file contents of: $path");
+
+  };if($@){
+    fail($@);
+  }
+
+
+};
+
 
 sub _create_test_object{
   return new $MODULE(-path=>$test_bam_file);
