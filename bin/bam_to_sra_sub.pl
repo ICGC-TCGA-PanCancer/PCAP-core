@@ -104,7 +104,8 @@ bam_to_sra_sub.pl [options] [file(s)...]
     -man       -m   Full documentation.
 
   File list can be full file names, wildcards or combination, e.g.
-    bam_to_sra_sub.pl -s PANCAN -o myout input/*.bam input2/sample2.bam
+
+    bam_to_sra_sub.pl -s icgc_pancancer -o myDonor/tumour_sra myDonor/tumour/*.bam
 
 =head1 OPTIONS
 
