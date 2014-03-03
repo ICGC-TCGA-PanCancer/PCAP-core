@@ -59,10 +59,14 @@ sub bwa_mem {
   my $index = 0;
   for my $input(@{$input_meta}) {
     $index++;
+    # uncoverable branch true
+    # uncoverable branch false
     next if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
     my $this_stub = $input->tstub;
 
     my $rg_line;
+    # uncoverable branch true
+    # uncoverable branch false
     if($input->fastq) {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
@@ -78,8 +82,12 @@ sub bwa_mem {
     # uncoverable branch false
     if($input->fastq) {
       my $interleaved_fq = q{};
+      # uncoverable branch true
+      # uncoverable branch false
       $interleaved_fq = q{ -p}, unless($input->paired_fq);
       $bwa .= sprintf $BWA_MEM, $interleaved_fq, $rg_line, $options->{'threads'}, $options->{'reference'};
+      # uncoverable branch true
+      # uncoverable branch false
       if($input->paired_fq) {
         $bwa .= ' '.$input->in.'_1.'.$input->fastq; # add correct file extension for various types
         $bwa .= ' '.$input->in.'_2.'.$input->fastq;
@@ -102,6 +110,8 @@ sub bwa_mem {
     }
 
     my $helpers = 1;
+    # uncoverable branch true
+    # uncoverable branch false
     $helpers = 2 if($options->{'threads'} > 3);
 
     my $sort = which('bamsort') || die "Unable to find 'bamsort' in path\n";
@@ -127,11 +137,14 @@ sub bwa_aln {
     $input_counter++;
     for my $end(1..2) {
       $index_counter++;
+      # uncoverable branch true
+      # uncoverable branch false
       next if(defined $options->{'index'} && $index_counter != $options->{'index'});
       # uncoverable branch true
       # uncoverable branch false
-      next if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $input_counter, $end);
+      next if(PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $input_counter, $end));
       my $this_stub = $input->tstub;
+
       my $command = which('bwa') || die "Unable to find 'bwa' in path";
 
       # uncoverable branch true
@@ -156,6 +169,8 @@ sub sampe {
   my $input_meta = $options->{'meta_set'};
   my $ref = $options->{'reference'};
 
+  # uncoverable branch true
+  # uncoverable branch false
   return 1 if(exists $options->{'index'} && $index != $options->{'index'});
   # uncoverable branch true
   # uncoverable branch false
@@ -164,8 +179,10 @@ sub sampe {
   my $pathstub = $input_meta->[$index-1]->tstub;
   my $fastq = $input_meta->[$index-1]->fastq;
 
+
   my $command = which('bwa') || die "Unable to find 'bwa' in path";;
   my $bamsort = which('bamsort') || die "Unable to find 'bwa' in bamsort";;
+
   # uncoverable branch true
   # uncoverable branch false
   if(defined $fastq) {

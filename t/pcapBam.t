@@ -52,9 +52,15 @@ my $test_bam = File::Spec->catfile($test_data, 'header.bam');
 my $multi_bam = File::Spec->catfile($test_data, 'multi_sample.bam');
 my $paired_bam = File::Spec->catfile($test_data, 'paired.bam');
 my $unpaired_bam = File::Spec->catfile($test_data, 'unpaired.bam');
+my $no_rg_bam = File::Spec->catfile($test_data, 'no_readgroups.bam');
+my $md5_bam = File::Spec->catfile($test_data, 'md5.bam');
+my $md5_bam_md5 = File::Spec->catfile($test_data, 'md5.bam.md5');
+
 
 subtest 'Initialisation checks' => sub {
   use_ok($MODULE);
+  my $obj = new_ok($MODULE => [$md5_bam]);
+  is($obj->{'md5'}, $md5_bam_md5, 'md5 file for bam found');
 };
 
 subtest 'co line checks' => sub {
@@ -103,9 +109,17 @@ subtest 'header_info checks' => sub {
 
   is_deeply($obj->read_group_info(['SM','ID']), $EXPECTED_MULTI_RG, 'Successful with tag presence checks');
 
+  is_deeply($obj->read_group_info(), $EXPECTED_MULTI_RG, 'Successful without tag presence checks');
+
   like(exception { $obj->read_group_info(['XX']) }
       , qr/ not found in RG of /m
       , 'Fail when required tag not found');
+
+  $obj = new_ok($MODULE => [$no_rg_bam] );
+   like(exception { $obj->read_group_info() }
+      , qr/ERROR: This BAM has no readgroups:/m
+      , 'Fail when no read groups found in header');
+
 };
 
 done_testing();
