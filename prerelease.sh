@@ -5,6 +5,8 @@ set -eu # exit on first error or undefined value in subtitution
 # get current directory
 INIT_DIR=`pwd`
 
+rm -rf blib
+
 # get location of this file
 MY_PATH="`dirname \"$0\"`"              # relative
 MY_PATH="`( cd \"$MY_PATH\" && pwd )`"  # absolutized and normalized
@@ -27,8 +29,9 @@ if [[ $? -ne 0 ]] ; then
   echo "\n\tERROR: TESTS FAILED\n"
   exit 1
 fi
-cover -coverage branch,condition,subroutine,pod -report html_basic reports -silent > /dev/null
-cover -coverage branch,condition,subroutine,pod -report text reports -silent > docs/reports_text/coverage.txt
+# removed 'condition' from coverage as '||' 'or' doesn't work properly
+cover -coverage branch,subroutine,pod -report html_basic reports -silent > /dev/null
+cover -coverage branch,subroutine,pod -report text reports -silent > docs/reports_text/coverage.txt
 rm -rf reports/structure reports/digests reports/cover.13 reports/runs
 cp reports/coverage.html reports/index.html
 mv reports docs/reports_html
