@@ -32,6 +32,19 @@ WriteMakefile(
                         bin/bwa_aln.pl
                         bin/diff_bams.pl
                         bin/monitor.pl)],
+  PREREQ_PM     => {
+                     'File::ShareDir' => 1.03,
+                     'File::ShareDir::Install' => 0.08,
+                     'IPC::System::Simple' => 1.25,
+                     'Capture::Tiny' => 0.24,
+                     'Const::Fast' => 0.014,
+                     'Bio::DB::Sam' => 1.39,
+                     'Bio::Perl' => 1.6.923,
+                     'Try::Tiny' => 0.19,
+                     'File::Which' => 0.05,
+                     'List::Util' => 1.38,
+                     'Proc::ProcessTable' => 0.50,
+                   }
 );
 
 package MY;
