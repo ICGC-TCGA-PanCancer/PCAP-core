@@ -129,7 +129,7 @@ sub generate_sample_SRA {
           symlink abs_path($bam_ob->{'file'}), "$submission_path/$cleaned_filename";
           push @cgsubmit_validate, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s --validate-only', $submission_uuid , $submission_uuid );
           push @cgsubmit, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -c $GNOS_PERM', $submission_uuid , $submission_uuid );
-          push @gtupload, (sprintf 'gtupload -v -c ~/gnostest.pem -u %s/manifest.xml >& %s.upload.log&', $submission_uuid, $submission_uuid);
+          push @gtupload, (sprintf 'gtupload -v -c $GNOS_PERM -u %s/manifest.xml >& %s.upload.log&', $submission_uuid, $submission_uuid);
         }
       }
     }
