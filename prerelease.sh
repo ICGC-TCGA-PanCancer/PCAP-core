@@ -45,6 +45,8 @@ perl -MPod::Simple::HTMLBatch -e 'Pod::Simple::HTMLBatch::go' lib:bin docs/pod_h
 echo '### Generating MANIFEST ###'
 # delete incase any files are moved, the make target just adds stuff
 rm -f MANIFEST
+# cleanup things which could break the manifest
+rm -rf install_tmp
 ./Makefile.PL > /dev/null
 make manifest &> /dev/null
 rm -f Makefile MYMETA.json MYMETA.yml MANIFEST.bak pm_to_blib
