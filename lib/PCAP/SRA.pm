@@ -34,6 +34,7 @@ use File::Path qw(make_path);
 use File::Basename;
 use Cwd 'abs_path';
 use Data::UUID;
+use Fcntl qw( :mode );
 
 use File::ShareDir qw(module_dir);
 
@@ -87,7 +88,7 @@ const my %CV_MAPPINGS => ('analyte_code'     => { 'file' => 'cv_tables/TCGA/port
 sub generate_sample_SRA {
   my ($grouped, $options) = @_;
   my $cv_lookups = create_cv_lookups();
-  my (@cgsubmit_validate, @cgsubmit, @gtupload);
+  my @analysis_ids;
   my $base_path = $options->{'outdir'};
   for my $seq_type(keys %{$grouped}) {
     for my $sample(keys %{$grouped->{$seq_type}}) {
@@ -110,7 +111,7 @@ sub generate_sample_SRA {
           push @{$runs{$bam_ob->{'run'}}}, $bam_ob;
 
           my $run_xmls = run($bam_ob->{'CN'}, \%runs);
-          my $exp_xml = experiment_sets($options->{'study'}, $sample, \%exps);
+          my $exp_xml = experiment_sets($options->{'study'}, \%exps);
 
           my $analysis_xml = analysis_xml($bam_ob, $options->{'study'}, $sample);
           open my $XML, '>', "$submission_path/analysis.xml";
@@ -127,21 +128,22 @@ sub generate_sample_SRA {
           my ($cleaned_filename, $directories, $suffix) = fileparse($bam_ob->{'file'}, '.bam');
           $cleaned_filename .= '.bam';
           symlink abs_path($bam_ob->{'file'}), "$submission_path/$cleaned_filename";
-          push @cgsubmit_validate, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s --validate-only', $submission_uuid , $submission_uuid );
-          push @cgsubmit, (sprintf 'cgsubmit -s https://gtrepo-ebi.annailabs.com -o %s.log -u %s -c $GNOS_PERM', $submission_uuid , $submission_uuid );
-          push @gtupload, (sprintf 'gtupload -v -c $GNOS_PERM -u %s/manifest.xml >& %s.upload.log&', $submission_uuid, $submission_uuid);
+          push @analysis_ids, $submission_uuid;
         }
       }
     }
   }
   print "## Executing the following will complete the submission/upload process:\n";
-  print "cd $base_path\n";
-  print join "\n", @cgsubmit_validate;
-  print "\n## if successful\n";
-  print join "\n", @cgsubmit;
-  print "\n## if successful\n";
-  print join "\n", @gtupload;
-  print "\n";
+  my $full_path = abs_path($base_path);
+  my $sra_sh_script = "$full_path/auto_upload.sh";
+  open my $SH, '>', $sra_sh_script;
+  print $SH bash_script($full_path, \@analysis_ids);
+  close $SH;
+  chmod S_IRUSR|S_IXUSR, $sra_sh_script;
+  my $log = $sra_sh_script;
+  $log .= '.log';
+  print "$sra_sh_script >& $log &\n";
+  print "tail -f $log\n";
 }
 
 sub create_cv_lookups {
@@ -152,7 +154,7 @@ sub create_cv_lookups {
   # so try installed area
   unless(defined $data_path && -e $data_path) {
     $data_path = dirname(abs_path($0)).'/../share';
-    $data_path = module_dir('PCAP::SRA') unless(-e $data_path);
+    $data_path = module_dir('PCAP::SRA') unless(-e "$data_path/cv_tables");
   }
   for my $cv_field(keys %CV_MAPPINGS) {
     my $cv_file = "$data_path/$CV_MAPPINGS{$cv_field}{file}";
@@ -272,6 +274,7 @@ sub get_md5_from_file {
   my $md5 = <$IN>;
   close $IN;
   chomp $md5;
+  $md5 =~ s/\s+.*//;
   return $md5;
 }
 
@@ -363,7 +366,7 @@ ATTRXML
 }
 
 sub experiment_sets {
-  my ($study, $sample, $exp_set) = @_;
+  my ($study, $exp_set) = @_;
   my $experiment_xml = <<EXP_XML;
 <EXPERIMENT_SET xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.experiment.xsd?view=co">
 %s
@@ -372,13 +375,13 @@ EXP_XML
 
   my @experiments;
   for my $exp(keys %{$exp_set}) {
-    push @experiments, experiment($study, $sample, $exp_set->{$exp});
+    push @experiments, experiment($study, $exp_set->{$exp});
   }
   return sprintf $experiment_xml, (join '', @experiments);
 }
 
 sub experiment {
-  my ($study, $sample, $bam_ob) = @_;
+  my ($study, $bam_ob) = @_;
   my $exp_xml = <<EXPXML;
   <EXPERIMENT center_name="%s" alias="%s">
     <STUDY_REF refcenter="OICR" refname="%s"/>
@@ -513,6 +516,88 @@ RUNXML
   return $xml;
 }
 
+sub bash_script {
+  my ($path, $uuids) = @_;
+  my $uuid_str = join q{" "}, @{$uuids};
+my $script = <<'BASHSCRIPT';
+#!/bin/bash
+set -e
+set -u
+set -o pipefail
+
+submitexp=" OK ";
+queryext="All matching objects are in a downloadable state";
+
+submit_needed () {
+  if [ -e "$1" ]; then
+    catres=`cat $1`
+    if [ $catres != $submitexp ]; then
+      return 0
+    fi
+  else
+    return 0
+  fi
+  return 1
+}
+
+upload_needed () {
+  uploadlog="$1/gtupload.log"
+  if [ -e "$uploadlog" ]; then
+    # check against cgquery
+    set +e
+    tmpfile="$(mktemp)"
+    thing="cgquery -s https://gtrepo-ebi.annailabs.com analysis_id=$1"
+    $thing >& $tmpfile
+    if cat "$tmpfile" | grep -q "$queryext"; then
+      rm -f $tmpfile
+      return 1
+    else
+      rm -f $tmpfile
+      return 0
+    fi
+  else # no log file so upload needed
+    return 0
+  fi
+  return 1
+}
+
+process_uuids () {
+  name=$1[@]
+  uuids=("${!name}")
+
+  for i in "${uuids[@]}"; do
+    submitlog="$i/cgsubmit.log"
+    if submit_needed $submitlog; then
+      set -x
+      cgsubmit -s https://gtrepo-ebi.annailabs.com -o $submitlog -u $i -c $GNOS_PERM > $submitlog.out
+      set +x
+    else
+      echo RESUME MESSAGE: cgsubmit previously successful for $i
+    fi
+    if upload_needed $i; then
+      set -x
+      gtupload -v -c $GNOS_PERM -u $i/manifest.xml >> $i/gtupload.log 2>&1
+      set +x
+    else
+      echo RESUME MESSAGE: gtupload previously successful for $i
+    fi
+  done
+}
+
+# change into working dir
+workarea="%s"
+echo Working directory: $workarea
+cd $workarea
+ids=( "%s" )
+
+process_uuids ids
+
+echo SUCCESSFULLY COMPLETED
+
+BASHSCRIPT
+  return sprintf $script, $path, $uuid_str;
+}
+
 1;
 
 __END__
@@ -605,5 +690,11 @@ Takes list of values in this order
   bam object (with info prepopulated)
   study_name
   aliquot_id from BAM RG header SM tag
+
+=item bash_script
+
+Takes output path and list of submission UUIDs.
+
+Generates a bash script that can be run to complete GNOS upload with resume capabilities.
 
 =back
