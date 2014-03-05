@@ -6,71 +6,71 @@ lib/PCAP/Bam.pm                                     93.5  100.0  100.0   96.4
 lib/PCAP/Bwa.pm                                    100.0  100.0  100.0  100.0
 lib/PCAP/Bwa/Meta.pm                               100.0  100.0  100.0  100.0
 lib/PCAP/Cli.pm                                     71.4   69.2  100.0   73.9
-lib/PCAP/SRA.pm                                     20.5   51.3  100.0   46.5
+lib/PCAP/SRA.pm                                     20.5   51.2  100.0   47.1
 lib/PCAP/Threaded.pm                                70.0   95.7  100.0   81.2
-Total                                               78.2   83.2  100.0   82.4
+Total                                               78.2   82.8  100.0   82.3
 ------------------------------------------------- ------ ------ ------ ------
 
 
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:27 2014
-Finish:       Mon Mar  3 23:33:27 2014
+Start:        Wed Mar  5 22:49:46 2014
+Finish:       Wed Mar  5 22:49:47 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:28 2014
-Finish:       Mon Mar  3 23:33:30 2014
+Start:        Wed Mar  5 22:49:49 2014
+Finish:       Wed Mar  5 22:49:52 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:30 2014
-Finish:       Mon Mar  3 23:33:30 2014
+Start:        Wed Mar  5 22:49:53 2014
+Finish:       Wed Mar  5 22:49:53 2014
 
 Run:          t/pcap.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:31 2014
-Finish:       Mon Mar  3 23:33:31 2014
+Start:        Wed Mar  5 22:49:54 2014
+Finish:       Wed Mar  5 22:49:54 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:31 2014
-Finish:       Mon Mar  3 23:33:32 2014
+Start:        Wed Mar  5 22:49:55 2014
+Finish:       Wed Mar  5 22:49:55 2014
 
 Run:          t/pcapBwa.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:32 2014
-Finish:       Mon Mar  3 23:33:33 2014
+Start:        Wed Mar  5 22:49:57 2014
+Finish:       Wed Mar  5 22:49:57 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:33 2014
-Finish:       Mon Mar  3 23:33:34 2014
+Start:        Wed Mar  5 22:49:59 2014
+Finish:       Wed Mar  5 22:50:00 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:34 2014
-Finish:       Mon Mar  3 23:33:35 2014
+Start:        Wed Mar  5 22:50:01 2014
+Finish:       Wed Mar  5 22:50:02 2014
 
 Run:          t/pcapSra.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:35 2014
-Finish:       Mon Mar  3 23:33:35 2014
+Start:        Wed Mar  5 22:50:03 2014
+Finish:       Wed Mar  5 22:50:03 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Mon Mar  3 23:33:36 2014
-Finish:       Mon Mar  3 23:33:36 2014
+Start:        Wed Mar  5 22:50:05 2014
+Finish:       Wed Mar  5 22:50:05 2014
 
 Covered Subroutines
 -------------------
@@ -339,31 +339,31 @@ Branches
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-109   ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
-153   ***     50      0      3   unless (defined $data_path and -e $data_path)
-155   ***      0      0      0   unless -e $data_path
-159          100      1     15   unless -e $cv_file
-160          100      1     14   unless -s _
-164          100     14   3588   if $CV_MAPPINGS{$cv_field}{'header'} and $PCAP::SRA::INPUT_LINE_NUMBER == 1
-178   ***      0      0      0   unless exists $$cv_lookup{$key}
-179   ***      0      0      0   unless first sub {
+110   ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
+155   ***     50      0      3   unless (defined $data_path and -e $data_path)
+157   ***      0      0      0   unless -e "$data_path/cv_tables"
+161          100      1     15   unless -e $cv_file
+162          100      1     14   unless -s _
+166          100     14   3588   if $CV_MAPPINGS{$cv_field}{'header'} and $PCAP::SRA::INPUT_LINE_NUMBER == 1
+180   ***      0      0      0   unless exists $$cv_lookup{$key}
+181   ***      0      0      0   unless first sub {
 	$info{$key} eq $_;
 }
 , @{$$cv_lookup{$key};}
-182   ***      0      0      0   unless exists $info{$req}
-194          100      1      1   unless _check_seq_type($seq_in)
-208   ***      0      0      0   if ($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
-218   ***      0      0      0   if (defined $in_seq_type) { }
-223   ***      0      0      0   unless _check_seq_type($seq_type)
-341   ***      0      0      0   if (scalar @tags > 0)
-422   ***      0      0      0   if (exists $$bam_ob{'info'}{'submitter_aliquot_id'})
-439   ***      0      0      0   if (-e $info_file)
-443   ***      0      0      0   if $line eq ''
-444   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
-445   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
-450   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
-452   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
-453   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+184   ***      0      0      0   unless exists $info{$req}
+196          100      1      1   unless _check_seq_type($seq_in)
+210   ***      0      0      0   if ($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+220   ***      0      0      0   if (defined $in_seq_type) { }
+225   ***      0      0      0   unless _check_seq_type($seq_type)
+344   ***      0      0      0   if (scalar @tags > 0)
+425   ***      0      0      0   if (exists $$bam_ob{'info'}{'submitter_aliquot_id'})
+442   ***      0      0      0   if (-e $info_file)
+446   ***      0      0      0   if $line eq ''
+447   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
+448   ***      0      0      0   if $line =~ /^([^:]+):(.*)$/
+453   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
+455   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
+456   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
 
 
 Covered Subroutines
@@ -383,39 +383,41 @@ BEGIN                   2     lib/PCAP/SRA.pm:33
 BEGIN                   2     lib/PCAP/SRA.pm:34 
 BEGIN                   2     lib/PCAP/SRA.pm:35 
 BEGIN                   2     lib/PCAP/SRA.pm:36 
-BEGIN                   2     lib/PCAP/SRA.pm:38 
-BEGIN                   2     lib/PCAP/SRA.pm:40 
-BEGIN                   2     lib/PCAP/SRA.pm:42 
-__ANON__                4     lib/PCAP/SRA.pm:200
-_check_seq_type         2     lib/PCAP/SRA.pm:199
-create_cv_lookups       3   1 lib/PCAP/SRA.pm:148
-uuid                    1   1 lib/PCAP/SRA.pm:188
-validate_seq_type       2   1 lib/PCAP/SRA.pm:193
+BEGIN                   2     lib/PCAP/SRA.pm:37 
+BEGIN                   2     lib/PCAP/SRA.pm:39 
+BEGIN                   2     lib/PCAP/SRA.pm:41 
+BEGIN                   2     lib/PCAP/SRA.pm:43 
+__ANON__                4     lib/PCAP/SRA.pm:202
+_check_seq_type         2     lib/PCAP/SRA.pm:201
+create_cv_lookups       3   1 lib/PCAP/SRA.pm:150
+uuid                    1   1 lib/PCAP/SRA.pm:190
+validate_seq_type       2   1 lib/PCAP/SRA.pm:195
 
 Uncovered Subroutines
 ---------------------
 
 Subroutine          Count Pod Location           
 ------------------- ----- --- -------------------
-__ANON__                0     lib/PCAP/SRA.pm:179
-_attribute_xml          0     lib/PCAP/SRA.pm:354
-_exp_xml                0     lib/PCAP/SRA.pm:494
-_run_xml                0     lib/PCAP/SRA.pm:507
-analysis_attributes     0   1 lib/PCAP/SRA.pm:338
-analysis_run_xml        0   1 lib/PCAP/SRA.pm:261
-analysis_xml            0   1 lib/PCAP/SRA.pm:279
-experiment              0   1 lib/PCAP/SRA.pm:381
-experiment_sets         0   1 lib/PCAP/SRA.pm:366
-file_xml                0   1 lib/PCAP/SRA.pm:251
-generate_sample_SRA     0   1 lib/PCAP/SRA.pm:88 
-get_md5_from_file       0   1 lib/PCAP/SRA.pm:270
-group_bams              0   1 lib/PCAP/SRA.pm:204
-info_file_data          0   1 lib/PCAP/SRA.pm:437
-parse_input             0   1 lib/PCAP/SRA.pm:232
-run                     0   1 lib/PCAP/SRA.pm:472
-run_set                 0   1 lib/PCAP/SRA.pm:462
-sample_descriptor       0   1 lib/PCAP/SRA.pm:420
-validate_info           0   1 lib/PCAP/SRA.pm:175
+__ANON__                0     lib/PCAP/SRA.pm:181
+_attribute_xml          0     lib/PCAP/SRA.pm:357
+_exp_xml                0     lib/PCAP/SRA.pm:497
+_run_xml                0     lib/PCAP/SRA.pm:510
+analysis_attributes     0   1 lib/PCAP/SRA.pm:341
+analysis_run_xml        0   1 lib/PCAP/SRA.pm:263
+analysis_xml            0   1 lib/PCAP/SRA.pm:282
+bash_script             0   1 lib/PCAP/SRA.pm:520
+experiment              0   1 lib/PCAP/SRA.pm:384
+experiment_sets         0   1 lib/PCAP/SRA.pm:369
+file_xml                0   1 lib/PCAP/SRA.pm:253
+generate_sample_SRA     0   1 lib/PCAP/SRA.pm:89 
+get_md5_from_file       0   1 lib/PCAP/SRA.pm:272
+group_bams              0   1 lib/PCAP/SRA.pm:206
+info_file_data          0   1 lib/PCAP/SRA.pm:440
+parse_input             0   1 lib/PCAP/SRA.pm:234
+run                     0   1 lib/PCAP/SRA.pm:475
+run_set                 0   1 lib/PCAP/SRA.pm:465
+sample_descriptor       0   1 lib/PCAP/SRA.pm:423
+validate_info           0   1 lib/PCAP/SRA.pm:177
 
 
 Branches
