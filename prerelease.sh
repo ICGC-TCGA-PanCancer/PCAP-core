@@ -47,7 +47,7 @@ echo '### Generating MANIFEST ###'
 rm -f MANIFEST
 # cleanup things which could break the manifest
 rm -rf install_tmp
-./Makefile.PL > /dev/null
+perl Makefile.PL > /dev/null
 make manifest &> /dev/null
 rm -f Makefile MYMETA.json MYMETA.yml MANIFEST.bak pm_to_blib
 
