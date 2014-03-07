@@ -531,7 +531,7 @@ queryext="All matching objects are in a downloadable state";
 submit_needed () {
   if [ -e "$1" ]; then
     catres=`cat $1`
-    if [ $catres != $submitexp ]; then
+    if [ "$catres" != $submitexp ]; then
       return 0
     fi
   else
