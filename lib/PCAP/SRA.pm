@@ -137,7 +137,7 @@ sub generate_sample_SRA {
   my $full_path = abs_path($base_path);
   my $sra_sh_script = "$full_path/auto_upload.sh";
   open my $SH, '>', $sra_sh_script;
-  print $SH bash_script($full_path, \@analysis_ids);
+  print $SH bash_script($options->{'gnos'}, $full_path, \@analysis_ids);
   close $SH;
   chmod S_IRUSR|S_IXUSR, $sra_sh_script;
   my $log = $sra_sh_script;
@@ -517,7 +517,7 @@ RUNXML
 }
 
 sub bash_script {
-  my ($path, $uuids) = @_;
+  my ($gnos_server, $path, $uuids) = @_;
   my $uuid_str = join q{" "}, @{$uuids};
 my $script = <<'BASHSCRIPT';
 #!/bin/bash
@@ -546,7 +546,7 @@ upload_needed () {
     # check against cgquery
     set +e
     tmpfile="$(mktemp)"
-    thing="cgquery -s https://gtrepo-ebi.annailabs.com analysis_id=$1"
+    thing="cgquery -s %s analysis_id=$1"
     $thing >& $tmpfile
     if cat "$tmpfile" | grep -q "$queryext"; then
       rm -f $tmpfile
@@ -569,7 +569,7 @@ process_uuids () {
     submitlog="$i/cgsubmit.log"
     if submit_needed $submitlog; then
       set -x
-      cgsubmit -s https://gtrepo-ebi.annailabs.com -o $submitlog -u $i -c $GNOS_PERM > $submitlog.out
+      cgsubmit -s %s -o $submitlog -u $i -c $GNOS_PERM > $submitlog.out
       set +x
     else
       echo RESUME MESSAGE: cgsubmit previously successful for $i
@@ -595,7 +595,7 @@ process_uuids ids
 echo SUCCESSFULLY COMPLETED
 
 BASHSCRIPT
-  return sprintf $script, $path, $uuid_str;
+  return sprintf $script, $gnos_server, $gnos_server, $path, $uuid_str;
 }
 
 1;
