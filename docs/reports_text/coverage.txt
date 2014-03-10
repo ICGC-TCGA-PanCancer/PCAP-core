@@ -15,62 +15,62 @@ Total                                               78.2   82.8  100.0   82.3
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:17 2014
-Finish:       Thu Mar  6 13:44:17 2014
+Start:        Mon Mar 10 09:38:21 2014
+Finish:       Mon Mar 10 09:38:23 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:18 2014
-Finish:       Thu Mar  6 13:44:20 2014
+Start:        Mon Mar 10 09:38:24 2014
+Finish:       Mon Mar 10 09:38:26 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:20 2014
-Finish:       Thu Mar  6 13:44:21 2014
+Start:        Mon Mar 10 09:38:26 2014
+Finish:       Mon Mar 10 09:38:26 2014
 
 Run:          t/pcap.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:21 2014
-Finish:       Thu Mar  6 13:44:21 2014
+Start:        Mon Mar 10 09:38:27 2014
+Finish:       Mon Mar 10 09:38:27 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:21 2014
-Finish:       Thu Mar  6 13:44:22 2014
+Start:        Mon Mar 10 09:38:27 2014
+Finish:       Mon Mar 10 09:38:27 2014
 
 Run:          t/pcapBwa.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:22 2014
-Finish:       Thu Mar  6 13:44:23 2014
+Start:        Mon Mar 10 09:38:28 2014
+Finish:       Mon Mar 10 09:38:28 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:24 2014
-Finish:       Thu Mar  6 13:44:24 2014
+Start:        Mon Mar 10 09:38:29 2014
+Finish:       Mon Mar 10 09:38:29 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:25 2014
-Finish:       Thu Mar  6 13:44:25 2014
+Start:        Mon Mar 10 09:38:30 2014
+Finish:       Mon Mar 10 09:38:30 2014
 
 Run:          t/pcapSra.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:25 2014
-Finish:       Thu Mar  6 13:44:26 2014
+Start:        Mon Mar 10 09:38:31 2014
+Finish:       Mon Mar 10 09:38:31 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Thu Mar  6 13:44:27 2014
-Finish:       Thu Mar  6 13:44:27 2014
+Start:        Mon Mar 10 09:38:32 2014
+Finish:       Mon Mar 10 09:38:32 2014
 
 Covered Subroutines
 -------------------
