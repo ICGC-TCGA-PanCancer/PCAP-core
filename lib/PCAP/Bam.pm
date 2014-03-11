@@ -36,7 +36,7 @@ use List::Util qw(first);
 
 use PCAP::Threaded;
 
-const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY T=%s filename=%s level=1 > %s)};
+const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
 const my $BAMBAM_DUP => q{ O=%s M=%s tmpfile=%s markthreads=%s rewritebam=1 rewritebamlevel=1 index=1 md5=1};
 
 sub new {
