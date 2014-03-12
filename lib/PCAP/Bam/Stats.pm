@@ -19,6 +19,9 @@ package PCAP::Bam::Stats;
 #   http://www.gnu.org/licenses/gpl-2.0.html
 ##########LICENCE##########
 
+use PCAP;
+our $VERSION = PCAP->VERSION;
+
 use strict;
 use English qw( -no_match_vars );
 use warnings FATAL=>'all';
@@ -119,11 +122,6 @@ sub _process_reads {
       $groups->{$rg}->{'inserts'} = {} if($flag & $FIRST);
     }
 
-    ## GC count... Total gc bases for a read group we then need to divide by read length and read count for meaning full stats
-    my $qseq = $a->qseq;
-    $qseq =~ s/[GCgc]//gi;
-    $groups->{$rg}->{'gc_'.$read} += ($a->l_qseq - length($qseq));
-
     $groups->{$rg}->{'count_'.$read}++;
     $groups->{$rg}->{'dup_'.$read}++ if($flag & $DUPLICATE);
 
@@ -133,6 +131,21 @@ sub _process_reads {
       $groups->{$rg}->{'proper_'.$read}++;
     }
 
+    ## GC count: Total gc bases for a read group we then need to divide by read length and read count for meaning full stats
+    my $qseq = $a->qseq;
+    $qseq =~ s/[GCgc]//gi;
+    $groups->{$rg}->{'gc_'.$read} += ($a->l_qseq - length($qseq));
+
+    # Divergence calculation: Collect stats that will allow us to calculate the the number of bases that diverge from the reference.
+    #                         This requires collecting the value from the NM tag and the mapped proportion of the query string.
+    if(($flag & $UNMAPPED) == 0 && defined ($a->get_tag_values('NM'))){
+
+      my($nm) = ($a->get_tag_values('NM'))[0];
+      $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos);
+      $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm;
+    }
+
+    # Quality score collection for quality score plots.
     # This is really expensive therefore it is optional.
     if($qualiy_scoring){
       _add_to_qplot($groups->{$rg}->{'fqp_'.$read}, scalar $a->qscore, ($flag & $REVERSED));
@@ -295,6 +308,26 @@ sub count_duplicate_reads_rg{
 sub count_duplicate_reads{
   my ($self, $read) = @_;
   return $self->_counts('dup', $read);
+}
+
+sub count_total_mapped_bases_rg{
+  my ($self, $rg, $read) = @_;
+  return $self->_counts_rg('total_mapped_bases',$rg, $read);
+}
+
+sub count_total_mapped_bases{
+  my ($self, $read) = @_;
+  return $self->_counts('total_mapped_bases', $read);
+}
+
+sub count_total_divergent_bases_rg{
+  my ($self, $rg, $read) = @_;
+  return $self->_counts_rg('total_divergent_bases',$rg, $read);
+}
+
+sub count_total_divergent_bases{
+  my ($self, $read) = @_;
+  return $self->_counts('total_divergent_bases', $read);
 }
 
 sub count_gc_rg{
@@ -669,16 +702,13 @@ sub fastq2image {
 #####
 
 sub bas{
-	my($self,$output_path) = @_;
+	my($self,$output_fh) = @_;
 
-	croak 'Undefined output_path argument' unless $output_path;
+	croak 'Undefined output_path argument' unless $output_fh;
 
-  my $output_fh;
   my $file_name = basename($self->{_file_path});
 
   try{
-    open($output_fh, ">", $output_path) or croak "Unable to open |$output_path|: $!";
-
     my $header = join("\t",
       'bam_filename',
 #      'md5',
@@ -688,10 +718,15 @@ sub bas{
       'platform_unit',
       'library',
       'readgroup',
-#      '#_total_bases',
-#      '#_mapped_bases',
       'read_length_r1',
       'read_length_r2',
+#      '#_total_bases',
+      '#_mapped_bases',
+      '#_mapped_bases_r1',
+      '#_mapped_bases_r2',
+      '#_divergent_bases',
+      '#_divergent_bases_r1',
+      '#_divergent_bases_r2',
       '#_total_reads',
       '#_total_reads_r1',
       '#_total_reads_r2',
@@ -725,6 +760,13 @@ sub bas{
       my ($platform_unit) = $rg_info =~ /\tPU:([^\t]+)/;
       my ($library)  = $rg_info =~ /\tLB:([^\t]+)/;
 
+      my $mapped_bases = $self->count_total_mapped_bases_rg($rg);
+      my $mapped_bases_r1 = $self->count_total_mapped_bases_rg($rg,1);
+      my $mapped_bases_r2 = $self->count_total_mapped_bases_rg($rg,2);
+
+      my $divergent_bases = $self->count_total_divergent_bases_rg($rg);
+      my $divergent_bases_r1 = $self->count_total_divergent_bases_rg($rg,1);
+      my $divergent_bases_r2 = $self->count_total_divergent_bases_rg($rg,2);
 
       my $unmapped_reads = $self->count_unmapped_rg($rg);
       my $unmapped_reads_r1 = $self->count_unmapped_rg($rg,1);
@@ -762,10 +804,14 @@ sub bas{
         $platform_unit,
         $library,
         $rg,
-#      '#_total_bases',
-#      '#_mapped_bases',
         $read_length_1,
-        $read_length_1,
+        $read_length_2,
+        $mapped_bases,
+        $mapped_bases_r1,
+        $mapped_bases_r2,
+        $divergent_bases,
+        $divergent_bases_r1,
+        $divergent_bases_r2,
         $total_reads,
         $total_reads_r2,
         $total_reads_r2,
@@ -789,9 +835,7 @@ sub bas{
     }
 
   }catch{
-    croak("Problem writing |$output_path|: $_");
-  }finally{
-    close $output_fh or croak "Unable to close |$output_path|: $!" if($output_fh);
+    croak("Problem writing output: $_");
   }
 }
 

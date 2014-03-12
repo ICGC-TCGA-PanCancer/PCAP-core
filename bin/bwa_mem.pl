@@ -84,8 +84,8 @@ sub setup {
               'i|index=i' => \$opts{'index'},
   ) or pod2usage(2);
 
-  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'h'});
-  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'m'});
+  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
+  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
 
   my $version = PCAP::Bwa::bwa_version();
   die "bwa mem can only be used with bwa version 0.7+, the version found in path is: $version\n" unless(version->parse($version) >= version->parse('0.7.0'));
@@ -93,15 +93,13 @@ sub setup {
   # then check for no args:
   my $defined;
   for(keys %opts) { $defined++ if(defined $opts{$_}); }
-  pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 2,  -output => \*STDERR) unless($defined);
+  pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined);
 
   PCAP::Cli::file_for_reading('reference', $opts{'reference'});
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
 
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
-
-
 
   if(exists $opts{'process'}) {
     PCAP::Cli::valid_process('process', $opts{'process'}, \@VALID_PROCESS);

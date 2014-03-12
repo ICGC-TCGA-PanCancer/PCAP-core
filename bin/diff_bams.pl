@@ -3,17 +3,17 @@
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
 # Copyright (C) 2014 ICGC PanCancer Project
-# 
+#
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
 # as published by the Free Software Foundation; either version 2
 # of the License, or (at your option) any later version.
-# 
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not see:
 #   http://www.gnu.org/licenses/gpl-2.0.html
@@ -90,8 +90,8 @@ sub setup {
               's|skip' => \$opts{'s'},
   ) or pod2usage(2);
 
-  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'h'});
-  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'m'});
+  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
+  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
 
   my $defined = 0;
   for(keys %opts) { $defined++ if(defined $opts{$_}); }
@@ -100,9 +100,9 @@ sub setup {
     $opts{'b'} = shift @ARGV;
     $defined = 2;
   }
-  pod2usage(-msg  => "\nERROR: Options 'a' & 'b' must be defined.\n", -verbose => 2,  -output => \*STDERR) unless($defined == 2);
+  pod2usage(-msg  => "\nERROR: Options 'a' & 'b' must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined == 2);
 
-  die pod2usage(-msg  => "\nERROR: bam_a and bam_b cannot be the same file\n", -verbose => 2,  -output => \*STDERR) if($opts{'a'} eq $opts{'b'});
+  die pod2usage(-msg  => "\nERROR: bam_a and bam_b cannot be the same file\n", -verbose => 1,  -output => \*STDERR) if($opts{'a'} eq $opts{'b'});
 
   PCAP::Cli::file_for_reading('bam_a', $opts{'a'});
   PCAP::Cli::file_for_reading('bam_a', $opts{'b'});

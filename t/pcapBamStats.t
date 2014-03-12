@@ -236,6 +236,17 @@ subtest 'Object funcions' => sub {
     is($test_obj->count_duplicate_reads_rg($rg1,2),0,'count_duplicate_reads_rg rg1 read2');
     is($test_obj->count_duplicate_reads_rg($rg2,1),0,'count_duplicate_reads_rg rg2 read1');
     is($test_obj->count_duplicate_reads_rg($rg2,2),0,'count_duplicate_reads_rg rg2 read2');
+
+    is($test_obj->count_total_mapped_bases_rg($rg1,1),114,'count_total_mapped_bases_rg rg1 read1');
+    is($test_obj->count_total_mapped_bases_rg($rg1,2),37,'count_total_mapped_bases_rg rg1 read2');
+    is($test_obj->count_total_mapped_bases_rg($rg2,1),20,'count_total_mapped_bases_rg rg2 read1');
+    is($test_obj->count_total_mapped_bases_rg($rg2,2),20,'count_total_mapped_bases_rg rg2 read2');
+
+    is($test_obj->count_total_divergent_bases_rg($rg1,1),30,'count_total_divergent_bases_rg rg1 read1');
+    is($test_obj->count_total_divergent_bases_rg($rg1,2),18,'count_total_divergent_bases_rg rg1 read2');
+    is($test_obj->count_total_divergent_bases_rg($rg2,1),11,'count_total_divergent_bases_rg rg2 read1');
+    is($test_obj->count_total_divergent_bases_rg($rg2,2),12,'count_total_divergent_bases_rg rg2 read2');
+
   };
 
   subtest '_count_' => sub {
@@ -252,6 +263,12 @@ subtest 'Object funcions' => sub {
 
     is($test_obj->count_duplicate_reads(1),4,'count_duplicate_reads read1');
     is($test_obj->count_duplicate_reads(2),0,'count_duplicate_reads read2');
+
+    is($test_obj->count_total_mapped_bases(1),134,'count_total_mapped_bases read1');
+    is($test_obj->count_total_mapped_bases(2),57,'count_total_mapped_bases read2');
+
+    is($test_obj->count_total_divergent_bases(1),41,'count_total_divergent_bases read1');
+    is($test_obj->count_total_divergent_bases(2),30,'count_total_divergent_bases read2');
   };
 
   subtest 'cal_insert_size_sd_rg' => sub {
@@ -276,8 +293,7 @@ subtest 'integration_test' => sub {
   eval{
     $tmp = File::Temp->new(TEMPLATE => '/tmp/Bam_StatsXXXXXX', SUFFIX => '.bas.tmp');
     $tmp->unlink_on_destroy( 1 );
-    my $path = $tmp->filename();
-    $test_obj->bas($path);
+    $test_obj->bas($tmp);
     $tmp->seek( 0, 0 );
 
 
@@ -288,7 +304,7 @@ subtest 'integration_test' => sub {
     close($ref_fh);
     close($tmp);
 
-    is_deeply(\@test_string,\@ref_string,"integration_test compare file contents of: $path");
+    is_deeply(\@test_string,\@ref_string,"integration_test compare file contents of: $tmp");
 
   };if($@){
     fail($@);
@@ -357,32 +373,32 @@ __DATA__
 @RG	ID:29976	PL:GAII	PU:5178_6	LB:PD1234a 140546_1054	PI:404	DS:short	MI:582	SM:PD1234a	PG:29976	CN:SANGER
 @RG	ID:29978	PL:GAII	PU:5085_6	LB:PD1234a 140546_1054	PI:404	DS:short	MI:582	SM:PD1234a	PG:29978	CN:SANGER
 
-IL29_5178:2:54:17473:17010	579	1	9993	0	*	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
+IL29_5178:2:54:17473:17010	579	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:1
 
-IL29_5178:3:48:10131:17011	1091	1	9993	0	*	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
-IL29_5178:3:48:10131:17012	1091	1	9993	0	*	=	9993	-100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
-IL29_5178:3:48:10131:17013	1091	1	9993	0	*	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
-IL29_5178:3:48:10131:17014	1091	1	9993	0	*	=	9993	150	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
+IL29_5178:3:48:10131:17011	1091	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:2
+IL29_5178:3:48:10131:17012	1091	1	9993	0	3S15M2S	=	9993	-100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:3
+IL29_5178:3:48:10131:17013	1091	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:4
+IL29_5178:3:48:10131:17014	1091	1	9993	0	20M	=	9993	150	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:5
 
-IL29_5178:5:103:3067:17015	323	1	9993	0	*	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
+IL29_5178:5:103:3067:17015	323	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978	NM:i:6
 
 
 ## good read pairs
-IL29_5178:2:54:17473:18172	67	1	9993	0	*	=	9993	375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
-IL29_5178:2:54:17473:18172	131	1	9993	0	*	=	9993	-375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
+IL29_5178:2:54:17473:18172	67	1	9993	0	9M1I10M	=	9993	375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:7
+IL29_5178:2:54:17473:18172	131	1	9993	0	20M	=	9993	-375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:8
 
-IL29_5178:3:48:10131:17417	67	1	9993	0	*	=	9993	350	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
-IL29_5178:3:48:10131:17417	131	1	9993	0	*	=	9993	350	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
+IL29_5178:3:48:10131:17417	67	1	9993	0	20M	=	9993	350	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:9
+IL29_5178:3:48:10131:17417	131	1	9993	0	2S17M1S	=	9993	350	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:10
 
-IL29_5178:5:103:3067:17734	67	1	9993	0	*	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
-IL29_5178:5:103:3067:17734	131	1	9993	0	*	=	9993	-100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
+IL29_5178:5:103:3067:17734	67	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978	NM:i:11
+IL29_5178:5:103:3067:17734	131	1	9993	0	20M	=	9993	-100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978	NM:i:12
 
 ## one read unmapped
-IL29_5178:7:35:17751:10872	69	1	9994	20	108M	=	9994	375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
-IL29_5178:7:35:17751:10872	133	1	9994	0	*	=	9994	375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29976
+IL29_5178:7:35:17751:10872	69	1	9994	20	*	=	9994	375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976
+IL29_5178:7:35:17751:10872	133	1	9994	0	*	=	9994	375	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976
 
-IL20_5085:6:61:7856:9407	69	1	9996	0	*	=	9996	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
-IL20_5085:6:61:7856:9407	133	1	9996	0	*	=	9996	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
+IL20_5085:6:61:7856:9407	69	1	9996	0	*	=	9996	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978
+IL20_5085:6:61:7856:9407	133	1	9996	0	*	=	9996	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978
 
-IL29_5178:8:46:3804:17877	69	1	9996	0	*	=	9996	150	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
-IL29_5178:8:46:3804:17877	133	1	9996	0	*	=	9996	150	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEF	RG:Z:29978
+IL29_5178:8:46:3804:17877	69	1	9996	0	*	=	9996	150	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978
+IL29_5178:8:46:3804:17877	133	1	9996	0	*	=	9996	150	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29978
