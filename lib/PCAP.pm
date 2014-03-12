@@ -32,8 +32,22 @@ const my $LICENSE =>
 # See LICENSE for full details.
 #################";
 
+const my $DEFAULT_PATH => 'biobambam,samtools,bwa';
+const my %UPGRADE_PATH => ( '0.1.0' => 'biobambam,samtools,bwa',
+                            '0.1.1' => 'biobambam,bwa',
+                            '0.1.2' => '',
+                          );
+
 sub license {
   return sprintf $LICENSE, $VERSION;
+}
+
+sub upgrade_path {
+  my $installed_version = shift;
+  return $DEFAULT_PATH if(!defined $installed_version);
+  chomp $installed_version;
+  return $DEFAULT_PATH if(!exists $UPGRADE_PATH{$installed_version});
+  return $UPGRADE_PATH{$installed_version};
 }
 
 1;

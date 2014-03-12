@@ -35,6 +35,13 @@ unset PERL5LIB;
 SETUP_DIR=$INIT_DIR/install_tmp
 mkdir -p $SETUP_DIR
 
+# figure out the upgrade path
+#set -x
+COMPILE=`echo 'nothing' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
+if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
+  COMPILE=`perl -I $INST_PATH/lib/perl5 -MPCAP -e 'print PCAP->VERSION,"\n";' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
+fi
+
 # re-initialise log file
 echo > $INIT_DIR/setup.log;
 
@@ -70,138 +77,146 @@ do
 done
 
 cd $SETUP_DIR;
-echo -n "Building BWA ..."
-if [ -e $SETUP_DIR/bwa.success ]; then
-  echo -n "previously installed"
+if [[ ",$COMPILE," == *,bwa,* ]] ; then
+  echo -n "Building BWA ..."
+  if [ -e $SETUP_DIR/bwa.success ]; then
+    echo "previously installed"
+  else
+    (
+      set -e;
+      if hash curl 2>/dev/null; then
+        curl -sS -o 0.7.7.tar.gz -L https://github.com/lh3/bwa/archive/0.7.7.tar.gz;
+      else
+        wget -nv -O 0.7.7.tar.gz https://github.com/lh3/bwa/archive/0.7.7.tar.gz;
+      fi
+      tar zxf 0.7.7.tar.gz;
+      cd $SETUP_DIR/bwa-0.7.7;
+      make -j3;
+      cp bwa $INST_PATH/bin/.
+      cd $SETUP_DIR;
+      rm -rf $SETUP_DIR/bwa-0.7.7;
+      rm -f 0.7.7.tar.gz;
+      touch $SETUP_DIR/bwa.success;
+      set +e;
+    ) >>$INIT_DIR/setup.log 2>&1;
+  fi
+  done_message "" "Failed to build bwa.";
 else
-  (
+  echo "BWA - No change between PCAP versions"
+fi
+
+if [[ ",$COMPILE," == *,biobambam,* ]] ; then
+  echo -n "Building snappy ..."
+  if [ -e $SETUP_DIR/snappy.success ]; then
+    echo "previously installed"
+  else
+    (
+      set -e;
+      if hash curl 2>/dev/null; then
+        curl -sS -o snappy-1.1.1.tar.gz -L https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz;
+      else
+        wget -nv -O snappy-1.1.1.tar.gz https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz;
+      fi
+      tar zxf snappy-1.1.1.tar.gz;
+      cd $SETUP_DIR/snappy-1.1.1;
+      ./configure --prefix=$INST_PATH;
+      make -j3;
+      make -j3 install;
+      cd $SETUP_DIR;
+      rm -rf $SETUP_DIR/snappy-1.1.1;
+      rm -f snappy-1.1.1.tar.gz;
+      touch $SETUP_DIR/snappy.success;
+      set +e;
+    ) >>$INIT_DIR/setup.log 2>&1;
+  fi
+  done_message "" "Failed to build snappy.";
+
+  echo -n "Building io_lib ..."
+  if [ -e $SETUP_DIR/io_lib.success ]; then
+    echo "previously installed"
+  else
+    (
     set -e;
-    if hash curl 2>/dev/null; then
-      curl -sS -o 0.7.7.tar.gz -L https://github.com/lh3/bwa/archive/0.7.7.tar.gz;
-    else
-      wget -nv -O 0.7.7.tar.gz https://github.com/lh3/bwa/archive/0.7.7.tar.gz;
-    fi
-    tar zxf 0.7.7.tar.gz;
-    cd $SETUP_DIR/bwa-0.7.7;
-    make -j3;
-    cp bwa $INST_PATH/bin/.
-    cd $SETUP_DIR;
-    rm -rf $SETUP_DIR/bwa-0.7.7;
-    rm -f 0.7.7.tar.gz;
-    touch $SETUP_DIR/bwa.success;
-    set +e;
-  ) >>$INIT_DIR/setup.log 2>&1;
-fi
-done_message "" "Failed to build bwa.";
+      if hash curl 2>/dev/null; then
+        curl -sS -o io_lib-1.13.4.tar.gz -L http://downloads.sourceforge.net/project/staden/io_lib/1.13.4/io_lib-1.13.4.tar.gz;
+      else
+        wget -nv -O io_lib-1.13.4.tar.gz http://downloads.sourceforge.net/project/staden/io_lib/1.13.4/io_lib-1.13.4.tar.gz;
+      fi
+      tar zxf io_lib-1.13.4.tar.gz;
+      cd $SETUP_DIR/io_lib-1.13.4;
+      ./configure --prefix=$INST_PATH;
+      make -j3;
+      make -j3 install;
+      cd $SETUP_DIR;
+      rm -rf $SETUP_DIR/io_lib-1.13.4;
+      rm -f io_lib-1.13.4.tar.gz;
+      touch $SETUP_DIR/io_lib.success;
+      set +e;
+    ) >>$INIT_DIR/setup.log 2>&1;
+  fi
+  done_message "" "Failed to build io_lib.";
 
-echo -n "Building snappy ..."
-if [ -e $SETUP_DIR/snappy.success ]; then
-  echo -n "previously installed"
+  echo -n "Building libmaus ..."
+  if [ -e $SETUP_DIR/libmaus.success ]; then
+    echo "previously installed"
+  else
+    (
+      set -e;
+      if hash curl 2>/dev/null; then
+        curl -sS -o libmaus-0.0.104-release-20140221093548.tar.gz -L https://github.com/gt1/libmaus/archive/0.0.104-release-20140221093548.tar.gz;
+      else
+        wget -nv -O libmaus-0.0.104-release-20140221093548.tar.gz https://github.com/gt1/libmaus/archive/0.0.104-release-20140221093548.tar.gz;
+      fi
+      tar zxf libmaus-0.0.104-release-20140221093548.tar.gz;
+      cd $SETUP_DIR/libmaus-0.0.104-release-20140221093548;
+      autoreconf -i -f;
+      ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
+      make -j3;
+      make -j3 install;
+      cd $SETUP_DIR;
+      rm -rf $SETUP_DIR/libmaus-0.0.104-release-20140221093548;
+      rm -f libmaus-0.0.104-release-20140221093548.tar.gz;
+      touch $SETUP_DIR/libmaus.success;
+      set +e;
+    ) >>$INIT_DIR/setup.log 2>&1;
+  fi
+  done_message "" "Failed to build libmaus.";
+
+  echo -n "Building biobambam ..."
+  if [ -e $SETUP_DIR/biobambam.success ]; then
+    echo "previously installed"
+  else
+    (
+      set -e;
+      if hash curl 2>/dev/null; then
+        curl -sS -o 0.0.125-release-20140221093621.tar.gz -L https://github.com/gt1/biobambam/archive/0.0.125-release-20140221093621.tar.gz;
+      else
+        wget -nv -O 0.0.125-release-20140221093621.tar.gz https://github.com/gt1/biobambam/archive/0.0.125-release-20140221093621.tar.gz;
+      fi
+      tar zxf 0.0.125-release-20140221093621.tar.gz;
+      cd $SETUP_DIR/biobambam-0.0.125-release-20140221093621;
+      autoreconf -i -f;
+      ./configure --with-libmaus=$INST_PATH --prefix=$INST_PATH
+      make -j3;
+      make -j3 install;
+      cd $SETUP_DIR;
+      rm -rf $SETUP_DIR/biobambam-0.0.125-release-20140221093621;
+      rm -f 0.0.125-release-20140221093621.tar.gz;
+      touch $SETUP_DIR/biobambam.success;
+      set +e;
+    ) >>$INIT_DIR/setup.log 2>&1;
+  fi
+  done_message "" "Failed to build biobambam.";
 else
-  (
-    set -e;
-    if hash curl 2>/dev/null; then
-      curl -sS -o snappy-1.1.1.tar.gz -L https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz;
-    else
-      wget -nv -O snappy-1.1.1.tar.gz https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz;
-    fi
-    tar zxf snappy-1.1.1.tar.gz;
-    cd $SETUP_DIR/snappy-1.1.1;
-    ./configure --prefix=$INST_PATH;
-    make -j3;
-    make -j3 install;
-    cd $SETUP_DIR;
-    rm -rf $SETUP_DIR/snappy-1.1.1;
-    rm -f snappy-1.1.1.tar.gz;
-    touch $SETUP_DIR/snappy.success;
-    set +e;
-  ) >>$INIT_DIR/setup.log 2>&1;
+  echo "biobambam - No change between PCAP versions"
 fi
-done_message "" "Failed to build snappy.";
-
-
-echo -n "Building io_lib ..."
-if [ -e $SETUP_DIR/io_lib.success ]; then
-  echo -n "previously installed"
-else
-  (
-  set -e;
-    if hash curl 2>/dev/null; then
-      curl -sS -o io_lib-1.13.4.tar.gz -L http://downloads.sourceforge.net/project/staden/io_lib/1.13.4/io_lib-1.13.4.tar.gz;
-    else
-      wget -nv -O io_lib-1.13.4.tar.gz http://downloads.sourceforge.net/project/staden/io_lib/1.13.4/io_lib-1.13.4.tar.gz;
-    fi
-    tar zxf io_lib-1.13.4.tar.gz;
-    cd $SETUP_DIR/io_lib-1.13.4;
-    ./configure --prefix=$INST_PATH;
-    make -j3;
-    make -j3 install;
-    cd $SETUP_DIR;
-    rm -rf $SETUP_DIR/io_lib-1.13.4;
-    rm -f io_lib-1.13.4.tar.gz;
-    touch $SETUP_DIR/io_lib.success;
-    set +e;
-  ) >>$INIT_DIR/setup.log 2>&1;
-fi
-done_message "" "Failed to build io_lib.";
-
-echo -n "Building libmaus ..."
-if [ -e $SETUP_DIR/libmaus.success ]; then
-  echo -n "previously installed"
-else
-  (
-    set -e;
-    if hash curl 2>/dev/null; then
-      curl -sS -o libmaus-0.0.104-release-20140221093548.tar.gz -L https://github.com/gt1/libmaus/archive/0.0.104-release-20140221093548.tar.gz;
-    else
-      wget -nv -O libmaus-0.0.104-release-20140221093548.tar.gz https://github.com/gt1/libmaus/archive/0.0.104-release-20140221093548.tar.gz;
-    fi
-    tar zxf libmaus-0.0.104-release-20140221093548.tar.gz;
-    cd $SETUP_DIR/libmaus-0.0.104-release-20140221093548;
-    autoreconf -i -f;
-    ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
-    make -j3;
-    make -j3 install;
-    cd $SETUP_DIR;
-    rm -rf $SETUP_DIR/libmaus-0.0.104-release-20140221093548;
-    rm -f libmaus-0.0.104-release-20140221093548.tar.gz;
-    touch $SETUP_DIR/libmaus.success;
-    set +e;
-  ) >>$INIT_DIR/setup.log 2>&1;
-fi
-done_message "" "Failed to build libmaus.";
-
-echo -n "Building biobambam ..."
-if [ -e $SETUP_DIR/biobambam.success ]; then
-  echo -n "previously installed"
-else
-  (
-    set -e;
-    if hash curl 2>/dev/null; then
-      curl -sS -o 0.0.125-release-20140221093621.tar.gz -L https://github.com/gt1/biobambam/archive/0.0.125-release-20140221093621.tar.gz;
-    else
-      wget -nv -O 0.0.125-release-20140221093621.tar.gz https://github.com/gt1/biobambam/archive/0.0.125-release-20140221093621.tar.gz;
-    fi
-    tar zxf 0.0.125-release-20140221093621.tar.gz;
-    cd $SETUP_DIR/biobambam-0.0.125-release-20140221093621;
-    autoreconf -i -f;
-    ./configure --with-libmaus=$INST_PATH --prefix=$INST_PATH
-    make -j3;
-    make -j3 install;
-    cd $SETUP_DIR;
-    rm -rf $SETUP_DIR/biobambam-0.0.125-release-20140221093621;
-    rm -f 0.0.125-release-20140221093621.tar.gz;
-    touch $SETUP_DIR/biobambam.success;
-    set +e;
-  ) >>$INIT_DIR/setup.log 2>&1;
-fi
-done_message "" "Failed to build biobambam.";
 
 cd $INIT_DIR;
 
+if [[ ",$COMPILE," == *,biobambam,* ]] ; then
 echo -n "Building samtools ..."
 if [ -e $SETUP_DIR/samtools.success ]; then
-  echo -n "previously installed";
+  echo "previously installed";
 else
   cd $SETUP_DIR
   if( [ "x$SAMTOOLS" == "x" ] ); then
@@ -227,6 +242,10 @@ else
   fi
 fi
 done_message "" "Failed to build samtools.";
+else
+  echo "samtools - No change between PCAP versions"
+fi
+
 export SAMTOOLS="$SETUP_DIR/samtools-0.1.19";
 
 # continuation of contained installation
