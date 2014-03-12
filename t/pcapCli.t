@@ -5,6 +5,7 @@ use File::Spec;
 use File::Path qw(make_path remove_tree);
 use Try::Tiny qw(try catch finally);
 use Fcntl qw( :mode );
+use File::Temp;
 
 use constant MODULE => 'PCAP::Cli';
 
@@ -41,18 +42,14 @@ subtest 'out_dir_check' => sub {
       , qr/Option 'test' points to an existing entity \(not a directory\):/m
       , 'Fail when pointed to file');
 
-  my $tmp_dir = File::Spec->catdir($test_data, 'test_folder');
-  my $non_write = File::Spec->catfile($test_data, 'nonWritableDir');
+  my $tmp_root = File::Temp->newdir('PCAPtests_XXXX');
+  my $tmp_dir = File::Spec->catdir($tmp_root, 'test_folder');
+  note("Temporary folder: $tmp_dir");
   # need to ensure folder is removed
   try {
-    make_path($non_write);
-    chmod S_IRUSR, $non_write;
-    like(exception{ PCAP::Cli::out_dir_check('test', $non_write) }
-        , qr/Option 'test' points to an existing WRITE PROTECTED directory:/m
-        , 'Fail when pointed to non-writable area');
     is(PCAP::Cli::out_dir_check('test', $tmp_dir), $tmp_dir, 'Success when able to create directory');
     is(PCAP::Cli::out_dir_check('test', $tmp_dir), $tmp_dir, 'Success when directory exists and writable');
-    ok((chmod 0400, $tmp_dir), 'make test folder readonly for next test');
+    ok((chmod S_IRUSR, $tmp_dir), 'make test folder readonly for next test');
     like(exception{ PCAP::Cli::out_dir_check('test', $tmp_dir) }
         , qr/Option '.+' points to an existing WRITE PROTECTED directory: /
         , 'Fail when provided an existing write protected dir.');
@@ -65,11 +62,6 @@ subtest 'out_dir_check' => sub {
   finally {
     if(-e $tmp_dir) {
       chmod S_IRWXU, $tmp_dir; # if it don't work it's knackered anyway
-      remove_tree($tmp_dir);
-    }
-    if(-e $non_write) {
-      chmod S_IRWXU, $non_write;
-      remove_tree($non_write);
     }
   };
 };
