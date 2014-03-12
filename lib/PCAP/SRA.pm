@@ -317,7 +317,7 @@ sub analysis_xml {
       </REFERENCE_ALIGNMENT>
     </ANALYSIS_TYPE>
     <TARGETS>
-      <TARGET refcenter="TCGA" refname="%s" sra_object_type="SAMPLE"/>
+      <TARGET refcenter="OICR" refname="%s" sra_object_type="SAMPLE"/>
     </TARGETS>
     <DATA_BLOCK>
       <FILES>
