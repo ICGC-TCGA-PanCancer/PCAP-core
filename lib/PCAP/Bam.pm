@@ -36,7 +36,7 @@ use List::Util qw(first);
 
 use PCAP::Threaded;
 
-const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY T=%s filename=%s level=1 > %s)};
+const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
 const my $BAMBAM_DUP => q{ O=%s M=%s tmpfile=%s markthreads=%s rewritebam=1 rewritebamlevel=1 index=1 md5=1};
 
 sub new {
@@ -67,6 +67,8 @@ sub rg_line_for_output {
 sub bam_to_grouped_bam {
   # uncoverable subroutine
   my ($index, $options) = @_;
+  # uncoverable branch true
+  # uncoverable branch false
   return 1 if(exists $options->{'index'} && $index != $options->{'index'});
   my $tmp = $options->{'tmp'};
   # uncoverable branch true
@@ -90,6 +92,8 @@ sub merge_and_mark_dup {
   # uncoverable branch true
   # uncoverable branch false
   $helper_threads = 1 if($helper_threads < 1);
+  # uncoverable branch true
+  # uncoverable branch false
   my $command = which('bammarkduplicates') || die "Unable to find 'bammarkduplicates' in path";
   $command .= sprintf $BAMBAM_DUP,  $marked,
                                     $met,
@@ -137,9 +141,12 @@ sub read_group_info {
     for my $element(@elements) {
       # Don't think it's possible to generate header with blank fields (\t+)
       # but lets be parnoid
+      # uncoverable branch true
       next if($element eq q{});
 
       my ($tag, $value) = $element =~ m/^([^\:]+)\:(.+)$/;
+      # tools used to generate BAM files don't allow this
+      # uncoverable branch true
       die "ERROR: Malformed RG tag/value: $element\n" unless(defined $tag && defined $value);
       $rg{$tag} = $value;
     }

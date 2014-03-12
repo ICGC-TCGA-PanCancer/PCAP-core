@@ -29,7 +29,7 @@ my %EXPECTED_VERSION = (
                         'bwa'           => {
                               'get'   => q{},
                               'match' => qr/Version: ([[:digit:]\.]+[[:alpha:]]?)/, # we don't care about the revision number
-                              'version'       => ['0.6.2','0.7.6a']},
+                              'version'       => ['0.6.2','0.7.7']},
                         );
 
 subtest 'External programs exist on PATH' => sub {

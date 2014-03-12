@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
@@ -53,10 +53,6 @@ const my %INDEX_FACTOR => ( 'bwamem' => 1,
 {
   my $options = setup();
   $options->{'meta_set'} = PCAP::Bwa::Meta::files_to_meta($options->{'tmp'}, $options->{'raw_files'}, $options->{'sample'});
-
-  if($options->{'meta_set'}->[0]->fastq && !$options->{'meta_set'}->[0]->paired_fq) {
-    die "BWA aln doesn't support interleaved FASTQ\n";
-  }
 
   my $bam_count = scalar @{$options->{'meta_set'}};
   PCAP::Bwa::bwa_mem($options) if(!exists $options->{'process'} || $options->{'process'} eq 'bwamem');
@@ -132,7 +128,7 @@ __END__
 
 =head1 NAME
 
-bwa_aln.pl - Align a set of lanes to specified reference with single command.
+bwa_mem.pl - Align a set of lanes to specified reference with single command.
 
 =head1 SYNOPSIS
 
@@ -157,7 +153,7 @@ bwa_aln.pl [options] [file(s)...]
     -man       -m   Full documentation.
 
   File list can be full file names or wildcard, e.g.
-    bwa_aln.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*.fq.gz
+    bwa_mem.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*.bam
 
   Run with '-m' for possible input file types.
 
@@ -218,7 +214,8 @@ There are several types of file that the script is able to process.
 =item f[ast]q
 
 A standard uncompressed fastq file.  Requires a pair of inputs with standard suffix of '_1' and '_2'
-immediately prior to '.f[ast]q'.
+immediately prior to '.f[ast]q' or an interleaved f[ast]q file where read 1 and 2 are adjacent
+in the file.
 
 
 =item f[ast]q.gz
@@ -227,16 +224,14 @@ As *.f[ast]q but compressed with gzip.
 
 =item bam
 
-A list of single lane BAM files, no information is taken from the headers.
-
-B<This method has additional processing converted to *.fq.gz to give common start point.>
+A list of single lane BAM files, RG line is transfered to aligned files.
 
 =back
 
 =head1 DESCRIPTION
 
-B<bwa_aln.pl> will attempt to run all mapping steps for BWA ALN and subsequent duplicate marking
-automatically.
+B<bwa_mem.pl> will attempt to run all mapping steps for BWA-mem, as well as subsequent merging
+and duplicate marking automatically.
 
 =cut
 

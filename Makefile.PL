@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
@@ -30,8 +30,21 @@ WriteMakefile(
   VERSION_FROM  => 'lib/PCAP.pm',
   EXE_FILES     => [qw( bin/bam_to_sra_sub.pl
                         bin/bwa_aln.pl
+                        bin/bwa_mem.pl
                         bin/diff_bams.pl
                         bin/monitor.pl)],
+  PREREQ_PM     => {
+                     'IPC::System::Simple' => 1.25,
+                     'Capture::Tiny' => 0.24,
+                     'Const::Fast' => 0.014,
+                     'Bio::DB::Sam' => 1.39,
+                     'Bio::Perl' => 0, # can't specify as make manifest can't parse the version string
+                                       # cpanmdb also doesn't have 1.6.923 indexed for some reason
+                     'Try::Tiny' => 0.19,
+                     'File::Which' => 0.05,
+                     'List::Util' => 1.38,
+                     'Proc::ProcessTable' => 0.50,
+                   }
 );
 
 package MY;

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
@@ -55,6 +55,7 @@ sub setup {
               'm|man' => \$opts{'m'},
               'o|outdir=s' => \$opts{'outdir'},
               's|study=s' => \$opts{'study'},
+              'g|gnos=s' => \$opts{'gnos'},
               't|type=s' => \$opts{'type'},
   ) or pod2usage(2);
 
@@ -65,6 +66,10 @@ sub setup {
   my $defined;
   for(keys %opts) { $defined++ if(defined $opts{$_}); }
   pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined);
+
+  pod2usage(-msg => qq{\nERROR: 'outdir' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'outdir'});
+  pod2usage(-msg => qq{\nERROR: 'study' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'study'});
+  pod2usage(-msg => qq{\nERROR: 'gnos' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'gnos'});
 
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
 
@@ -91,6 +96,8 @@ bam_to_sra_sub.pl [options] [file(s)...]
   Required parameters:
     -outdir    -o   Folder to output result to.
     -study     -s   Study reference in repository
+    -gnos      -g   GNOS upload server, e.g.
+                      https://gtrepo-ebi.annailabs.com
 
   Optional:
     -type      -t   Only required if not encoded in readgroup LB tag.
@@ -104,7 +111,8 @@ bam_to_sra_sub.pl [options] [file(s)...]
     -man       -m   Full documentation.
 
   File list can be full file names, wildcards or combination, e.g.
-    bam_to_sra_sub.pl -s PANCAN -o myout input/*.bam input2/sample2.bam
+
+    bam_to_sra_sub.pl -s icgc_pancancer -o myDonor/tumour_sra myDonor/tumour/*.bam
 
 =head1 OPTIONS
 

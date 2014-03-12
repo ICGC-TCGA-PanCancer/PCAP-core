@@ -16,10 +16,16 @@ data submissions process.
 
 ---
 
-###Dependencies
-Some of the code included in this package has dependencies on [biobambam](https://github.com/gt1/biobambam).  This also requires the library [libmaus](https://github.com/gt1/libmaus).  Please ensure that you compile libmaus with **snappy** and **io_lib** to enable the relevant features.  These are described on the libmaus page.
+###Dependencies/Install
+Some of the code included in this package has dependencies on several C packages:
 
-Please see the `INSTALL` file for full list of dependencies.
+ * [biobambam](https://github.com/gt1/biobambam)
+ * [bwa](https://github.com/lh3/bwa)
+ * [samtools](https://github.com/samtools/samtools)
+
+And various perl modules.
+
+Please use `setup.sh` to install the dependencies.  Please be aware that this expects basic C compilation libraries and tools to be available.
 
 ---
 

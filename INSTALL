@@ -1,41 +1,23 @@
-perl Makefile.pl [INSTALL_BASE=...]
-make
-make test
-make install
+To install run:
 
-(note: test requires that 'Other Software' listed below has been installed and is available on PATH)
+  ./setup.sh /install/to/here
+
+'/install/to/here' is where you want the bin/lib folders to be created.
 
 Perl:
   Minimum version: 5.10.1
   Tested version: 5.16.3
 
-The following perl modules (and their dependencies) are required:
-  File::ShareDir::Install
-  Bio::Perl - covers many other dependancies
-  IPC::System::Simple
-  Const::Fast
-  Try::Tiny
-  File::Which
-  Bio::DB::Sam (requires https://github.com/samtools/samtools/archive/0.1.19.tar.gz)
-  List::Util (1.35+)
-  Capture::Tiny
-
 OS:
   This distribution will only work on *NIX type systems at present.
 
 Other Software
-  The following software is expected to be present on path:
-    biobambam-0.0.125 - https://github.com/gt1/biobambam/archive/0.0.125-release-20140221093621.tar.gz
-      - Dependancy on libmaus: https://github.com/gt1/libmaus
-        which in turn requires installation of snappy and io_lib
-        which are described on the libmaus page.
-
-
-    bwa-0.6.2 - https://github.com/lh3/bwa/archive/0.6.2.tar.gz
-      OR
-    bwa-0.7.6a - https://github.com/lh3/bwa/archive/0.7.6a.tar.gz
+  setup.sh will install
+    biobambam
+    bwa (v0.7.7)
+    samtools
 
     NOTE: bwa_aln.pl will only function when 0.6.2 installed
-          bwa_mem.pl will only function when 0.7.6a installed
-          Either will allow successful install, modify path to switch between methods
+            (you will need to make this available on path manually)
+          bwa_mem.pl will only function when 0.7.7 installed
 
