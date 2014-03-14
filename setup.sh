@@ -189,7 +189,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
 
   echo -n "Building biobambam ..."
   if [ -e $SETUP_DIR/biobambam.success ]; then
-    echo -n "previously installed ..."
+    echo -n " previously installed ..."
   else
     (
       set -e;
@@ -221,7 +221,7 @@ cd $INIT_DIR;
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
 echo -n "Building samtools ..."
 if [ -e $SETUP_DIR/samtools.success ]; then
-  echo "previously installed";
+  echo -n " previously installed ...";
 else
   cd $SETUP_DIR
   if( [ "x$SAMTOOLS" == "x" ] ); then
