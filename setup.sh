@@ -30,17 +30,14 @@ cd $INIT_DIR
 
 # make sure that build is self contained
 unset PERL5LIB;
+ARCHNAME=`perl -e 'use Config; print $Config{archname};'`;
+PERLROOT=$INST_PATH/lib/perl5
+PERLARCH=$PERLROOT/$ARCHNAME
+export PERL5LIB="$PERLROOT:$PERLARCH";
 
 #create a location to build dependencies
 SETUP_DIR=$INIT_DIR/install_tmp
 mkdir -p $SETUP_DIR
-
-# figure out the upgrade path
-#set -x
-COMPILE=`echo 'nothing' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
-if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
-  COMPILE=`perl -I $INST_PATH/lib/perl5 -MPCAP -e 'print PCAP->VERSION,"\n";' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
-fi
 
 # re-initialise log file
 echo > $INIT_DIR/setup.log;
@@ -58,7 +55,8 @@ echo > $INIT_DIR/setup.log;
     echo; echo;
 ) >>$INIT_DIR/setup.log 2>&1;
 
-perlmods=( "File::ShareDir::Install" )
+perlmods=( "Module::Build" "File::ShareDir" "File::ShareDir::Install" "Const::Fast" )
+
 for i in "${perlmods[@]}";
 do
   echo -n "Installing build prerequisite $i..."
@@ -75,6 +73,12 @@ do
     done_message "" "Failed during installation of $i.";
   fi
 done
+
+# figure out the upgrade path
+COMPILE=`echo 'nothing' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
+if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
+  COMPILE=`perl -I $INST_PATH/lib/perl5 -MPCAP -e 'print PCAP->VERSION,"\n";' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
+fi
 
 cd $SETUP_DIR;
 if [[ ",$COMPILE," == *,bwa,* ]] ; then
@@ -247,12 +251,6 @@ else
 fi
 
 export SAMTOOLS="$SETUP_DIR/samtools-0.1.19";
-
-# continuation of contained installation
-ARCHNAME=`perl -e 'use Config; print $Config{archname};'`;
-PERLROOT=$INST_PATH/lib/perl5
-PERLARCH=$PERLROOT/$ARCHNAME
-export PERL5LIB="$PERLROOT:$PERLARCH";
 
 #add bin path for PCAP install tests
 export PATH="$INST_PATH/bin:$PATH";
