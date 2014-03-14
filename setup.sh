@@ -7,6 +7,7 @@ done_message () {
         fi
     else
         echo " failed.  See setup.log file for error messages." $2
+        echo "    Please check INSTALL file for items that should be installed by a package manager"
         exit 1
     fi
 }
@@ -84,7 +85,7 @@ cd $SETUP_DIR;
 if [[ ",$COMPILE," == *,bwa,* ]] ; then
   echo -n "Building BWA ..."
   if [ -e $SETUP_DIR/bwa.success ]; then
-    echo "previously installed"
+    echo -n " previously installed ..."
   else
     (
       set -e;
@@ -112,7 +113,7 @@ fi
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
   echo -n "Building snappy ..."
   if [ -e $SETUP_DIR/snappy.success ]; then
-    echo "previously installed"
+    echo -n " previously installed ..."
   else
     (
       set -e;
@@ -137,7 +138,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
 
   echo -n "Building io_lib ..."
   if [ -e $SETUP_DIR/io_lib.success ]; then
-    echo "previously installed"
+    echo -n " previously installed ... "
   else
     (
     set -e;
@@ -162,7 +163,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
 
   echo -n "Building libmaus ..."
   if [ -e $SETUP_DIR/libmaus.success ]; then
-    echo "previously installed"
+    echo -n " previously installed ..."
   else
     (
       set -e;
@@ -188,7 +189,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
 
   echo -n "Building biobambam ..."
   if [ -e $SETUP_DIR/biobambam.success ]; then
-    echo "previously installed"
+    echo -n "previously installed ..."
   else
     (
       set -e;

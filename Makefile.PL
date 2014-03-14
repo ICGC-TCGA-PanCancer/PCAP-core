@@ -44,7 +44,8 @@ WriteMakefile(
                      'File::Which' => 0.05,
                      'List::Util' => 1.38,
                      'Proc::ProcessTable' => 0.50,
-                     'Data::UUID' => 0,
+                     'Data::UUID' => 1.219,
+                     'Test::Fatal' => 0.013,
                    }
 );
 
