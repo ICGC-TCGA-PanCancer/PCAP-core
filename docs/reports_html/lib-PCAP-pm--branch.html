@@ -20,7 +20,7 @@ http://www.pjcj.net
 </head>
 <body>
 
-<h1> Subroutine Coverage </h1>
+<h1> Branch Coverage </h1>
 <table>
 <tr>
 <th colspan="4">lib/PCAP.pm</th>
@@ -35,24 +35,12 @@ http://www.pjcj.net
 
 
 <tr>
-<td class="h">subroutine</td>
-<td>3</td>
+<td class="h">branch</td>
+<td>0</td>
 <td>4</td>
-<td class="c1" title="3 / 4">
+<td class="c0" title="0 / 4">
 
-<a href="lib-PCAP-pm--subroutine.html"> 75.0 </a>
-
-</td>
-</tr>
-
-
-<tr>
-<td class="h">pod</td>
-<td>1</td>
-<td>2</td>
-<td class="c0" title="1 / 2">
-
-<a href="lib-PCAP-pm--subroutine.html"> 50.0 </a>
+<a href="lib-PCAP-pm--branch.html">  0.0 </a>
 
 </td>
 </tr>
@@ -63,65 +51,35 @@ http://www.pjcj.net
 <table>
 <tr>
 <th> line </th>
-
-<th> count </th>
-
-
-<th> pod </th>
-
-<th> subroutine </th>
+<th> true </th>
+<th> false </th>
+<th> branch </th>
 </tr>
 
+<a name=""> </a>
 <tr>
 <td class="h">
-<a href="lib-PCAP-pm.html#23">23</a>
-</td>
-
-<td class="c3"> 8 </td>
-
-
-<td class=""> n/a </td>
-
-<td> BEGIN </td>
-</tr>
-
-<tr>
-<td class="h">
-<a href="lib-PCAP-pm.html#24">24</a>
-</td>
-
-<td class="c3"> 8 </td>
-
-
-<td class=""> n/a </td>
-
-<td> BEGIN </td>
-</tr>
-
-<tr>
-<td class="h">
-<a href="lib-PCAP-pm.html#42">42</a>
-</td>
-
-<td class="c3"> 1 </td>
-
-
-<td class="c3"> Yes </td>
-
-<td> license </td>
-</tr>
-
-<tr>
-<td class="h">
-<a href="lib-PCAP-pm.html#46">46</a>
+<a href="lib-PCAP-pm.html#47">47</a>
 </td>
 
 <td class="c0"> 0 </td>
 
+<td class="c0"> 0 </td>
 
-<td class="c0"> No </td>
+<td class="s"> <span class="keyword">unless</span>&nbsp;<span class="core">defined</span> <span class="symbol">$installed_version</span> </td>
+</tr>
 
-<td> upgrade_path </td>
+<a name=""> </a>
+<tr>
+<td class="h">
+<a href="lib-PCAP-pm.html#49">49</a>
+</td>
+
+<td class="c0"> 0 </td>
+
+<td class="c0"> 0 </td>
+
+<td class="s"> <span class="keyword">unless</span>&nbsp;<span class="word">exists</span> <span class="symbol">$UPGRADE_PATH</span><span class="structure">{</span><span class="symbol">$installed_version</span><span class="structure">}</span> </td>
 </tr>
 
 </table>

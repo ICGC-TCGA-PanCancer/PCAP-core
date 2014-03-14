@@ -36,11 +36,11 @@ http://www.pjcj.net
 
 <tr>
 <td class="h">branch</td>
-<td></td>
-<td></td>
-<td title="">
+<td>0</td>
+<td>4</td>
+<td class="c0" title="0 / 4">
 
-n/a
+<a href="lib-PCAP-pm--branch.html">  0.0 </a>
 
 </td>
 </tr>
@@ -49,10 +49,10 @@ n/a
 <tr>
 <td class="h">subroutine</td>
 <td>3</td>
-<td>3</td>
-<td class="c3" title="3 / 3">
+<td>4</td>
+<td class="c1" title="3 / 4">
 
-<a href="lib-PCAP-pm--subroutine.html"> 100.0 </a>
+<a href="lib-PCAP-pm--subroutine.html"> 75.0 </a>
 
 </td>
 </tr>
@@ -61,10 +61,10 @@ n/a
 <tr>
 <td class="h">pod</td>
 <td>1</td>
-<td>1</td>
-<td class="c3" title="1 / 1">
+<td>2</td>
+<td class="c0" title="1 / 2">
 
-<a href="lib-PCAP-pm--subroutine.html"> 100.0 </a>
+<a href="lib-PCAP-pm--subroutine.html"> 50.0 </a>
 
 </td>
 </tr>
@@ -73,10 +73,10 @@ n/a
 <tr>
 <td class="h">total</td>
 <td>4</td>
-<td>4</td>
-<td class="c3" title="4 / 4">
+<td>10</td>
+<td class="c0" title="4 / 10">
 
-100.0
+40.0
 
 </td>
 </tr>
@@ -770,7 +770,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">our</span>&nbsp;<span class="symbol">$VERSION</span> <span class="operator">=</span> <span class="single">'0.1.2'</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">our</span>&nbsp;<span class="symbol">$VERSION</span> <span class="operator">=</span> <span class="single">'0.2.0'</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -1004,7 +1004,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">license</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="word">const</span>&nbsp;<span class="word">my</span> <span class="symbol">$DEFAULT_PATH</span> <span class="operator">=&gt;</span> <span class="single">'biobambam,samtools,bwa'</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -1018,19 +1018,19 @@ n/a
 
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-pm--subroutine.html#36-1"> 
-1
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-pm--subroutine.html#36-1"> 
-1
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$LICENSE</span><span class="operator">,</span> <span class="symbol">$VERSION</span><span class="structure">;</span> </td>
+<td class="s"> <span class="word">const</span>&nbsp;<span class="word">my</span> <span class="symbol">%UPGRADE_PATH</span> <span class="operator">=&gt;</span> <span class="structure">(</span> <span class="single">'0.1.0'</span> <span class="operator">=&gt;</span> <span class="single">'biobambam,samtools,bwa'</span><span class="operator">,</span> </td>
 </tr>
 
 <tr>
@@ -1056,7 +1056,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="single">'0.1.1'</span> <span class="operator">=&gt;</span> <span class="single">'biobambam,bwa'</span><span class="operator">,</span> </td>
 </tr>
 
 <tr>
@@ -1082,7 +1082,7 @@ n/a
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="single">'0.1.2'</span> <span class="operator">=&gt;</span> <span class="single">''</span><span class="operator">,</span> </td>
 </tr>
 
 <tr>
@@ -1108,7 +1108,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="number">1</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -1160,7 +1160,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="separator">__END__</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">license</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -1174,19 +1174,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-pm--subroutine.html#42-1"> 
+1
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-pm--subroutine.html#42-1"> 
+1
+ </a> 
 </td>
 
-<td class="s"> <span class="end"></span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="word">sprintf</span> <span class="symbol">$LICENSE</span><span class="operator">,</span> <span class="symbol">$VERSION</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -1212,7 +1212,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=head1 NAME</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -1238,7 +1238,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -1264,7 +1264,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">PCAP - Base class to house version and generic functions.</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">upgrade_path</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -1278,19 +1278,19 @@ n/a
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-pm--subroutine.html#46-1"> 
+0
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-pm--subroutine.html#46-1"> 
+0
+ </a> 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$installed_version</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -1298,10 +1298,10 @@ n/a
 <a name="47">47</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-pm--branch.html#47-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -1316,7 +1316,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=head2 Methods</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$DEFAULT_PATH</span> <span class="word">if</span><span class="structure">(</span><span class="operator">!</span><span class="core">defined</span> <span class="symbol">$installed_version</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -1342,7 +1342,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">chomp</span> <span class="symbol">$installed_version</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -1350,10 +1350,10 @@ n/a
 <a name="49">49</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c0" >
+ <a href="lib-PCAP-pm--branch.html#49-1"> 
+  0
+ </a> 
 </td>
 
 <td >
@@ -1368,7 +1368,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=over 4</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$DEFAULT_PATH</span> <span class="word">if</span><span class="structure">(</span><span class="operator">!</span><span class="word">exists</span> <span class="symbol">$UPGRADE_PATH</span><span class="structure">{</span><span class="symbol">$installed_version</span><span class="structure">});</span> </td>
 </tr>
 
 <tr>
@@ -1394,7 +1394,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$UPGRADE_PATH</span><span class="structure">{</span><span class="symbol">$installed_version</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -1420,7 +1420,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=item license</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -1446,7 +1446,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -1472,7 +1472,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">  my $brief_license = PCAP::licence;</span> </td>
+<td class="s"> <span class="number">1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -1498,7 +1498,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -1524,7 +1524,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">Output the brief license text for use in help messages.</span> </td>
+<td class="s"> <span class="separator">__END__</span> </td>
 </tr>
 
 <tr>
@@ -1550,7 +1550,7 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="end"></span> </td>
 </tr>
 
 <tr>
@@ -1576,12 +1576,376 @@ n/a
 
 </td>
 
-<td class="s"> <span class="pod">=back</span> </td>
+<td class="s"> <span class="pod">=head1 NAME</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
 <a name="58">58</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="59">59</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">PCAP - Base class to house version and generic functions.</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="60">60</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="61">61</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=head2 Methods</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="62">62</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="63">63</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=over 4</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="64">64</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="65">65</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=item license</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="66">66</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="67">67</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">  my $brief_license = PCAP::licence;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="68">68</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="69">69</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">Output the brief license text for use in help messages.</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="70">70</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="71">71</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=back</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="72">72</a>
 </td>
 
 <td >
