@@ -33,7 +33,7 @@ use Try::Tiny;
 use File::Basename;
 
 use Math::Gradient;
-use List::Util qw(sum);
+use List::Util qw(sum first);
 use Bio::DB::Sam;
 use GD::Image;
 
@@ -48,8 +48,11 @@ const my $SECOND     => 128;
 const my $NON_PRI    => 256;
 const my $V_FAIL     => 512;
 const my $DUPLICATE  => 1024;
+const my $SUPPLIMENT => 2048;
 
 const my $INSERT_SMOOTH => 15;
+
+const my @PAIRED_PROPERTIES => qw(proper);
 
 1;
 
@@ -107,6 +110,7 @@ sub _process_reads {
 
     next if($flag & $NON_PRI); # skip secondary hits so no double counts
     next if($flag & $V_FAIL); # skip vendor fail as generally aren't considered
+    next if($flag & $SUPPLIMENT); # skip supplimentary
 
     my $read = ($flag & $FIRST) ? 1 : 2;
 
@@ -127,8 +131,6 @@ sub _process_reads {
 
     if($flag & $UNMAPPED) {
       $groups->{$rg}->{'unmap_'.$read}++;
-    } elsif($flag & $PROPER) { # can't be $PROPER if $UNMAPPED
-      $groups->{$rg}->{'proper_'.$read}++;
     }
 
     ## GC count: Total gc bases for a read group we then need to divide by read length and read count for meaning full stats
@@ -154,7 +156,10 @@ sub _process_reads {
     # Insert size can only be calculated based on reads that are on same chr
     # so it is more sensible to generate the distribution based on $PROPER-pairs.
     # only assess read 1 as size is a factor of the pair
-    $groups->{$rg}->{'inserts'}->{abs $a->isize}++ if(($flag & ($PROPER|$FIRST)) == ($PROPER|$FIRST));
+    if(($flag & ($PROPER|$FIRST)) == ($PROPER|$FIRST)) {
+      $groups->{$rg}->{'inserts'}->{abs $a->isize}++;
+      $groups->{$rg}->{'proper'}++;
+    }
     $count++;
   }
 
@@ -200,11 +205,7 @@ sub read_group_info{
 
 sub read_length{
   my ($self, $rg, $read) = @_;
-  if($read eq '1'){
-    return $self->{_groups}->{$rg}->{'length_1'};
-  }elsif($read eq '2'){
-    return$self->{_groups}->{$rg}->{'length_2'};
-  }
+  return $self->{_groups}->{$rg}->{"length_$read"};
 }
 
 sub calc_frac_properly_paired_rg{
@@ -239,18 +240,21 @@ sub calc_frac_duplicate_reads{
 
 sub _calc_frac_property_rg{
   my ($self, $prop, $rg) = @_;
-  if($rg && exists $self->{_groups}->{$rg}){
-
-    my $pp = ($self->{_groups}->{$rg}->{$prop.'_1'} || 0) + ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
-    my $tt = ($self->{_groups}->{$rg}->{'count_1'} || 0) + ($self->{_groups}->{$rg}->{'count_2'} ||0);
-
-    if($tt){
-      return $pp / $tt;
-    }else{
-      return 0;
-    }
+  my ($pp, $tt);
+  my $res = 0;
+  if(first {$_ eq $prop} @PAIRED_PROPERTIES) {
+    $pp = ($self->{_groups}->{$rg}->{$prop} || 0);
+    $tt = ($self->{_groups}->{$rg}->{'count_1'} || 0);
   }
-  return undef;
+  else {
+    $pp = ($self->{_groups}->{$rg}->{$prop.'_1'} || 0) + ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
+    $tt = ($self->{_groups}->{$rg}->{'count_1'} || 0) + ($self->{_groups}->{$rg}->{'count_2'} ||0);
+  }
+
+  if($tt){
+    $res = $pp / $tt;
+  }
+  return $res;
 }
 
 sub _calc_frac_property{
@@ -258,16 +262,24 @@ sub _calc_frac_property{
 
   my $pp = 0;
   my $tt = 0;
+  my $res = 0;
 
-  foreach my $rg (keys %{$self->{_groups}}){
-    $pp += ($self->{_groups}->{$rg}->{$prop.'_1'} || 0) + ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
-    $tt += ($self->{_groups}->{$rg}->{'count_1'} || 0) + ($self->{_groups}->{$rg}->{'count_2'} || 0);
+  if(first {$_ eq $prop} @PAIRED_PROPERTIES) {
+    foreach my $rg (keys %{$self->{_groups}}){
+      $pp += ($self->{_groups}->{$rg}->{$prop} || 0);
+      $tt += ($self->{_groups}->{$rg}->{'count_1'} || 0);
+    }
+  }
+  else {
+    foreach my $rg (keys %{$self->{_groups}}){
+      $pp += ($self->{_groups}->{$rg}->{$prop.'_1'} || 0) + ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
+      $tt += ($self->{_groups}->{$rg}->{'count_1'} || 0) + ($self->{_groups}->{$rg}->{'count_2'} || 0);
+    }
   }
   if($tt){
-    return $pp / $tt;
-  }else{
-    return 0;
+    $res = $pp / $tt;
   }
+  return $res
 }
 
 sub count_total_reads_rg{
@@ -281,13 +293,17 @@ sub count_total_reads{
 }
 
 sub count_properly_paired_rg{
-  my ($self, $rg, $read) = @_;
-  return $self->_counts_rg('proper',$rg, $read);
+  my ($self, $rg) = @_;
+  return $self->{_groups}->{$rg}->{'proper'} || 0;
 }
 
 sub count_properly_paired{
-  my ($self, $read) = @_;
-  return $self->_counts('proper', $read);
+  my $self = shift;
+  my $ret = 0;
+  foreach my $rg(keys %{$self->{_groups}}){
+    $ret += $self->count_properly_paired_rg($rg);
+  }
+  return $ret;
 }
 
 sub count_unmapped_rg{
@@ -337,37 +353,23 @@ sub count_gc_rg{
 
 sub _counts_rg{
   my ($self, $prop, $rg, $read) = @_;
-  if($rg && exists $self->{_groups}->{$rg}){
-    my $ret = 0;
-    if($read){
-      if($read eq '1'){
-        $ret = ($self->{_groups}->{$rg}->{$prop.'_1'} || 0);
-      }elsif($read eq '2'){
-        $ret = ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
-      }
-    }else{
-      $ret += ($self->{_groups}->{$rg}->{$prop.'_1'} || 0);
-      $ret += ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
-    }
-    return $ret;
+  croak "\$rg should be defined" unless(defined $rg);
+  croak "\$rg doesn't exist" unless(exists $self->{_groups}->{$rg});
+  my $ret;
+  if(defined $read){
+    $ret = ($self->{_groups}->{$rg}->{$prop."_$read"} || 0);
+  }else{
+    $ret = ($self->{_groups}->{$rg}->{$prop.'_1'} || 0) + ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
   }
-  return undef;
+  return $ret;
 }
 
 sub _counts{
   my ($self, $prop, $read) = @_;
   my $ret = 0;
-  my $ext = q{};
-
-  if($read eq '1'){
-    $ext = '_1';
-  }elsif($read eq '2'){
-    $ext = '_2';
-  }
-
   foreach my $rg(keys %{$self->{_groups}}){
-    if($ext){
-      $ret += ($self->{_groups}->{$rg}->{$prop.$ext} || 0);
+    if(defined $read){
+      $ret += ($self->{_groups}->{$rg}->{$prop."_$read"} || 0);
     }else{
       $ret += ($self->{_groups}->{$rg}->{$prop.'_1'} || 0);
       $ret += ($self->{_groups}->{$rg}->{$prop.'_2'} || 0);
@@ -378,18 +380,18 @@ sub _counts{
 
 sub mean_gc_rg{
   my ($self, $rg, $read) = @_;
+  croak "\$rg should be defined" unless(defined $rg);
+  croak "\$rg doesn't exist" unless(exists $self->{_groups}->{$rg});
 
   my $ext = q{};
+  $ext = "_$read" if(defined $read);
+  my $prop = "gc$ext";
 
-  if($read eq '1'){
-    $ext = '_1';
-  }elsif($read eq '2'){
-    $ext = '_2';
-  }
+  croak "Property '$prop' doesn't exist for RG '$rg'" unless(exists $self->{_groups}->{$rg}->{$prop});
 
-  if($rg && exists $self->{_groups}->{$rg}->{'gc'.$ext}){
+  if(exists $self->{_groups}->{$rg}->{$prop}){
 
-    my $gc = $self->{_groups}->{$rg}->{'gc'.$ext} || 0;
+    my $gc = $self->{_groups}->{$rg}->{$prop} || 0;
     my $read_length = $self->{_groups}->{$rg}->{'length'.$ext} || 0;
     my $read_count = $self->{_groups}->{$rg}->{'count'.$ext} || 0;
 
@@ -558,20 +560,19 @@ sub properly_mapped_ratio{
   my $pp = 0;
   my $um = 0;
   my $tt = 0;
+  my $res = 0;
 
   foreach my $rg (keys %{$self->{_groups}}){
-    $pp += ($self->{_groups}->{$rg}->{'proper_1'} || 0) + ($self->{_groups}->{$rg}->{'proper_2'} || 0);
-    $um += ($self->{_groups}->{$rg}->{'unmap_1'} || 0) + ($self->{_groups}->{$rg}->{'unmap_2'} || 0);
-    $tt += ($self->{_groups}->{$rg}->{'count_1'} || 0) + ($self->{_groups}->{$rg}->{'count_2'} || 0);
+    $pp += ($self->{_groups}->{$rg}->{'proper'} || 0);
+    $tt += ($self->{_groups}->{$rg}->{'count_1'} || 0);
   }
 
-  croak("Total read count does not match combined unmapped/properly paired count. total: $tt, combined:".($pp+$um)) if $tt != ($pp+$um);
+#  croak("Total read count does not match combined unmapped/properly paired count. total: $tt, combined:".($pp+$um)) if $tt != ($pp+$um);
 
   if($tt){
-    return $pp / $um;
-  }else{
-    return 0;
+    $res = $pp / $tt;
   }
+  return $res;
 }
 
 
@@ -734,11 +735,8 @@ sub bas{
       '#_mapped_reads_r1',
       '#_mapped_reads_r2',
       '#_mapped_reads_properly_paired',
-      '#_mapped_reads_properly_paired_r1',
-      '#_mapped_reads_properly_paired_r2',
       '#_gc_bases_r1',
       '#_gc_bases_r2',
-
 #      '%_of_mismatched_bases',
 #      'average_quality_of_mapped_bases',
       'mean_insert_size',
@@ -760,14 +758,6 @@ sub bas{
       my ($platform_unit) = $rg_info =~ /\tPU:([^\t]+)/;
       my ($library)  = $rg_info =~ /\tLB:([^\t]+)/;
 
-      my $mapped_bases = $self->count_total_mapped_bases_rg($rg);
-      my $mapped_bases_r1 = $self->count_total_mapped_bases_rg($rg,1);
-      my $mapped_bases_r2 = $self->count_total_mapped_bases_rg($rg,2);
-
-      my $divergent_bases = $self->count_total_divergent_bases_rg($rg);
-      my $divergent_bases_r1 = $self->count_total_divergent_bases_rg($rg,1);
-      my $divergent_bases_r2 = $self->count_total_divergent_bases_rg($rg,2);
-
       my $unmapped_reads = $self->count_unmapped_rg($rg);
       my $unmapped_reads_r1 = $self->count_unmapped_rg($rg,1);
       my $unmapped_reads_r2 = $self->count_unmapped_rg($rg,2);
@@ -777,20 +767,36 @@ sub bas{
       my $total_reads_r2 = $self->count_total_reads_rg($rg,2);
 
       my $mapped_reads = $total_reads - $unmapped_reads;
-      my $mapped_reads_r1 = $total_reads_r1 - $unmapped_reads_r1;
-      my $mapped_reads_r2 = $total_reads_r2 - $unmapped_reads_r2;
-
-      my $proper_pairs = $self->count_properly_paired_rg($rg);
-      my $proper_pairs_r1 = $self->count_properly_paired_rg($rg,1);
-      my $proper_pairs_r2 = $self->count_properly_paired_rg($rg,2);
 
       my $gc_rg1 = $self->count_gc_rg($rg,1);
       my $gc_rg2 = $self->count_gc_rg($rg,2);
 
-      my $mean_insert_size = sprintf('%.3f',$self->mean_insert_size_rg($rg));
-      my $insert_size_sd = sprintf('%.3f',$self->cal_insert_size_sd_rg($rg));
-      my $median_insert_size = sprintf('%.3f',$self->med_insert_size_rg($rg));
-      my $dup_reads = $self->count_duplicate_reads_rg($rg);
+      my ($mapped_reads_r1, $mapped_reads_r2, $proper_pairs) = (0,0,0);
+      my ($mapped_bases, $mapped_bases_r1, $mapped_bases_r2) = (0,0,0);
+      my ($divergent_bases, $divergent_bases_r1, $divergent_bases_r2) = (0,0,0);
+      my ($mean_insert_size, $insert_size_sd, $median_insert_size, $dup_reads) = qw(. . . .);
+
+      if($mapped_reads > 0) {
+        # only need to count from read 1 for pairs.
+        $proper_pairs = $self->count_properly_paired_rg($rg);
+
+        $mapped_reads_r1 = $total_reads_r1 - $unmapped_reads_r1;
+        $mapped_reads_r2 = $total_reads_r2 - $unmapped_reads_r2;
+
+        $mapped_bases = $self->count_total_mapped_bases_rg($rg);
+        $mapped_bases_r1 = $self->count_total_mapped_bases_rg($rg,1);
+        $mapped_bases_r2 = $self->count_total_mapped_bases_rg($rg,2);
+
+        $divergent_bases = $self->count_total_divergent_bases_rg($rg);
+        if($divergent_bases > 0) {
+          $divergent_bases_r1 = $self->count_total_divergent_bases_rg($rg,1);
+          $divergent_bases_r2 = $self->count_total_divergent_bases_rg($rg,2);
+        }
+        $mean_insert_size = sprintf('%.3f',$self->mean_insert_size_rg($rg));
+        $insert_size_sd = sprintf('%.3f',$self->cal_insert_size_sd_rg($rg));
+        $median_insert_size = sprintf('%.3f',$self->med_insert_size_rg($rg));
+        $dup_reads = $self->count_duplicate_reads_rg($rg);
+      }
 
       my $read_length_1 = $self->read_length($rg,1);
       my $read_length_2 = $self->read_length($rg,2);
@@ -806,6 +812,7 @@ sub bas{
         $rg,
         $read_length_1,
         $read_length_2,
+#      '#_total_bases',
         $mapped_bases,
         $mapped_bases_r1,
         $mapped_bases_r2,
@@ -819,8 +826,6 @@ sub bas{
         $mapped_reads_r1,
         $mapped_reads_r2,
         $proper_pairs,
-        $proper_pairs_r1,
-        $proper_pairs_r2,
         $gc_rg1,
         $gc_rg2,
 #      '%_of_mismatched_bases',
@@ -836,6 +841,6 @@ sub bas{
 
   }catch{
     croak("Problem writing output: $_");
-  }
+  };
 }
 
