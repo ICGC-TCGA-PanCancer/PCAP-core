@@ -59,13 +59,13 @@ sub setup {
               't|type=s' => \$opts{'type'},
   ) or pod2usage(2);
 
-  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'h'});
-  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'m'});
+  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
+  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
 
   # then check for no args:
   my $defined;
   for(keys %opts) { $defined++ if(defined $opts{$_}); }
-  pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 2,  -output => \*STDERR) unless($defined);
+  pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined);
 
   pod2usage(-msg => qq{\nERROR: 'outdir' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'outdir'});
   pod2usage(-msg => qq{\nERROR: 'study' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'study'});
@@ -78,7 +78,7 @@ sub setup {
     PCAP::SRA::validate_seq_type($opts{'type'});
   }
 
-  pod2usage(-msg  => "\nERROR: Please provide a list of inputs files after any options\n", -verbose => 2,  -output => \*STDERR) unless(scalar @ARGV > 0);
+  pod2usage(-msg  => "\nERROR: Please provide a list of inputs files after any options\n", -verbose => 1,  -output => \*STDERR) unless(scalar @ARGV > 0);
   $opts{'raw_files'} = \@ARGV;
   return \%opts;
 }
