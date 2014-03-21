@@ -214,7 +214,7 @@ subtest 'Object funcions' => sub {
 
   subtest '_count__rg' => sub {
     my $test_obj = _create_test_object();
-warn Dumper($test_obj);
+
     is($test_obj->count_total_reads_rg($rg1,1),7,'count_total_reads_rg rg1 read1');
     is($test_obj->count_total_reads_rg($rg1,2),3,'count_total_reads_rg rg1 read2');
     is($test_obj->count_total_reads_rg($rg2,1),3,'count_total_reads_rg rg2 read1');
