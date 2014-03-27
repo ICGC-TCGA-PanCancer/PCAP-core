@@ -113,8 +113,7 @@ subtest 'Object funcions' => sub {
 
   subtest 'calc_frac__rg' => sub {
     my $test_obj = _create_test_object();
-
-    is(sprintf('%.4f',$test_obj->calc_frac_properly_paired_rg($rg1)),'0.8000','calc_frac_properly_paired_rg rg1');
+    is(sprintf('%.4f',$test_obj->calc_frac_properly_paired_rg($rg1)),'0.8571','calc_frac_properly_paired_rg rg1');
     is(sprintf('%.4f',$test_obj->calc_frac_properly_paired_rg($rg2)),'0.3333','calc_frac_properly_paired_rg rg2');
     is(sprintf('%.4f',$test_obj->calc_frac_unmapped_rg($rg1)),'0.2000','calc_frac_unmapped_rg rg1');
     is(sprintf('%.4f',$test_obj->calc_frac_unmapped_rg($rg2)),'0.6667','calc_frac_unmapped_rg rg2');
@@ -125,7 +124,7 @@ subtest 'Object funcions' => sub {
   subtest 'calc_frac_' => sub {
     my $test_obj = _create_test_object();
 
-    is(sprintf('%.4f',$test_obj->calc_frac_properly_paired()),'0.6250','calc_frac_properly_paired');
+    is(sprintf('%.4f',$test_obj->calc_frac_properly_paired()),'0.7000','calc_frac_properly_paired');
     is(sprintf('%.4f',$test_obj->calc_frac_unmapped()),'0.3750','calc_frac_unmapped');
     is(sprintf('%.4f',$test_obj->calc_frac_duplicate_reads()),'0.2500','calc_frac_duplicate_reads');
   };
@@ -175,8 +174,7 @@ subtest 'Object funcions' => sub {
 
   subtest 'properly_mapped_ratio' => sub {
     my $test_obj = _create_test_object();
-
-    is(sprintf('%.4f',$test_obj->properly_mapped_ratio()),'1.6667','properly_mapped_ratio');
+    is(sprintf('%.4f',$test_obj->properly_mapped_ratio()),'0.7000','properly_mapped_ratio');
   };
 
   subtest 'read_length' => sub{
@@ -222,10 +220,8 @@ subtest 'Object funcions' => sub {
     is($test_obj->count_total_reads_rg($rg2,1),3,'count_total_reads_rg rg2 read1');
     is($test_obj->count_total_reads_rg($rg2,2),3,'count_total_reads_rg rg2 read2');
 
-    is($test_obj->count_properly_paired_rg($rg1,1),6,'count_properly_paired_rg rg1 read1');
-    is($test_obj->count_properly_paired_rg($rg1,2),2,'count_properly_paired_rg rg1 read2');
-    is($test_obj->count_properly_paired_rg($rg2,1),1,'count_properly_paired_rg rg2 read1');
-    is($test_obj->count_properly_paired_rg($rg2,2),1,'count_properly_paired_rg rg2 read2');
+    is($test_obj->count_properly_paired_rg($rg1),6,'count_properly_paired_rg rg1');
+    is($test_obj->count_properly_paired_rg($rg2),1,'count_properly_paired_rg rg2');
 
     is($test_obj->count_unmapped_rg($rg1,1),1,'count_unmapped_rg rg1 read1');
     is($test_obj->count_unmapped_rg($rg1,2),1,'count_unmapped_rg rg1 read2');
@@ -255,8 +251,7 @@ subtest 'Object funcions' => sub {
     is($test_obj->count_total_reads(1),10,'count_total_reads read1');
     is($test_obj->count_total_reads(2),6,'count_total_reads read2');
 
-    is($test_obj->count_properly_paired(1),7,'count_properly_paired read1');
-    is($test_obj->count_properly_paired(2),3,'count_properly_paired read2');
+    is($test_obj->count_properly_paired(),7,'count_properly_paired');
 
     is($test_obj->count_unmapped(1),3,'count_unmapped read1');
     is($test_obj->count_unmapped(2),3,'count_unmapped read2');
@@ -292,19 +287,21 @@ subtest 'integration_test' => sub {
 
   eval{
     $tmp = File::Temp->new(TEMPLATE => '/tmp/Bam_StatsXXXXXX', SUFFIX => '.bas.tmp');
+    my $fname = $tmp->filename;
     $tmp->unlink_on_destroy( 1 );
     $test_obj->bas($tmp);
-    $tmp->seek( 0, 0 );
+    close $tmp;
+
+    open my $open_tmp, '<', $fname;
+    my @test_string = <$open_tmp>;
+    close($open_tmp);
 
 
-    open (my $ref_fh, "<", $test_bas_file) or fail "Could not open $test_bas_file for reading: $!";
-
-    my @test_string = <$tmp>;
+    open (my $ref_fh, '<', $test_bas_file) or fail "Could not open $test_bas_file for reading: $!";
     my @ref_string = <$ref_fh>;
     close($ref_fh);
-    close($tmp);
 
-    is_deeply(\@test_string,\@ref_string,"integration_test compare file contents of: $tmp");
+    is_deeply(\@test_string,\@ref_string, "integration_test compare file contents of: $tmp");
 
   };if($@){
     fail($@);

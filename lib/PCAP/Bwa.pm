@@ -59,6 +59,7 @@ sub bwa_mem {
   my $index = 0;
   for my $input(@{$input_meta}) {
     $index++;
+    next if(exists $options->{'index'} && $index != $options->{'index'});
     # uncoverable branch true
     # uncoverable branch false
     next if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);

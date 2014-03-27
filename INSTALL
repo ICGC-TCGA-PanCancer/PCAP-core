@@ -12,6 +12,13 @@ OS:
   This distribution will only work on *NIX type systems at present.
 
 Other Software
+  For installation to proceed you require the following packages:
+
+    zlib1g-dev
+    g++
+    dh-autoreconf
+    libncurses-dev
+
   setup.sh will install
     biobambam
     bwa (v0.7.7)

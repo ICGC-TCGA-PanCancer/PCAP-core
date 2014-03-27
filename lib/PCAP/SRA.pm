@@ -207,10 +207,6 @@ sub group_bams {
   my %grouped;
   for my $bam_ob(@{$bam_obs}) {
     my $sm = $bam_ob->{'SM'};
-    if($sm =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/) {
-      $sm = join q{-}, ($1,$2,$3,$4,$5);
-      $bam_ob->{'SM'} = $sm;
-    }
     my $lb = $bam_ob->{'LB'};
     my ($run) = $bam_ob->{'PU'} =~ m/^[[:alpha:]]+:([^_]+)_[^#]+/;
     $bam_ob->{'run'} = sprintf '%s:%s', $bam_ob->{'CN'}, $run;
@@ -240,6 +236,13 @@ sub parse_input {
     my %bam_detail;
     for my $tag(@REQUIRED_HEADER_TAGS) {
       $bam_detail{$tag} = $bam->single_rg_value($tag);
+      if($tag eq 'SM') {
+        my $sm = lc $bam_detail{$tag};
+        if($sm =~ /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/) {
+          $sm = join q{-}, ($1,$2,$3,$4,$5);
+        }
+        $bam_detail{$tag} = $sm;
+      }
     }
     $bam_detail{'file'} = $bam->{'bam'};
     $bam_detail{'md5'} = $bam->{'md5'};
@@ -317,7 +320,7 @@ sub analysis_xml {
       </REFERENCE_ALIGNMENT>
     </ANALYSIS_TYPE>
     <TARGETS>
-      <TARGET refcenter="TCGA" refname="%s" sra_object_type="SAMPLE"/>
+      <TARGET refcenter="OICR" refname="%s" sra_object_type="SAMPLE"/>
     </TARGETS>
     <DATA_BLOCK>
       <FILES>

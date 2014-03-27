@@ -17,7 +17,7 @@ my $lib_path = "$Bin/../lib";
 
 # Add modules here that cannot be instantiated (should be extended and have no 'new')
 # or need a set of inputs - these should be tested in own test script
-use constant MODULE_SKIP => qw(PCAP::Threaded PCAP::Bwa::Meta);
+use constant MODULE_SKIP => qw(PCAP::Threaded PCAP::Bwa::Meta PCAP::Bam::Stats);
 
 
 my $init_cwd = getcwd;
