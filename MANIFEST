@@ -1,3 +1,4 @@
+bin/bam_stats.pl
 bin/bam_to_sra_sub.pl
 bin/bwa_aln.pl
 bin/bwa_mem.pl
@@ -16,6 +17,7 @@ docs/pod_html/_whtgrng.css
 docs/pod_html/_whtnavk.css
 docs/pod_html/_whtprpk.css
 docs/pod_html/_whtpurk.css
+docs/pod_html/bam_stats.html
 docs/pod_html/bam_to_sra_sub.html
 docs/pod_html/bwa_aln.html
 docs/pod_html/bwa_mem.html
@@ -36,6 +38,9 @@ docs/reports_html/index.html
 docs/reports_html/lib-PCAP-Bam-pm--branch.html
 docs/reports_html/lib-PCAP-Bam-pm--subroutine.html
 docs/reports_html/lib-PCAP-Bam-pm.html
+docs/reports_html/lib-PCAP-Bam-Stats-pm--branch.html
+docs/reports_html/lib-PCAP-Bam-Stats-pm--subroutine.html
+docs/reports_html/lib-PCAP-Bam-Stats-pm.html
 docs/reports_html/lib-PCAP-Bwa-Meta-pm--branch.html
 docs/reports_html/lib-PCAP-Bwa-Meta-pm--subroutine.html
 docs/reports_html/lib-PCAP-Bwa-Meta-pm.html
@@ -59,6 +64,7 @@ docs/reports_text/coverage.txt
 INSTALL
 lib/PCAP.pm
 lib/PCAP/Bam.pm
+lib/PCAP/Bam/Stats.pm
 lib/PCAP/Bwa.pm
 lib/PCAP/Bwa/Meta.pm
 lib/PCAP/Cli.pm
@@ -87,6 +93,7 @@ t/2_pl_compile.t
 t/3_external_progs.t
 t/pcap.t
 t/pcapBam.t
+t/pcapBamStats.t
 t/pcapBwa.t
 t/pcapBwaMeta.t
 t/pcapCli.t
@@ -117,4 +124,6 @@ testData/no_readgroups.bam
 testData/no_readgroups.sam
 testData/not_really_a.bam
 testData/paired.bam
+testData/Stats.bam
+testData/Stats.bam.bas
 testData/unpaired.bam
