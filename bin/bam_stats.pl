@@ -175,8 +175,6 @@ The output consists of the following columns:
       '#_mapped_reads_r1' = the total number of unmapped read 1s.
       '#_mapped_reads_r2' = the total number of unmapped read 2s.
       '#_mapped_reads_properly_paired' = the total number of properly paired reads.
-      '#_mapped_reads_properly_paired_r1' = the total number of properly paired read 1s.
-      '#_mapped_reads_properly_paired_r2' = the total number of properly paired read 2s.
       '#_gc_bases_r1' = the total number of G/C bases in read 1s.
       '#_gc_bases_r2' = the total number of G/C bases in read 2s.
       'mean_insert_size' = the mean insert size.
