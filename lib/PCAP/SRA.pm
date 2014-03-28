@@ -98,7 +98,6 @@ sub generate_sample_SRA {
       }
       for my $lib_id(keys %{$grouped->{$seq_type}->{$sample}}) {
         for my $bam_ob(@{$grouped->{$seq_type}->{$sample}->{$lib_id}}) {
-          info_file_data($bam_ob);
           $bam_ob->{'info'}->{'total_lanes'} = $total_bams;
           validate_info($cv_lookups, $bam_ob);
 
@@ -231,6 +230,7 @@ sub parse_input {
   my @bam_obs;
   for my $file(@{$files}) {
     my $bam = PCAP::Bam->new($file);
+    info_file_data($bam);
     $bam->check_paired;
     $bam->read_group_info(\@REQUIRED_HEADER_TAGS);
     my %bam_detail;
@@ -247,6 +247,13 @@ sub parse_input {
     $bam_detail{'file'} = $bam->{'bam'};
     $bam_detail{'md5'} = $bam->{'md5'};
     $bam_detail{'comments'} = $bam->comments;
+
+    if(exists $bam->{'info'}) {
+      for my $info_key(keys %{$bam->{'info'}}) {
+        $bam_detail{'info'}{$info_key} = $bam->{'info'}->{$info_key};
+      }
+    }
+
     push @bam_obs, \%bam_detail
   }
   return \@bam_obs;
@@ -441,14 +448,15 @@ SAMPXML
 
 sub info_file_data {
   my ($bam_ob) = @_;
-  my $info_file = $bam_ob->{'file'}.'.info';
+  my $info_file = $bam_ob->{'bam'}.'.info';
   if(-e $info_file) {
     open my $IN, '<', $info_file;
     while (my $line = <$IN>) {
       chomp $line;
       next if($line eq q{});
+      die "Info line incorrect format, expecting key:* got:\n\t$line\n" unless($line =~ m/^([^:]+):(.*)$/);
       die "$info_file has more that one entry for $1" if(exists $bam_ob->{'info'}->{$1});
-      $bam_ob->{'info'}->{$1} = $2 if($line =~ m/^([^:]+):(.*)$/);
+      $bam_ob->{'info'}->{$1} = $2;
     }
   }
   # also check the bam header
