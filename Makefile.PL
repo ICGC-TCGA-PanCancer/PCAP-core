@@ -48,6 +48,8 @@ WriteMakefile(
                      'Test::Fatal' => 0.013,
                      'GD::Image' => 0,
                      'Math::Gradient' => 0,
+                     'Devel::Cover' => 1.09,
+                     'Pod::Coverage' => 0.23,
                    }
 );
 
