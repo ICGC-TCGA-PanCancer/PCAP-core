@@ -7,6 +7,16 @@ SOURCE_LIBMAUS="https://github.com/gt1/libmaus/archive/0.0.108-release-201403190
 SOURCE_BIOBAMBAM="https://github.com/gt1/biobambam/archive/0.0.129-release-20140319092922.tar.gz"
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.19.tar.gz"
 
+
+CPU=`grep -c ^processor /proc/cpuinfo`
+if [ $? == 0 ]; then
+  if [ $CPU > 6 ]; then
+    CPU=6
+  fi
+else
+  CPU=1
+fi
+
 done_message () {
     if [ $? == 0 ]; then
         echo " done."
@@ -108,7 +118,7 @@ if [[ ",$COMPILE," == *,bwa,* ]] ; then
       set -e;
       get_distro "bwa" $SOURCE_BWA;
       cd $SETUP_DIR/bwa;
-      make -j3;
+      make -j$CPU;
       cp bwa $INST_PATH/bin/.
       touch $SETUP_DIR/bwa.success;
       set +e;
@@ -129,8 +139,8 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       get_distro "snappy" $SOURCE_SNAPPY;
       cd $SETUP_DIR/snappy;
       ./configure --prefix=$INST_PATH;
-      make -j3;
-      make -j3 install;
+      make -j$CPU;
+      make -j$CPU install;
       touch $SETUP_DIR/snappy.success;
       set +e;
     ) >>$INIT_DIR/setup.log 2>&1;
@@ -146,8 +156,8 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       get_distro "io_lib" $SOURCE_IOLIB;
       cd $SETUP_DIR/io_lib;
       ./configure --prefix=$INST_PATH;
-      make -j3;
-      make -j3 install;
+      make -j$CPU;
+      make -j$CPU install;
       touch $SETUP_DIR/io_lib.success;
       set +e;
     ) >>$INIT_DIR/setup.log 2>&1;
@@ -164,8 +174,8 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       cd $SETUP_DIR/libmaus;
       autoreconf -i -f;
       ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
-      make -j3;
-      make -j3 install;
+      make -j$CPU;
+      make -j$CPU install;
       touch $SETUP_DIR/libmaus.success;
       set +e;
     ) >>$INIT_DIR/setup.log 2>&1;
@@ -182,8 +192,8 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       cd $SETUP_DIR/biobambam;
       autoreconf -i -f;
       ./configure --with-libmaus=$INST_PATH --prefix=$INST_PATH
-      make -j3;
-      make -j3 install;
+      make -j$CPU;
+      make -j$CPU install;
       touch $SETUP_DIR/biobambam.success;
       set +e;
     ) >>$INIT_DIR/setup.log 2>&1;
@@ -209,7 +219,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
         get_distro "samtools" $SOURCE_SAMTOOLS;
         perl -i -pe 's/^CFLAGS=\s*/CFLAGS=-fPIC / unless /\b-fPIC\b/' samtools/Makefile;
       fi;
-      make -C samtools -j3;
+      make -C samtools -j$CPU;
       cp samtools/samtools $INST_PATH/bin/.;
       touch $SETUP_DIR/samtools.success;
       set +e;
