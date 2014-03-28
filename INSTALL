@@ -18,6 +18,7 @@ Other Software
     g++
     dh-autoreconf
     libncurses-dev
+    pkg-config
 
   setup.sh will install
     biobambam
