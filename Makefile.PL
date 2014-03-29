@@ -38,16 +38,16 @@ WriteMakefile(
                      'Capture::Tiny' => 0.24,
                      'Const::Fast' => 0.014,
                      'Bio::DB::Sam' => 1.39,
-                     'Bio::Perl' => 0, # can't specify as make manifest can't parse the version string
-                                       # cpanmdb also doesn't have 1.6.923 indexed for some reason
+                     'Bio::Root::Version' => 1.006923, # this is the only way to get Bio::Perl to behave
+                                                       # and return the version correctly
                      'Try::Tiny' => 0.19,
                      'File::Which' => 0.05,
                      'List::Util' => 1.38,
                      'Proc::ProcessTable' => 0.50,
                      'Data::UUID' => 1.219,
                      'Test::Fatal' => 0.013,
-                     'GD::Image' => 0,
-                     'Math::Gradient' => 0,
+                     'GD' => 2.52,
+                     'Math::Gradient' => 0.04,
                      'Devel::Cover' => 1.09,
                      'Pod::Coverage' => 0.23,
                    }

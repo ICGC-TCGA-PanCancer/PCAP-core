@@ -19,6 +19,9 @@ Other Software
     dh-autoreconf
     libncurses-dev
     pkg-config
+    libgd2-xpm-dev
+
+    This listing is based on Ubunti 12.04
 
   setup.sh will install
     biobambam

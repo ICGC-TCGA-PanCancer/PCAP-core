@@ -7,18 +7,8 @@ SOURCE_LIBMAUS="https://github.com/gt1/libmaus/archive/0.0.108-release-201403190
 SOURCE_BIOBAMBAM="https://github.com/gt1/biobambam/archive/0.0.129-release-20140319092922.tar.gz"
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.19.tar.gz"
 
-
-CPU=`grep -c ^processor /proc/cpuinfo`
-if [ $? == 0 ]; then
-  if [ $CPU > 6 ]; then
-    CPU=6
-  fi
-else
-  CPU=1
-fi
-
 done_message () {
-    if [ $? == 0 ]; then
+    if [ $? -eq 0 ]; then
         echo " done."
         if [ "x$1" != "x" ]; then
             echo $1;
@@ -44,6 +34,16 @@ if [ "$#" -ne "1" ] ; then
   echo "Please provide an installation path  such as /opt/ICGC"
   exit 0;
 fi
+
+CPU=`grep -c ^processor /proc/cpuinfo`
+if [ $? -eq 0 ]; then
+  if [ "$CPU" -gt "6" ]; then
+    CPU=6
+  fi
+else
+  CPU=1
+fi
+echo "Max compilation CPUs set to $CPU"
 
 INST_PATH=$1;
 
@@ -205,7 +205,7 @@ fi
 
 cd $INIT_DIR;
 
-if [[ ",$COMPILE," == *,biobambam,* ]] ; then
+if [[ ",$COMPILE," == *,samtools,* ]] ; then
   echo -n "Building samtools ..."
   if [ -e $SETUP_DIR/samtools.success ]; then
     echo -n " previously installed ...";
@@ -246,7 +246,6 @@ if ! ( perl -MExtUtils::MakeMaker -e 1 >/dev/null 2>&1); then
 fi;
 (
   set -x;
-  $INIT_DIR/bin/cpanm -v --notest -l $INST_PATH/ --installdeps . < /dev/null;
   $INIT_DIR/bin/cpanm -v --notest -l $INST_PATH/ --installdeps . < /dev/null;
   set -e;
   $INIT_DIR/bin/cpanm -v --notest -l $INST_PATH/ --installdeps . < /dev/null;
