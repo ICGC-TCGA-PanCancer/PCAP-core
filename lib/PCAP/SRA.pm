@@ -50,9 +50,13 @@ const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
                                           'selection' => 'Hybrid Selection'},
                                 'RNA' => {'source' => 'RNA',
                                           'selection' => 'RANDOM'},);
-const my @REQUIRED_FIELDS => qw(participant_id sample_id aliquot_id submitter_participant_id
-                                submitter_sample_id submitter_aliquot_id dcc_project_code
+const my @REQUIRED_FIELDS => qw(submitter_donor_id submitter_specimen_id submitter_sample_id
+                                dcc_project_code dcc_specimen_type
                                 total_lanes);
+# map these back to the legacy terms (which are nice and confusing)
+const my %INFO_OUTPUT_MAP => ('submitter_donor_id' => 'submitter_participant_id',
+                              'submitter_specimen_id' => 'submitter_sample_id',
+                              'submitter_sample_id' => 'submitter_aliquot_id',);
 const my %CV_MAPPINGS => ('analyte_code'     => { 'file' => 'cv_tables/TCGA/portionAnalyte.txt',
                                                   'column' => 0,
                                                   'header' => 1},
@@ -182,6 +186,11 @@ sub validate_info {
   for my $req(@REQUIRED_FIELDS) {
     die "Required comment field '$req' is missing" unless(exists $info{$req});
   }
+
+  if($info{'dcc_specimen_type'} !~ m/^normal$/ && (!exists $info{'use_cntl'} || !defined $info{'use_cntl'})) {
+    die qq{When 'dcc_specimen_type' is not defined as 'normal', 'use_cntl' must be set.};
+  }
+
   return 1;
 }
 
@@ -354,7 +363,13 @@ sub analysis_attributes {
   if(scalar @tags > 0) {
     my @attributes;
     for my $tag(@tags) {
-      push @attributes, _attribute_xml($tag, $info->{$tag});
+      if(exists $INFO_OUTPUT_MAP{$tag}) {
+        # map new dcc like terms ont old GNOS style terms.
+        push @attributes, _attribute_xml($INFO_OUTPUT_MAP{$tag}, $info->{$tag});
+      }
+      else {
+        push @attributes, _attribute_xml($tag, $info->{$tag});
+      }
     }
     $attr_xml = "\n    <ANALYSIS_ATTRIBUTES>\n".
                 (join "\n", @attributes).
