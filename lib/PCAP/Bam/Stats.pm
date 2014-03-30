@@ -101,10 +101,9 @@ sub _parse_header {
 sub _process_reads {
   my ($groups, $sam, $qualiy_scoring) = @_;
   my $bam = $sam->bam;
-  my $count = 0; # 'COUNTER BASED LAST IN USE';
   while (my $a = $bam->read1) {
-    my $rg = q{.};
-    ($rg) = ($a->get_tag_values('RG'))[0] if($a->has_tag('RG'));
+    my $rg = ($a->get_tag_values('RG'))[0];
+    $rg ||= q{.};
 
     my $flag = $a->flag;
 
@@ -114,11 +113,7 @@ sub _process_reads {
 
     my $read = ($flag & $FIRST) ? 1 : 2;
 
-    ## Looking for read lengths that do not match the first read seen in this group.
-    if(exists $groups->{$rg}->{'length_'.$read}) {
-      croak 'Read length changes from '.$groups->{$rg}->{'length_'.$read}.' to '.$a->l_qseq." \n\tPossible undefined readgroups\n"
-        if($groups->{$rg}->{'length_'.$read} != $a->l_qseq);
-    } else {
+    unless(exists $groups->{$rg}->{'length_'.$read}) {
       # various initialisation of elements here
       $groups->{$rg}->{'length_'.$read} = $a->l_qseq;
       $groups->{$rg}->{'fqp_'.$read} = [];
@@ -129,29 +124,28 @@ sub _process_reads {
     $groups->{$rg}->{'count_'.$read}++;
     $groups->{$rg}->{'dup_'.$read}++ if($flag & $DUPLICATE);
 
-    if($flag & $UNMAPPED) {
-      $groups->{$rg}->{'unmap_'.$read}++;
-    }
-
     ## GC count: Total gc bases for a read group we then need to divide by read length and read count for meaning full stats
     my $qseq = $a->qseq;
-    $qseq =~ s/[GCgc]//gi;
-    $groups->{$rg}->{'gc_'.$read} += ($a->l_qseq - length($qseq));
-
-    # Divergence calculation: Collect stats that will allow us to calculate the the number of bases that diverge from the reference.
-    #                         This requires collecting the value from the NM tag and the mapped proportion of the query string.
-    if(($flag & $UNMAPPED) == 0 && defined ($a->get_tag_values('NM'))){
-
-      my($nm) = ($a->get_tag_values('NM'))[0];
-      $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos);
-      $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm;
-    }
+    $groups->{$rg}->{'gc_'.$read} += $qseq =~ s/[GC]//gi;
 
     # Quality score collection for quality score plots.
     # This is really expensive therefore it is optional.
     if($qualiy_scoring){
       _add_to_qplot($groups->{$rg}->{'fqp_'.$read}, scalar $a->qscore, ($flag & $REVERSED));
     }
+
+    if($flag & $UNMAPPED) {
+      $groups->{$rg}->{'unmap_'.$read}++;
+      next;
+    }
+
+    # everything after this point must require reads are mapped
+
+    $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos);
+    # Divergence calculation: Collect stats that will allow us to calculate the the number of bases that diverge from the reference.
+    #                         This requires collecting the value from the NM tag and the mapped proportion of the query string.
+    my $nm = ($a->get_tag_values('NM'))[0];
+    $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm if(defined $nm);
 
     # Insert size can only be calculated based on reads that are on same chr
     # so it is more sensible to generate the distribution based on $PROPER-pairs.
@@ -160,7 +154,6 @@ sub _process_reads {
       $groups->{$rg}->{'inserts'}->{abs $a->isize}++;
       $groups->{$rg}->{'proper'}++;
     }
-    $count++;
   }
 
   ## Clear out empty read groups with no data
@@ -757,6 +750,12 @@ sub bas{
       my ($platform) = $rg_info =~ /\tPL:([^\t]+)/;
       my ($platform_unit) = $rg_info =~ /\tPU:([^\t]+)/;
       my ($library)  = $rg_info =~ /\tLB:([^\t]+)/;
+
+      # all header items are potentially blank
+      $sample ||= q{.};
+      $platform ||= q{.};
+      $platform_unit ||= q{.};
+      $library ||= q{.};
 
       my $unmapped_reads = $self->count_unmapped_rg($rg);
       my $unmapped_reads_r1 = $self->count_unmapped_rg($rg,1);
