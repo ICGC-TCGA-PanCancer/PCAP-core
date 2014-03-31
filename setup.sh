@@ -3,6 +3,7 @@
 SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.7.tar.gz"
 SOURCE_SNAPPY="https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz"
 SOURCE_IOLIB="http://downloads.sourceforge.net/project/staden/io_lib/1.13.4/io_lib-1.13.4.tar.gz"
+# remove patch from LIBMAUS section when next release available
 SOURCE_LIBMAUS="https://github.com/gt1/libmaus/archive/0.0.108-release-20140319092837.tar.gz"
 SOURCE_BIOBAMBAM="https://github.com/gt1/biobambam/archive/0.0.129-release-20140319092922.tar.gz"
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.19.tar.gz"
@@ -172,6 +173,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       set -e;
       get_distro "libmaus" $SOURCE_LIBMAUS;
       cd $SETUP_DIR/libmaus;
+      patch "src/libmaus/aio/PosixFdInput.hpp" < "$INIT_DIR/patches/fileModeFix.diff"
       autoreconf -i -f;
       ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
       make -j$CPU;
