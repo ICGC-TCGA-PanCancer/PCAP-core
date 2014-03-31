@@ -182,4 +182,7 @@ The output consists of the following columns:
       'median_insert_size' = the median insert size.
       '#_duplicate_reads' = the total number of duplicate reads.
 
+Any reads not linked to a ReadGroup will be combined into the group '.'
+Please note that the accuracy of statistics in this group may be questionable.
+
 =cut
