@@ -102,16 +102,15 @@ sub _process_reads {
   my ($groups, $sam, $qualiy_scoring) = @_;
   my $bam = $sam->bam;
   while (my $a = $bam->read1) {
-    my $rg = ($a->get_tag_values('RG'))[0];
-    $rg ||= q{.};
-
     my $flag = $a->flag;
-
     next if($flag & $NON_PRI); # skip secondary hits so no double counts
     next if($flag & $V_FAIL); # skip vendor fail as generally aren't considered
     next if($flag & $SUPPLIMENT); # skip supplimentary
 
     my $read = ($flag & $FIRST) ? 1 : 2;
+
+    my ($rg) = ($a->get_tag_values('RG'));
+    $rg ||= q{.};
 
     unless(exists $groups->{$rg}->{'length_'.$read}) {
       # various initialisation of elements here
@@ -144,7 +143,7 @@ sub _process_reads {
     $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos);
     # Divergence calculation: Collect stats that will allow us to calculate the the number of bases that diverge from the reference.
     #                         This requires collecting the value from the NM tag and the mapped proportion of the query string.
-    my $nm = ($a->get_tag_values('NM'))[0];
+    my ($nm) = ($a->get_tag_values('NM'));
     $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm if(defined $nm);
 
     # Insert size can only be calculated based on reads that are on same chr
