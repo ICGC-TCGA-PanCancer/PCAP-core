@@ -233,7 +233,7 @@ subtest 'Object funcions' => sub {
     is($test_obj->count_duplicate_reads_rg($rg2,1),0,'count_duplicate_reads_rg rg2 read1');
     is($test_obj->count_duplicate_reads_rg($rg2,2),0,'count_duplicate_reads_rg rg2 read2');
 
-    is($test_obj->count_total_mapped_bases_rg($rg1,1),114,'count_total_mapped_bases_rg rg1 read1');
+    is($test_obj->count_total_mapped_bases_rg($rg1,1),115,'count_total_mapped_bases_rg rg1 read1');
     is($test_obj->count_total_mapped_bases_rg($rg1,2),37,'count_total_mapped_bases_rg rg1 read2');
     is($test_obj->count_total_mapped_bases_rg($rg2,1),20,'count_total_mapped_bases_rg rg2 read1');
     is($test_obj->count_total_mapped_bases_rg($rg2,2),20,'count_total_mapped_bases_rg rg2 read2');
@@ -259,7 +259,7 @@ subtest 'Object funcions' => sub {
     is($test_obj->count_duplicate_reads(1),4,'count_duplicate_reads read1');
     is($test_obj->count_duplicate_reads(2),0,'count_duplicate_reads read2');
 
-    is($test_obj->count_total_mapped_bases(1),134,'count_total_mapped_bases read1');
+    is($test_obj->count_total_mapped_bases(1),135,'count_total_mapped_bases read1');
     is($test_obj->count_total_mapped_bases(2),57,'count_total_mapped_bases read2');
 
     is($test_obj->count_total_divergent_bases(1),41,'count_total_divergent_bases read1');

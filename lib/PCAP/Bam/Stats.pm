@@ -33,7 +33,7 @@ use Try::Tiny;
 use File::Basename;
 
 use Math::Gradient;
-use List::Util qw(sum first);
+use List::Util qw(sum sum0 first);
 use Bio::DB::Sam;
 use GD::Image;
 
@@ -140,11 +140,24 @@ sub _process_reads {
 
     # everything after this point must require reads are mapped
 
-    $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos);
     # Divergence calculation: Collect stats that will allow us to calculate the the number of bases that diverge from the reference.
     #                         This requires collecting the value from the NM tag and the mapped proportion of the query string.
     my ($nm) = ($a->get_tag_values('NM'));
-    $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm if(defined $nm);
+    if(defined $nm) {
+      $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm;
+      if($nm > 0) {
+        my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
+        $groups->{$rg}->{'total_mapped_bases_'.$read} += sum0 @increments;
+      }
+      else {
+        $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos) + 1;
+      }
+    }
+    else {
+      my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
+      $groups->{$rg}->{'total_mapped_bases_'.$read} += sum0 @increments;
+    }
+    # calculate mapped seq from cigar
 
     # Insert size can only be calculated based on reads that are on same chr
     # so it is more sensible to generate the distribution based on $PROPER-pairs.
