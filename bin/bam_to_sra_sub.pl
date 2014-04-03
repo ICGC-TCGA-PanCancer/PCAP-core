@@ -42,10 +42,8 @@ use PCAP::SRA;
   # all inputs are checked here
   my $options = &setup;
   # all bam headers are checked here
-  my $bam_obs = PCAP::SRA::parse_input($options->{'raw_files'});
-  # groups data into sample/library
-  my $grouped_bams = PCAP::SRA::group_bams($bam_obs, $options->{'type'});
-  PCAP::SRA::generate_sample_SRA($grouped_bams, $options)
+  my $sra = PCAP::SRA->new($options->{'raw_files'}, $options->{'type'});
+  $sra->generate_sample_SRA($options);
 }
 
 
@@ -53,6 +51,7 @@ sub setup {
   my %opts;
   GetOptions( 'h|help' => \$opts{'h'},
               'm|man' => \$opts{'m'},
+              'd|detail' => \$opts{'d'},
               'o|outdir=s' => \$opts{'outdir'},
               's|study=s' => \$opts{'study'},
               'g|gnos=s' => \$opts{'gnos'},
@@ -68,7 +67,6 @@ sub setup {
   pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined);
 
   pod2usage(-msg => qq{\nERROR: 'outdir' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'outdir'});
-  pod2usage(-msg => qq{\nERROR: 'study' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'study'});
   pod2usage(-msg => qq{\nERROR: 'gnos' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'gnos'});
 
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
@@ -77,6 +75,8 @@ sub setup {
     # check seq type is part of the controlled vocab
     PCAP::SRA::validate_seq_type($opts{'type'});
   }
+
+  $opts{'study'} = 'icgc_pancancer' unless(defined $opts{'study'});
 
   pod2usage(-msg  => "\nERROR: Please provide a list of inputs files after any options\n", -verbose => 1,  -output => \*STDERR) unless(scalar @ARGV > 0);
   $opts{'raw_files'} = \@ARGV;
@@ -95,11 +95,12 @@ bam_to_sra_sub.pl [options] [file(s)...]
 
   Required parameters:
     -outdir    -o   Folder to output result to.
-    -study     -s   Study reference in repository
     -gnos      -g   GNOS upload server, e.g.
                       https://gtrepo-ebi.annailabs.com
 
   Optional:
+    -detail    -d   Generate a detail summary file to <outdir>/detail.tsv
+    -study     -s   Study reference in repository [icgc_pancancer]
     -type      -t   Only required if not encoded in readgroup LB tag.
                     Sequencing type, controlled values:
                       WGS     - Whole Genome Seq

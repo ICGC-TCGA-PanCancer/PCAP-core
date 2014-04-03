@@ -160,12 +160,14 @@ sub read_group_info {
 
 sub comments {
   my $self = shift;
+  return $self->{'comments'} if(exists $self->{'comments'});
   my @comments;
   for my $line(@{$self->sam_header}) {
     next unless($line =~ m/^\@CO\t(.*)/);
     push @comments, $1;
   }
-  return \@comments;
+  $self->{'comments'} = \@comments;
+  return $self->{'comments'};
 }
 
 sub sam_header {

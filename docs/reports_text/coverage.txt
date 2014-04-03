@@ -1,91 +1,91 @@
 ------------------------------------------------- ------ ------ ------ ------
 File                                                bran    sub    pod  total
 ------------------------------------------------- ------ ------ ------ ------
-lib/PCAP.pm                                          0.0   75.0   50.0   40.0
-lib/PCAP/Bam.pm                                     91.7  100.0  100.0   95.3
-lib/PCAP/Bam/Stats.pm                               60.3   95.2    0.0   60.0
+lib/PCAP.pm                                         75.0  100.0  100.0   90.0
+lib/PCAP/Bam.pm                                     90.0  100.0  100.0   94.3
+lib/PCAP/Bam/Stats.pm                               59.6   95.2    0.0   59.6
 lib/PCAP/Bwa.pm                                     92.3  100.0  100.0   95.7
 lib/PCAP/Bwa/Meta.pm                               100.0  100.0  100.0  100.0
 lib/PCAP/Cli.pm                                     71.4   69.2  100.0   73.9
-lib/PCAP/SRA.pm                                     18.8   51.2  100.0   45.4
+lib/PCAP/SRA.pm                                     40.5   60.0   82.6   52.6
 lib/PCAP/Threaded.pm                                70.0   95.7  100.0   81.2
-Total                                               70.8   86.1   60.8   74.0
+Total                                               71.2   87.7   59.4   74.3
 ------------------------------------------------- ------ ------ ------ ------
 
 
 Run:          t/1_pm_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:14 2014
-Finish:       Fri Mar 28 12:35:15 2014
+Start:        Thu Apr  3 13:20:42 2014
+Finish:       Thu Apr  3 13:20:42 2014
 
 Run:          t/2_pl_compile.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:16 2014
-Finish:       Fri Mar 28 12:35:18 2014
+Start:        Thu Apr  3 13:20:43 2014
+Finish:       Thu Apr  3 13:20:45 2014
 
 Run:          t/3_external_progs.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:19 2014
-Finish:       Fri Mar 28 12:35:19 2014
+Start:        Thu Apr  3 13:20:46 2014
+Finish:       Thu Apr  3 13:20:46 2014
 
 Run:          t/pcap.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:20 2014
-Finish:       Fri Mar 28 12:35:20 2014
+Start:        Thu Apr  3 13:20:46 2014
+Finish:       Thu Apr  3 13:20:46 2014
 
 Run:          t/pcapBam.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:20 2014
-Finish:       Fri Mar 28 12:35:21 2014
+Start:        Thu Apr  3 13:20:47 2014
+Finish:       Thu Apr  3 13:20:47 2014
 
 Run:          t/pcapBamStats.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:22 2014
-Finish:       Fri Mar 28 12:35:22 2014
+Start:        Thu Apr  3 13:20:48 2014
+Finish:       Thu Apr  3 13:20:48 2014
 
 Run:          t/pcapBwa.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:23 2014
-Finish:       Fri Mar 28 12:35:23 2014
+Start:        Thu Apr  3 13:20:49 2014
+Finish:       Thu Apr  3 13:20:49 2014
 
 Run:          t/pcapBwaMeta.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:24 2014
-Finish:       Fri Mar 28 12:35:24 2014
+Start:        Thu Apr  3 13:20:50 2014
+Finish:       Thu Apr  3 13:20:50 2014
 
 Run:          t/pcapCli.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:25 2014
-Finish:       Fri Mar 28 12:35:25 2014
+Start:        Thu Apr  3 13:20:51 2014
+Finish:       Thu Apr  3 13:20:51 2014
 
 Run:          t/pcapSra.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:26 2014
-Finish:       Fri Mar 28 12:35:26 2014
+Start:        Thu Apr  3 13:20:52 2014
+Finish:       Thu Apr  3 13:20:52 2014
 
 Run:          t/pcapThreaded.t
 Perl version: 5.16.3
 OS:           linux
-Start:        Fri Mar 28 12:35:27 2014
-Finish:       Fri Mar 28 12:35:27 2014
+Start:        Thu Apr  3 13:20:53 2014
+Finish:       Thu Apr  3 13:20:53 2014
 
 Branches
 --------
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-49    ***      0      0      0   unless defined $installed_version
-51    ***      0      0      0   unless exists $UPGRADE_PATH{$installed_version}
+49           100      1      1   unless defined $installed_version
+51    ***     50      1      0   unless exists $UPGRADE_PATH{$installed_version}
 
 
 Covered Subroutines
@@ -96,13 +96,7 @@ Subroutine   Count Pod Location
 BEGIN            9     lib/PCAP.pm:23
 BEGIN            9     lib/PCAP.pm:24
 license          1   1 lib/PCAP.pm:44
-
-Uncovered Subroutines
----------------------
-
-Subroutine   Count Pod Location      
------------- ----- --- --------------
-upgrade_path     0   0 lib/PCAP.pm:48
+upgrade_path     2   1 lib/PCAP.pm:48
 
 
 Branches
@@ -125,18 +119,19 @@ line  err      %   true  false   branch
 150         - 50     -0     56   unless defined $tag and defined $value
 155          100      1      5   if scalar @rgs == 0
 157          100      2      3   if defined $required_tags
-165          100     27      2   unless $line =~ /^\@CO\t(.*)/
-173   ***     50      0      7   if exists $$self{'header'}
-183          100      1      1   if scalar @{$rgs;} > 1
-193          100      2      7   unless (first sub {
+163   ***     50      0      1   if exists $$self{'comments'}
+166          100     27      2   unless $line =~ /^\@CO\t(.*)/
+175   ***     50      0      7   if exists $$self{'header'}
+185          100      1      1   if scalar @{$rgs;} > 1
+195          100      2      7   unless (first sub {
 	$$sorted_tags[$i] eq $_;
 }
 , @tags_found)
-194   ***     50      0      2   if ($$sorted_tags[$i] eq 'PM' and exists $$self{'info'}{'PM'})
-204          100      1      3   if scalar @errors > 0
-211   ***     50      0     13   if (ref $bam eq 'Bio::DB::Sam') { }
+196   ***     50      0      2   if ($$sorted_tags[$i] eq 'PM' and exists $$self{'info'}{'PM'})
+206          100      1      3   if scalar @errors > 0
+213   ***     50      0     13   if (ref $bam eq 'Bio::DB::Sam') { }
       ***     50     13      0   elsif (-e $bam) { }
-230          100      1      1   unless 1 & $read->flag
+232          100      1      1   unless 1 & $read->flag
 
 
 Covered Subroutines
@@ -156,17 +151,17 @@ BEGIN                  5     lib/PCAP/Bam.pm:33
 BEGIN                  5     lib/PCAP/Bam.pm:34 
 BEGIN                  5     lib/PCAP/Bam.pm:35 
 BEGIN                  5     lib/PCAP/Bam.pm:37 
-__ANON__              49     lib/PCAP/Bam.pm:193
-check_for_tags         4   1 lib/PCAP/Bam.pm:188
-check_paired           2   1 lib/PCAP/Bam.pm:225
+__ANON__              49     lib/PCAP/Bam.pm:195
+check_for_tags         4   1 lib/PCAP/Bam.pm:190
+check_paired           2   1 lib/PCAP/Bam.pm:227
 comments               1   1 lib/PCAP/Bam.pm:162
 new                   11   1 lib/PCAP/Bam.pm:43 
 read_group_info        9   1 lib/PCAP/Bam.pm:123
 rg_line_for_output     2   1 lib/PCAP/Bam.pm:54 
-sam_header             7   1 lib/PCAP/Bam.pm:172
-sam_ob                13   1 lib/PCAP/Bam.pm:209
+sam_header             7   1 lib/PCAP/Bam.pm:174
+sam_ob                13   1 lib/PCAP/Bam.pm:211
 sample_name            2   1 lib/PCAP/Bam.pm:110
-single_rg_value        2   1 lib/PCAP/Bam.pm:181
+single_rg_value        2   1 lib/PCAP/Bam.pm:183
 
 Uncovered Subroutines
 ---------------------
@@ -185,67 +180,66 @@ line  err      %   true  false   branch
 75           100     19      1   unless ($sam and ref $sam eq 'Bio::DB::Sam')
 82    ***     50      0     20   $q_scoring ? :
 92           100     40     40   if index($_, '@RG') != 0
-107   ***     50    360      0   if $a->has_tag('RG')
-111          100     20    340   if $flag & $NON_PRI
-112          100     20    320   if $flag & $V_FAIL
-113   ***     50      0    320   if $flag & $SUPPLIMENT
-115          100    200    120   $flag & $FIRST ? :
-118          100    240     80   if (exists $$groups{$rg}{'length_' . $read}) { }
-119   ***     50      0    240   if $$groups{$rg}{'length_' . $read} != $a->l_qseq
-126          100     40     40   if $flag & $FIRST
-130          100     80    240   if $flag & $DUPLICATE
-132          100    120    200   if ($flag & $UNMAPPED)
-143          100    200    120   if (($flag & $UNMAPPED) == 0 and defined $a->get_tag_values('NM'))
-152   ***     50      0    320   if ($qualiy_scoring)
-159          100    140    180   if (($flag & ($PROPER | $FIRST)) == ($PROPER | $FIRST))
-169          100     20     40   if scalar @elements == 1
-176          100      2      2   if ($reverse) { }
-201   ***     50      4      0   if ($rg and exists $$self{'_groups'}{$rg})
-245          100      2      4   if (first sub {
+106          100     20    340   if $flag & $NON_PRI
+107          100     20    320   if $flag & $V_FAIL
+108   ***     50      0    320   if $flag & $SUPPLIMENT
+110          100    200    120   $flag & $FIRST ? :
+115          100     80    240   unless (exists $$groups{$rg}{'length_' . $read})
+120          100     40     40   if $flag & $FIRST
+124          100     80    240   if $flag & $DUPLICATE
+132   ***     50      0    320   if ($qualiy_scoring)
+136          100    120    200   if ($flag & $UNMAPPED)
+146   ***     50    200      0   if (defined $nm) { }
+148   ***     50    200      0   if ($nm > 0) { }
+165          100    140     60   if (($flag & ($PROPER | $FIRST)) == ($PROPER | $FIRST))
+174          100     20     40   if scalar @elements == 1
+181          100      2      2   if ($reverse) { }
+206   ***     50      4      0   if ($rg and exists $$self{'_groups'}{$rg})
+250          100      2      4   if (first sub {
 	$_ eq $prop;
 }
 , @PAIRED_PROPERTIES) { }
-254   ***     50      6      0   if ($tt)
-267          100      1      2   if (first sub {
+259   ***     50      6      0   if ($tt)
+272          100      1      2   if (first sub {
 	$_ eq $prop;
 }
 , @PAIRED_PROPERTIES) { }
-279   ***     50      3      0   if ($tt)
-356   ***     50      0     54   unless defined $rg
-357   ***     50      0     54   unless exists $$self{'_groups'}{$rg}
-359          100     44     10   if (defined $read) { }
-371   ***     50     20      0   if (defined $read) { }
-383   ***     50      0      4   unless defined $rg
-384   ***     50      0      4   unless exists $$self{'_groups'}{$rg}
-387   ***     50      4      0   if defined $read
-390   ***     50      0      4   unless exists $$self{'_groups'}{$rg}{$prop}
-392   ***     50      4      0   if (exists $$self{'_groups'}{$rg}{$prop})
-405   ***     50      2      0   if ($rg and exists $$self{'_groups'}{$rg})
-413   ***     50      8      0   if (exists $$self{'_groups'}{$rg})
-421   ***     50      8      0   if ($tt) { }
-441   ***     50      2      0   if ($tt) { }
-469   ***     50      4      0   if (exists $$self{'_groups'}{$rg})
-486   ***     50      5      0   if ($total_conrib)
-495          100      5      2   if $running_total >= $mid_point
-498          100      2      3   if ($total_conrib % 2 == 0 and $running_total - $mid_point2 >= $$insert_bin{$ordered_inserts[$i]}) { }
-512   ***     50      4      0   if (exists $$self{'_groups'}{$rg})
-524   ***     50      4      0   if ($tt) { }
-549   ***     50      1      0   if ($tt) { }
-572   ***     50      1      0   if ($tt)
-585   ***      0      0      0   if ($$self{'_qualiy_scoring'})
-605          100     94      8   unless defined $$plot_vals[$pos][$raw_qual_pos]
-608          100      2    100   if $raw_qual_pos-- == 0
-616   ***      0      0      0   $rg ne '.' ? :
-626   ***      0      0      0   if ($end == 1) { }
-638   ***      0      0      0   unless ($im)
-668   ***      0      0      0   if ($cycle_count == 1 and $quality == 1 || $quality > 1 && $quality % 5 == 0)
-677   ***      0      0      0   if ($cycle_count == 1 or $cycle_count % 5 == 0)
-684   ***      0      0      0   if ($read)
-689   ***      0      0      0   if ($start_xaxis_label < 0)
-708   ***     50      0      1   unless $output_fh
-750   ***     50      0      1   unless print $output_fh $header
-779   ***     50      2      0   if ($mapped_reads > 0)
-791   ***     50      2      0   if ($divergent_bases > 0)
+284   ***     50      3      0   if ($tt)
+361   ***     50      0     54   unless defined $rg
+362   ***     50      0     54   unless exists $$self{'_groups'}{$rg}
+364          100     44     10   if (defined $read) { }
+376   ***     50     20      0   if (defined $read) { }
+388   ***     50      0      4   unless defined $rg
+389   ***     50      0      4   unless exists $$self{'_groups'}{$rg}
+392   ***     50      4      0   if defined $read
+395   ***     50      0      4   unless exists $$self{'_groups'}{$rg}{$prop}
+397   ***     50      4      0   if (exists $$self{'_groups'}{$rg}{$prop})
+410   ***     50      2      0   if ($rg and exists $$self{'_groups'}{$rg})
+418   ***     50      8      0   if (exists $$self{'_groups'}{$rg})
+426   ***     50      8      0   if ($tt) { }
+446   ***     50      2      0   if ($tt) { }
+474   ***     50      4      0   if (exists $$self{'_groups'}{$rg})
+491   ***     50      5      0   if ($total_conrib)
+500          100      5      2   if $running_total >= $mid_point
+503          100      2      3   if ($total_conrib % 2 == 0 and $running_total - $mid_point2 >= $$insert_bin{$ordered_inserts[$i]}) { }
+517   ***     50      4      0   if (exists $$self{'_groups'}{$rg})
+529   ***     50      4      0   if ($tt) { }
+554   ***     50      1      0   if ($tt) { }
+577   ***     50      1      0   if ($tt)
+590   ***      0      0      0   if ($$self{'_qualiy_scoring'})
+610          100     94      8   unless defined $$plot_vals[$pos][$raw_qual_pos]
+613          100      2    100   if $raw_qual_pos-- == 0
+621   ***      0      0      0   $rg ne '.' ? :
+631   ***      0      0      0   if ($end == 1) { }
+643   ***      0      0      0   unless ($im)
+673   ***      0      0      0   if ($cycle_count == 1 and $quality == 1 || $quality > 1 && $quality % 5 == 0)
+682   ***      0      0      0   if ($cycle_count == 1 or $cycle_count % 5 == 0)
+689   ***      0      0      0   if ($read)
+694   ***      0      0      0   if ($start_xaxis_label < 0)
+713   ***     50      0      1   unless $output_fh
+755   ***     50      0      1   unless print $output_fh $header
+790   ***     50      2      0   if ($mapped_reads > 0)
+802   ***     50      2      0   if ($divergent_bases > 0)
 
 
 Covered Subroutines
@@ -266,61 +260,61 @@ BEGIN                              2     lib/PCAP/Bam/Stats.pm:35
 BEGIN                              2     lib/PCAP/Bam/Stats.pm:36 
 BEGIN                              2     lib/PCAP/Bam/Stats.pm:37 
 BEGIN                              2     lib/PCAP/Bam/Stats.pm:38 
-__ANON__                           6     lib/PCAP/Bam/Stats.pm:245
-__ANON__                           3     lib/PCAP/Bam/Stats.pm:267
-__ANON__                           1     lib/PCAP/Bam/Stats.pm:713
-_add_to_qplot                      4     lib/PCAP/Bam/Stats.pm:174
-_calc_frac_property                3     lib/PCAP/Bam/Stats.pm:261
-_calc_frac_property_rg             6     lib/PCAP/Bam/Stats.pm:242
-_counts                           10     lib/PCAP/Bam/Stats.pm:368
-_counts_rg                        54     lib/PCAP/Bam/Stats.pm:355
-_med_binned_insert_sizes           5     lib/PCAP/Bam/Stats.pm:476
+__ANON__                           6     lib/PCAP/Bam/Stats.pm:250
+__ANON__                           3     lib/PCAP/Bam/Stats.pm:272
+__ANON__                           1     lib/PCAP/Bam/Stats.pm:718
+_add_to_qplot                      4     lib/PCAP/Bam/Stats.pm:179
+_calc_frac_property                3     lib/PCAP/Bam/Stats.pm:266
+_calc_frac_property_rg             6     lib/PCAP/Bam/Stats.pm:247
+_counts                           10     lib/PCAP/Bam/Stats.pm:373
+_counts_rg                        54     lib/PCAP/Bam/Stats.pm:360
+_med_binned_insert_sizes           5     lib/PCAP/Bam/Stats.pm:481
 _parse_header                     20     lib/PCAP/Bam/Stats.pm:87 
 _process_reads                    20     lib/PCAP/Bam/Stats.pm:102
-bas                                1   0 lib/PCAP/Bam/Stats.pm:706
-cal_insert_size_sd                 1   0 lib/PCAP/Bam/Stats.pm:535
-cal_insert_size_sd_rg              4   0 lib/PCAP/Bam/Stats.pm:510
-calc_frac_duplicate_reads          1   0 lib/PCAP/Bam/Stats.pm:237
-calc_frac_duplicate_reads_rg       2   0 lib/PCAP/Bam/Stats.pm:232
-calc_frac_properly_paired          1   0 lib/PCAP/Bam/Stats.pm:217
-calc_frac_properly_paired_rg       2   0 lib/PCAP/Bam/Stats.pm:212
-calc_frac_unmapped                 1   0 lib/PCAP/Bam/Stats.pm:227
-calc_frac_unmapped_rg              2   0 lib/PCAP/Bam/Stats.pm:222
-count_duplicate_reads              2   0 lib/PCAP/Bam/Stats.pm:325
-count_duplicate_reads_rg           6   0 lib/PCAP/Bam/Stats.pm:320
-count_gc_rg                        8   0 lib/PCAP/Bam/Stats.pm:350
-count_properly_paired              1   0 lib/PCAP/Bam/Stats.pm:301
-count_properly_paired_rg           6   0 lib/PCAP/Bam/Stats.pm:296
-count_total_divergent_bases        2   0 lib/PCAP/Bam/Stats.pm:345
-count_total_divergent_bases_rg    10   0 lib/PCAP/Bam/Stats.pm:340
-count_total_mapped_bases           2   0 lib/PCAP/Bam/Stats.pm:335
-count_total_mapped_bases_rg       10   0 lib/PCAP/Bam/Stats.pm:330
-count_total_reads                  2   0 lib/PCAP/Bam/Stats.pm:291
-count_total_reads_rg              10   0 lib/PCAP/Bam/Stats.pm:286
-count_unmapped                     2   0 lib/PCAP/Bam/Stats.pm:315
-count_unmapped_rg                 10   0 lib/PCAP/Bam/Stats.pm:310
-down_pop_quals                     1   0 lib/PCAP/Bam/Stats.pm:599
+bas                                1   0 lib/PCAP/Bam/Stats.pm:711
+cal_insert_size_sd                 1   0 lib/PCAP/Bam/Stats.pm:540
+cal_insert_size_sd_rg              4   0 lib/PCAP/Bam/Stats.pm:515
+calc_frac_duplicate_reads          1   0 lib/PCAP/Bam/Stats.pm:242
+calc_frac_duplicate_reads_rg       2   0 lib/PCAP/Bam/Stats.pm:237
+calc_frac_properly_paired          1   0 lib/PCAP/Bam/Stats.pm:222
+calc_frac_properly_paired_rg       2   0 lib/PCAP/Bam/Stats.pm:217
+calc_frac_unmapped                 1   0 lib/PCAP/Bam/Stats.pm:232
+calc_frac_unmapped_rg              2   0 lib/PCAP/Bam/Stats.pm:227
+count_duplicate_reads              2   0 lib/PCAP/Bam/Stats.pm:330
+count_duplicate_reads_rg           6   0 lib/PCAP/Bam/Stats.pm:325
+count_gc_rg                        8   0 lib/PCAP/Bam/Stats.pm:355
+count_properly_paired              1   0 lib/PCAP/Bam/Stats.pm:306
+count_properly_paired_rg           6   0 lib/PCAP/Bam/Stats.pm:301
+count_total_divergent_bases        2   0 lib/PCAP/Bam/Stats.pm:350
+count_total_divergent_bases_rg    10   0 lib/PCAP/Bam/Stats.pm:345
+count_total_mapped_bases           2   0 lib/PCAP/Bam/Stats.pm:340
+count_total_mapped_bases_rg       10   0 lib/PCAP/Bam/Stats.pm:335
+count_total_reads                  2   0 lib/PCAP/Bam/Stats.pm:296
+count_total_reads_rg              10   0 lib/PCAP/Bam/Stats.pm:291
+count_unmapped                     2   0 lib/PCAP/Bam/Stats.pm:320
+count_unmapped_rg                 10   0 lib/PCAP/Bam/Stats.pm:315
+down_pop_quals                     1   0 lib/PCAP/Bam/Stats.pm:604
 init                              20   0 lib/PCAP/Bam/Stats.pm:69 
-insert_sizes                       2   0 lib/PCAP/Bam/Stats.pm:404
-mean_gc_rg                         4   0 lib/PCAP/Bam/Stats.pm:382
-mean_insert_size                   2   0 lib/PCAP/Bam/Stats.pm:431
-mean_insert_size_rg                8   0 lib/PCAP/Bam/Stats.pm:412
-med_insert_size                    1   0 lib/PCAP/Bam/Stats.pm:452
-med_insert_size_rg                 4   0 lib/PCAP/Bam/Stats.pm:468
+insert_sizes                       2   0 lib/PCAP/Bam/Stats.pm:409
+mean_gc_rg                         4   0 lib/PCAP/Bam/Stats.pm:387
+mean_insert_size                   2   0 lib/PCAP/Bam/Stats.pm:436
+mean_insert_size_rg                8   0 lib/PCAP/Bam/Stats.pm:417
+med_insert_size                    1   0 lib/PCAP/Bam/Stats.pm:457
+med_insert_size_rg                 4   0 lib/PCAP/Bam/Stats.pm:473
 new                               20   0 lib/PCAP/Bam/Stats.pm:60 
-properly_mapped_ratio              1   0 lib/PCAP/Bam/Stats.pm:558
-read_group_info                    4   0 lib/PCAP/Bam/Stats.pm:199
-read_groups                        2   0 lib/PCAP/Bam/Stats.pm:194
-read_length                        8   0 lib/PCAP/Bam/Stats.pm:207
+properly_mapped_ratio              1   0 lib/PCAP/Bam/Stats.pm:563
+read_group_info                    4   0 lib/PCAP/Bam/Stats.pm:204
+read_groups                        2   0 lib/PCAP/Bam/Stats.pm:199
+read_length                        8   0 lib/PCAP/Bam/Stats.pm:212
 
 Uncovered Subroutines
 ---------------------
 
 Subroutine                     Count Pod Location                 
 ------------------------------ ----- --- -------------------------
-__ANON__                           0     lib/PCAP/Bam/Stats.pm:843
-fastq2image                        0   0 lib/PCAP/Bam/Stats.pm:614
-fqplots                            0   0 lib/PCAP/Bam/Stats.pm:584
+__ANON__                           0     lib/PCAP/Bam/Stats.pm:854
+fastq2image                        0   0 lib/PCAP/Bam/Stats.pm:619
+fqplots                            0   0 lib/PCAP/Bam/Stats.pm:589
 
 
 Branches
@@ -510,87 +504,109 @@ Branches
 
 line  err      %   true  false   branch
 ----- --- ------ ------ ------   ------
-109   ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
-154   ***     50      0      3   unless (defined $data_path and -e $data_path)
-156   ***      0      0      0   unless -e "$data_path/cv_tables"
-160          100      1     15   unless -e $cv_file
-161          100      1     14   unless -s _
-165          100     14   3588   if $CV_MAPPINGS{$cv_field}{'header'} and $PCAP::SRA::INPUT_LINE_NUMBER == 1
-179   ***      0      0      0   unless exists $$cv_lookup{$key}
-180   ***      0      0      0   unless first sub {
+112   ***      0      0      0   unless exists $exps{$$bam_ob{'exp'}}
+156          100      2      3   unless (defined $data_path and -e $data_path)
+158   ***     50      0      2   unless -e "$data_path/cv_tables"
+162          100      1      7   unless -e $cv_file
+163          100      1      6   unless -s _
+167          100      6    288   if $CV_MAPPINGS{$cv_field}{'header'} and $PCAP::SRA::INPUT_LINE_NUMBER == 1
+180   ***      0      0      0   if ($$self{'_tumours'}{$sample} ne $$self{'_control'})
+191          100     42     13   unless exists $$cv_lookup{$key}
+192   ***     50      0     13   unless first sub {
 	$info{$key} eq $_;
 }
 , @{$$cv_lookup{$key};}
-183   ***      0      0      0   unless exists $info{$req}
-195          100      1      1   unless _check_seq_type($seq_in)
-215   ***      0      0      0   if (defined $in_seq_type) { }
-220   ***      0      0      0   unless _check_seq_type($seq_type)
-239   ***      0      0      0   if ($tag eq 'SM')
-241   ***      0      0      0   if ($sm =~ /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/)
-251   ***      0      0      0   if (exists $$bam{'info'})
-354   ***      0      0      0   if (scalar @tags > 0)
-435   ***      0      0      0   if (exists $$bam_ob{'info'}{'submitter_aliquot_id'})
-452   ***      0      0      0   if (-e $info_file)
-456   ***      0      0      0   if $line eq ''
-457   ***      0      0      0   unless $line =~ /^([^:]+):(.*)$/
-458   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
-464   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
-466   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
-467   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
+195          100      1     39   unless exists $info{$req}
+198          100      1      5   unless exists $$self{'_donor'}
+199          100      1      5   if $$self{'_donor'} ne $info{'submitter_donor_id'}
+201          100      4      1   unless exists $$self{'_sample_to_uuid'}{$info{'submitter_sample_id'}}
+202          100      1      4   if ($$bam_ob{'SM'} ne $$self{'_sample_to_uuid'}{$info{'submitter_sample_id'}})
+206          100      3      1   unless exists $$self{'_uuid_to_sample'}{$$bam_ob{'SM'}}
+207          100      1      3   if ($info{'submitter_sample_id'} ne $$self{'_uuid_to_sample'}{$$bam_ob{'SM'}})
+211          100      2      1   if ($info{'dcc_specimen_type'} =~ /^Normal /) { }
+212          100      1      1   if (exists $$self{'_control'})
+213   ***     50      1      0   if $$self{'_control'} ne $$bam_ob{'SM'}
+218   ***     50      0      1   unless (exists $info{'use_cntl'} and defined $info{'use_cntl'})
+234   ***      0      0      0   unless exists $$self{'_detail'}{$sm}
+239   ***      0      0      0   if (exists $$current{$info}) { }
+      ***      0      0      0   elsif (exists $$bam_ob{'info'}{$info}) { }
+      ***      0      0      0   elsif ($counter == 0) { }
+240   ***      0      0      0   unless defined $$bam_ob{'info'}{$info}
+241   ***      0      0      0   if $$current{$info} ne $$bam_ob{'info'}{$info}
+263          100      1      1   unless _check_seq_type($seq_in)
+283   ***      0      0      0   if (defined $in_seq_type) { }
+288   ***      0      0      0   unless _check_seq_type($seq_type)
+308   ***      0      0      0   if ($tag eq 'SM')
+310   ***      0      0      0   if ($sm =~ /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/)
+318   ***      0      0      0   if (exists $$bam{'info'})
+323   ***      0      0      0   if (exists $$bam{'comments'})
+428   ***      0      0      0   if (scalar @tags > 0)
+509   ***      0      0      0   if (exists $$bam_ob{'info'}{'submitter_sample_id'})
+526   ***      0      0      0   if (-e $info_file)
+530   ***      0      0      0   if $line eq ''
+531   ***      0      0      0   unless $line =~ /^([^:]+):(.*)$/
+532   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
+538   ***      0      0      0   unless $comment =~ /^([^:]+):(.*)/
+540   ***      0      0      0   if exists $$bam_ob{'info'}{$1}
+541   ***      0      0      0   if ($value =~ /^([a-fA-F0-9]{8})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{4})([a-fA-F0-9]{12})$/)
 
 
 Covered Subroutines
 -------------------
 
-Subroutine          Count Pod Location           
-------------------- ----- --- -------------------
-BEGIN                   2     lib/PCAP/SRA.pm:23 
-BEGIN                   2     lib/PCAP/SRA.pm:26 
-BEGIN                   2     lib/PCAP/SRA.pm:27 
-BEGIN                   2     lib/PCAP/SRA.pm:28 
-BEGIN                   2     lib/PCAP/SRA.pm:29 
-BEGIN                   2     lib/PCAP/SRA.pm:30 
-BEGIN                   2     lib/PCAP/SRA.pm:31 
-BEGIN                   2     lib/PCAP/SRA.pm:32 
-BEGIN                   2     lib/PCAP/SRA.pm:33 
-BEGIN                   2     lib/PCAP/SRA.pm:34 
-BEGIN                   2     lib/PCAP/SRA.pm:35 
-BEGIN                   2     lib/PCAP/SRA.pm:36 
-BEGIN                   2     lib/PCAP/SRA.pm:37 
-BEGIN                   2     lib/PCAP/SRA.pm:39 
-BEGIN                   2     lib/PCAP/SRA.pm:41 
-BEGIN                   2     lib/PCAP/SRA.pm:43 
-__ANON__                4     lib/PCAP/SRA.pm:201
-_check_seq_type         2     lib/PCAP/SRA.pm:200
-create_cv_lookups       3   1 lib/PCAP/SRA.pm:149
-uuid                    1   1 lib/PCAP/SRA.pm:189
-validate_seq_type       2   1 lib/PCAP/SRA.pm:194
+Subroutine            Count Pod Location           
+--------------------- ----- --- -------------------
+BEGIN                     2     lib/PCAP/SRA.pm:23 
+BEGIN                     2     lib/PCAP/SRA.pm:26 
+BEGIN                     2     lib/PCAP/SRA.pm:27 
+BEGIN                     2     lib/PCAP/SRA.pm:28 
+BEGIN                     2     lib/PCAP/SRA.pm:29 
+BEGIN                     2     lib/PCAP/SRA.pm:30 
+BEGIN                     2     lib/PCAP/SRA.pm:31 
+BEGIN                     2     lib/PCAP/SRA.pm:32 
+BEGIN                     2     lib/PCAP/SRA.pm:33 
+BEGIN                     2     lib/PCAP/SRA.pm:34 
+BEGIN                     2     lib/PCAP/SRA.pm:35 
+BEGIN                     2     lib/PCAP/SRA.pm:36 
+BEGIN                     2     lib/PCAP/SRA.pm:37 
+BEGIN                     2     lib/PCAP/SRA.pm:39 
+BEGIN                     2     lib/PCAP/SRA.pm:41 
+BEGIN                     2     lib/PCAP/SRA.pm:43 
+__ANON__                151     lib/PCAP/SRA.pm:192
+__ANON__                  4     lib/PCAP/SRA.pm:269
+_check_seq_type           2     lib/PCAP/SRA.pm:268
+create_cv_lookups         5   1 lib/PCAP/SRA.pm:151
+group_bams                2   1 lib/PCAP/SRA.pm:273
+new                       2   0 lib/PCAP/SRA.pm:73 
+parse_input               2   1 lib/PCAP/SRA.pm:298
+uuid                      1   1 lib/PCAP/SRA.pm:257
+validate_grouped_data     2   0 lib/PCAP/SRA.pm:84 
+validate_info             7   1 lib/PCAP/SRA.pm:187
+validate_seq_type         2   1 lib/PCAP/SRA.pm:262
 
 Uncovered Subroutines
 ---------------------
 
-Subroutine          Count Pod Location           
-------------------- ----- --- -------------------
-__ANON__                0     lib/PCAP/SRA.pm:180
-_attribute_xml          0     lib/PCAP/SRA.pm:367
-_exp_xml                0     lib/PCAP/SRA.pm:508
-_run_xml                0     lib/PCAP/SRA.pm:521
-analysis_attributes     0   1 lib/PCAP/SRA.pm:351
-analysis_run_xml        0   1 lib/PCAP/SRA.pm:273
-analysis_xml            0   1 lib/PCAP/SRA.pm:292
-bash_script             0   1 lib/PCAP/SRA.pm:531
-experiment              0   1 lib/PCAP/SRA.pm:394
-experiment_sets         0   1 lib/PCAP/SRA.pm:379
-file_xml                0   1 lib/PCAP/SRA.pm:263
-generate_sample_SRA     0   1 lib/PCAP/SRA.pm:89 
-get_md5_from_file       0   1 lib/PCAP/SRA.pm:282
-group_bams              0   1 lib/PCAP/SRA.pm:205
-info_file_data          0   1 lib/PCAP/SRA.pm:450
-parse_input             0   1 lib/PCAP/SRA.pm:229
-run                     0   1 lib/PCAP/SRA.pm:486
-run_set                 0   1 lib/PCAP/SRA.pm:476
-sample_descriptor       0   1 lib/PCAP/SRA.pm:433
-validate_info           0   1 lib/PCAP/SRA.pm:176
+Subroutine            Count Pod Location           
+--------------------- ----- --- -------------------
+_attribute_xml            0     lib/PCAP/SRA.pm:441
+_exp_xml                  0     lib/PCAP/SRA.pm:582
+_run_xml                  0     lib/PCAP/SRA.pm:595
+analysis_attributes       0   1 lib/PCAP/SRA.pm:425
+analysis_run_xml          0   1 lib/PCAP/SRA.pm:347
+analysis_xml              0   1 lib/PCAP/SRA.pm:366
+bash_script               0   1 lib/PCAP/SRA.pm:605
+experiment                0   1 lib/PCAP/SRA.pm:468
+experiment_sets           0   1 lib/PCAP/SRA.pm:453
+file_xml                  0   1 lib/PCAP/SRA.pm:337
+generate_sample_SRA       0   1 lib/PCAP/SRA.pm:100
+get_md5_from_file         0   1 lib/PCAP/SRA.pm:356
+info_file_data            0   1 lib/PCAP/SRA.pm:524
+populate_detail           0   0 lib/PCAP/SRA.pm:230
+run                       0   1 lib/PCAP/SRA.pm:560
+run_set                   0   1 lib/PCAP/SRA.pm:550
+sample_descriptor         0   1 lib/PCAP/SRA.pm:507
+validate_control          0   0 lib/PCAP/SRA.pm:178
 
 
 Branches

@@ -70,4 +70,10 @@ PCAP - Base class to house version and generic functions.
 
 Output the brief license text for use in help messages.
 
+=item upgrade_path
+
+  my $install_these = PCAP::upgrade_path('<current_version>');
+
+Return the list of tools that should be installed by setup.sh when upgrading from a previous version.
+
 =back

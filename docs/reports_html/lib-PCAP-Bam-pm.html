@@ -36,11 +36,11 @@ http://www.pjcj.net
 
 <tr>
 <td class="h">branch</td>
-<td>36</td>
-<td>48</td>
-<td class="c2" title="36 / 48">
+<td>37</td>
+<td>50</td>
+<td class="c2" title="37 / 50">
 
-<a href="lib-PCAP-Bam-pm--branch.html"> 91.7 </a>
+<a href="lib-PCAP-Bam-pm--branch.html"> 90.0 </a>
 
 </td>
 </tr>
@@ -72,11 +72,11 @@ http://www.pjcj.net
 
 <tr>
 <td class="h">total</td>
-<td>71</td>
-<td>85</td>
-<td class="c2" title="71 / 85">
+<td>72</td>
+<td>87</td>
+<td class="c2" title="72 / 87">
 
-95.3
+94.3
 
 </td>
 </tr>
@@ -4314,10 +4314,10 @@ http://www.pjcj.net
 <a name="163">163</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c1" >
+ <a href="lib-PCAP-Bam-pm--branch.html#163-1"> 
+ 50
+ </a> 
 </td>
 
 <td >
@@ -4332,7 +4332,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@comments</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">}</span> <span class="word">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">});</span> </td>
 </tr>
 
 <tr>
@@ -4358,7 +4358,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$line</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="word">sam_header</span><span class="structure">})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@comments</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4366,8 +4366,34 @@ http://www.pjcj.net
 <a name="165">165</a>
 </td>
 
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$line</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="word">sam_header</span><span class="structure">})</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="166">166</a>
+</td>
+
 <td  class="c3" >
- <a href="lib-PCAP-Bam-pm--branch.html#165-1"> 
+ <a href="lib-PCAP-Bam-pm--branch.html#166-1"> 
 100
  </a> 
 </td>
@@ -4385,32 +4411,6 @@ http://www.pjcj.net
 </td>
 
 <td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span> <span class="word">unless</span><span class="structure">(</span><span class="symbol">$line</span> <span class="operator">=~</span> <span class="match">m/^\@CO\t(.*)/</span><span class="structure">);</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="166">166</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@comments</span><span class="operator">,</span> <span class="magic">$1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4436,7 +4436,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@comments</span><span class="operator">,</span> <span class="magic">$1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4462,7 +4462,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="cast">\</span><span class="symbol">@comments</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4488,7 +4488,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">}</span> <span class="operator">=</span> <span class="cast">\</span><span class="symbol">@comments</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4514,7 +4514,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'comments'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -4540,7 +4540,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">sam_header</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4554,14 +4554,66 @@ http://www.pjcj.net
 
 </td>
 
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp; </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="173">173</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">sam_header</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="174">174</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
 <td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#172-1"> 
+ <a href="lib-PCAP-Bam-pm--subroutine.html#174-1"> 
 7
  </a> 
 </td>
 
 <td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#172-1"> 
+ <a href="lib-PCAP-Bam-pm--subroutine.html#174-1"> 
 1
  </a> 
 </td>
@@ -4571,11 +4623,11 @@ http://www.pjcj.net
 
 <tr>
 <td  class="h" >
-<a name="173">173</a>
+<a name="175">175</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-Bam-pm--branch.html#173-1"> 
+<td  class="c1" >
+ <a href="lib-PCAP-Bam-pm--branch.html#175-1"> 
  50
  </a> 
 </td>
@@ -4593,58 +4645,6 @@ http://www.pjcj.net
 </td>
 
 <td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'header'</span><span class="structure">}</span> <span class="word">if</span><span class="structure">(</span><span class="word">exists</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'header'</span><span class="structure">});</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="174">174</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sam</span> <span class="operator">=</span> <span class="word">sam_ob</span><span class="structure">(</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'bam'</span><span class="structure">});</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="175">175</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@header_lines</span> <span class="operator">=</span> <span class="word">split</span> <span class="match">/\n/</span><span class="operator">,</span> <span class="symbol">$sam</span><span class="operator">-&gt;</span><span class="word">header</span><span class="operator">-&gt;</span><span class="word">text</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4670,7 +4670,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'header'</span><span class="structure">}</span> <span class="operator">=</span> <span class="cast">\</span><span class="symbol">@header_lines</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sam</span> <span class="operator">=</span> <span class="word">sam_ob</span><span class="structure">(</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'bam'</span><span class="structure">});</span> </td>
 </tr>
 
 <tr>
@@ -4696,7 +4696,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'header'</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@header_lines</span> <span class="operator">=</span> <span class="word">split</span> <span class="match">/\n/</span><span class="operator">,</span> <span class="symbol">$sam</span><span class="operator">-&gt;</span><span class="word">header</span><span class="operator">-&gt;</span><span class="word">text</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4722,7 +4722,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'header'</span><span class="structure">}</span> <span class="operator">=</span> <span class="cast">\</span><span class="symbol">@header_lines</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4748,7 +4748,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'header'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -4774,7 +4774,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">single_rg_value</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4788,19 +4788,19 @@ http://www.pjcj.net
 
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#181-1"> 
-2
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#181-1"> 
-1
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$self</span><span class="operator">,</span> <span class="symbol">$tag</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -4826,7 +4826,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$rgs</span> <span class="operator">=</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="word">read_group_info</span><span class="structure">([</span><span class="symbol">$tag</span><span class="structure">]);</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">single_rg_value</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -4834,25 +4834,25 @@ http://www.pjcj.net
 <a name="183">183</a>
 </td>
 
+<td >
+
+&nbsp;
+
+</td>
+
 <td  class="c3" >
- <a href="lib-PCAP-Bam-pm--branch.html#183-1"> 
-100
+ <a href="lib-PCAP-Bam-pm--subroutine.html#183-1"> 
+2
  </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#183-1"> 
+1
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="word">croak</span> <span class="double">&quot;ERROR: This BAM includes multiple readgroups: $self-&gt;{bam}&quot;</span> <span class="word">if</span><span class="structure">(</span><span class="word">scalar</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$rgs</span><span class="structure">}</span> <span class="operator">&gt;</span> <span class="number">1</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$self</span><span class="operator">,</span> <span class="symbol">$tag</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -4878,7 +4878,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$rgs</span><span class="operator">-&gt;</span><span class="structure">[</span><span class="number">0</span><span class="structure">]</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$tag</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$rgs</span> <span class="operator">=</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="word">read_group_info</span><span class="structure">([</span><span class="symbol">$tag</span><span class="structure">]);</span> </td>
 </tr>
 
 <tr>
@@ -4886,10 +4886,10 @@ http://www.pjcj.net
 <a name="185">185</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--branch.html#185-1"> 
+100
+ </a> 
 </td>
 
 <td >
@@ -4904,7 +4904,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">croak</span> <span class="double">&quot;ERROR: This BAM includes multiple readgroups: $self-&gt;{bam}&quot;</span> <span class="word">if</span><span class="structure">(</span><span class="word">scalar</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$rgs</span><span class="structure">}</span> <span class="operator">&gt;</span> <span class="number">1</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -4930,7 +4930,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$rgs</span><span class="operator">-&gt;</span><span class="structure">[</span><span class="number">0</span><span class="structure">]</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="symbol">$tag</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -4956,7 +4956,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">check_for_tags</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -4970,19 +4970,19 @@ http://www.pjcj.net
 
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#188-1"> 
-4
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#188-1"> 
-1
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$self</span><span class="operator">,</span> <span class="symbol">$sorted_tags</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -5008,7 +5008,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@errors</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">check_for_tags</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5022,19 +5022,19 @@ http://www.pjcj.net
 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#190-1"> 
+4
+ </a> 
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#190-1"> 
+1
+ </a> 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$rg</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'rgs'</span><span class="structure">}})</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="structure">(</span><span class="symbol">$self</span><span class="operator">,</span> <span class="symbol">$sorted_tags</span><span class="structure">)</span> <span class="operator">=</span> <span class="magic">@_</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5060,7 +5060,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@tags_found</span> <span class="operator">=</span> <span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$rg</span><span class="structure">};</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@errors</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5086,7 +5086,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$i</span><span class="structure">(</span><span class="number">0</span><span class="operator">..</span><span class="structure">(</span><span class="word">scalar</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$sorted_tags</span><span class="structure">})</span><span class="number">-1</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$rg</span><span class="structure">(</span><span class="cast">@</span><span class="structure">{</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'rgs'</span><span class="structure">}})</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5094,14 +5094,66 @@ http://www.pjcj.net
 <a name="193">193</a>
 </td>
 
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@tags_found</span> <span class="operator">=</span> <span class="word">keys</span> <span class="cast">%</span><span class="structure">{</span><span class="symbol">$rg</span><span class="structure">};</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="194">194</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">for</span> <span class="keyword">my</span> <span class="symbol">$i</span><span class="structure">(</span><span class="number">0</span><span class="operator">..</span><span class="structure">(</span><span class="word">scalar</span> <span class="cast">@</span><span class="structure">{</span><span class="symbol">$sorted_tags</span><span class="structure">})</span><span class="number">-1</span><span class="structure">)</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="195">195</a>
+</td>
+
 <td  class="c3" >
- <a href="lib-PCAP-Bam-pm--branch.html#193-1"> 
+ <a href="lib-PCAP-Bam-pm--branch.html#195-1"> 
 100
  </a> 
 </td>
 
 <td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#193-1"> 
+ <a href="lib-PCAP-Bam-pm--subroutine.html#195-1"> 
 49
  </a> 
 </td>
@@ -5117,11 +5169,11 @@ http://www.pjcj.net
 
 <tr>
 <td  class="h" >
-<a name="194">194</a>
+<a name="196">196</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-Bam-pm--branch.html#194-1"> 
+<td  class="c1" >
+ <a href="lib-PCAP-Bam-pm--branch.html#196-1"> 
  50
  </a> 
 </td>
@@ -5139,58 +5191,6 @@ http://www.pjcj.net
 </td>
 
 <td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="symbol">$sorted_tags</span><span class="operator">-&gt;</span><span class="structure">[</span><span class="symbol">$i</span><span class="structure">]</span> <span class="operator">eq</span> <span class="single">'PM'</span> <span class="operator">&amp;&amp;</span> <span class="word">exists</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'info'</span><span class="structure">}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PM'</span><span class="structure">})</span> <span class="structure">{</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="195">195</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$rg</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PM'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'info'</span><span class="structure">}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PM'</span><span class="structure">};</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="196">196</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5216,7 +5216,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$rg</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PM'</span><span class="structure">}</span> <span class="operator">=</span> <span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'info'</span><span class="structure">}</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'PM'</span><span class="structure">};</span> </td>
 </tr>
 
 <tr>
@@ -5242,7 +5242,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@pairs</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">next</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5268,7 +5268,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@pairs</span><span class="operator">,</span> <span class="double">&quot;$_:$rg-&gt;{$_}&quot;</span> <span class="word">for</span><span class="structure">(</span><span class="symbol">@tags_found</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5294,7 +5294,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@errors</span><span class="operator">,</span> <span class="double">&quot;ERROR: $sorted_tags-&gt;[$i] not found in RG of $self-&gt;{bam}\n\t&quot;</span><span class="operator">.</span><span class="structure">(</span><span class="word">join</span> <span class="literal">q{,}</span><span class="operator">,</span> <span class="symbol">@pairs</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">@pairs</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5320,7 +5320,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@pairs</span><span class="operator">,</span> <span class="double">&quot;$_:$rg-&gt;{$_}&quot;</span> <span class="word">for</span><span class="structure">(</span><span class="symbol">@tags_found</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5346,7 +5346,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="word">push</span> <span class="symbol">@errors</span><span class="operator">,</span> <span class="double">&quot;ERROR: $sorted_tags-&gt;[$i] not found in RG of $self-&gt;{bam}\n\t&quot;</span><span class="operator">.</span><span class="structure">(</span><span class="word">join</span> <span class="literal">q{,}</span><span class="operator">,</span> <span class="symbol">@pairs</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5372,7 +5372,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5380,12 +5380,6 @@ http://www.pjcj.net
 <a name="204">204</a>
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--branch.html#204-1"> 
-100
- </a> 
-</td>
-
 <td >
 
 &nbsp;
@@ -5398,7 +5392,13 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="word">die</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@errors</span><span class="structure">)</span> <span class="word">if</span><span class="structure">(</span><span class="word">scalar</span> <span class="symbol">@errors</span> <span class="operator">&gt;</span> <span class="number">0</span><span class="structure">);</span> </td>
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5424,7 +5424,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5432,10 +5432,10 @@ http://www.pjcj.net
 <a name="206">206</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--branch.html#206-1"> 
+100
+ </a> 
 </td>
 
 <td >
@@ -5450,7 +5450,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="word">die</span> <span class="structure">(</span><span class="word">join</span> <span class="double">&quot;\n&quot;</span><span class="operator">,</span> <span class="symbol">@errors</span><span class="structure">)</span> <span class="word">if</span><span class="structure">(</span><span class="word">scalar</span> <span class="symbol">@errors</span> <span class="operator">&gt;</span> <span class="number">0</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5476,7 +5476,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5502,7 +5502,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">sam_ob</span> <span class="structure">{</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5516,19 +5516,19 @@ http://www.pjcj.net
 
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#209-1"> 
-13
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#209-1"> 
-1
- </a> 
+<td >
+
+&nbsp;
+
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -5554,7 +5554,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sam</span><span class="structure">;</span> </td>
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">sam_ob</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5562,51 +5562,25 @@ http://www.pjcj.net
 <a name="211">211</a>
 </td>
 
-<td  class="c0" >
- <a href="lib-PCAP-Bam-pm--branch.html#211-1"> 
- 50
+<td >
+
+&nbsp;
+
+</td>
+
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#211-1"> 
+13
  </a> 
 </td>
 
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="word">ref</span> <span class="symbol">$bam</span> <span class="operator">eq</span> <span class="single">'Bio::DB::Sam'</span><span class="structure">)</span> <span class="structure">{</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a >&nbsp;</a>
-</td>
-
-<td  class="c0" >
- <a href="lib-PCAP-Bam-pm--branch.html#-2"> 
- 50
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#211-1"> 
+1
  </a> 
 </td>
 
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5632,7 +5606,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$sam</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sam</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5640,10 +5614,10 @@ http://www.pjcj.net
 <a name="213">213</a>
 </td>
 
-<td >
-
-&nbsp;
-
+<td  class="c1" >
+ <a href="lib-PCAP-Bam-pm--branch.html#213-1"> 
+ 50
+ </a> 
 </td>
 
 <td >
@@ -5658,7 +5632,33 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">if</span><span class="structure">(</span><span class="word">ref</span> <span class="symbol">$bam</span> <span class="operator">eq</span> <span class="single">'Bio::DB::Sam'</span><span class="structure">)</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a >&nbsp;</a>
+</td>
+
+<td  class="c1" >
+ <a href="lib-PCAP-Bam-pm--branch.html#-2"> 
+ 50
+ </a> 
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -5684,7 +5684,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">elsif</span><span class="structure">(</span><span class="operator">-e</span> <span class="symbol">$bam</span><span class="structure">)</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$sam</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5710,7 +5710,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$sam</span> <span class="operator">=</span> <span class="word">Bio::DB::Sam</span><span class="operator">-&gt;</span><span class="word">new</span><span class="structure">(</span><span class="word">-bam</span> <span class="operator">=&gt;</span> <span class="symbol">$bam</span><span class="structure">);</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5736,7 +5736,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">elsif</span><span class="structure">(</span><span class="operator">-e</span> <span class="symbol">$bam</span><span class="structure">)</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5762,7 +5762,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">else</span> <span class="structure">{</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="symbol">$sam</span> <span class="operator">=</span> <span class="word">Bio::DB::Sam</span><span class="operator">-&gt;</span><span class="word">new</span><span class="structure">(</span><span class="word">-bam</span> <span class="operator">=&gt;</span> <span class="symbol">$bam</span><span class="structure">);</span> </td>
 </tr>
 
 <tr>
@@ -5788,7 +5788,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$caller</span> <span class="operator">=</span> <span class="structure">(</span><span class="word">caller</span><span class="structure">(</span><span class="number">1</span><span class="structure">))[</span><span class="number">3</span><span class="structure">];</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5814,7 +5814,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">croak</span> <span class="double">&quot;$caller requires either a BAM file or Bio::DB::Sam object.\n&quot;</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">else</span> <span class="structure">{</span> </td>
 </tr>
 
 <tr>
@@ -5840,7 +5840,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$caller</span> <span class="operator">=</span> <span class="structure">(</span><span class="word">caller</span><span class="structure">(</span><span class="number">1</span><span class="structure">))[</span><span class="number">3</span><span class="structure">];</span> </td>
 </tr>
 
 <tr>
@@ -5866,7 +5866,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$sam</span><span class="structure">;</span> </td>
+<td class="s"> &nbsp;&nbsp;&nbsp;&nbsp;<span class="word">croak</span> <span class="double">&quot;$caller requires either a BAM file or Bio::DB::Sam object.\n&quot;</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5892,7 +5892,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="structure">}</span> </td>
+<td class="s"> &nbsp;&nbsp;<span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -5918,7 +5918,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> &nbsp; </td>
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="symbol">$sam</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -5944,220 +5944,12 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">check_paired</span> <span class="structure">{</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="225">225</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#225-1"> 
-2
- </a> 
-</td>
-
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--subroutine.html#225-1"> 
-1
- </a> 
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$self</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="226">226</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sam</span> <span class="operator">=</span> <span class="word">sam_ob</span><span class="structure">(</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'bam'</span><span class="structure">});</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="227">227</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="symbol">$sam</span><span class="operator">-&gt;</span><span class="word">bam</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="228">228</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">header</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="229">229</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$read</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">read1</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="230">230</a>
-</td>
-
-<td  class="c3" >
- <a href="lib-PCAP-Bam-pm--branch.html#230-1"> 
-100
- </a> 
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;ERROR: Input BAMs should be for paired end sequencing: $self-&gt;{bam}\n&quot;</span> <span class="word">unless</span><span class="structure">(</span><span class="number">1</span> <span class="operator">&amp;</span> <span class="symbol">$read</span><span class="operator">-&gt;</span><span class="word">flag</span><span class="structure">);</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="231">231</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span><span class="structure">;</span> </td>
-</tr>
-
-<tr>
-<td  class="h" >
-<a name="232">232</a>
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
-<td >
-
-&nbsp;
-
-</td>
-
 <td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
-<a name="233">233</a>
+<a name="225">225</a>
 </td>
 
 <td >
@@ -6183,6 +5975,214 @@ http://www.pjcj.net
 
 <tr>
 <td  class="h" >
+<a name="226">226</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="keyword">sub</span>&nbsp;<span class="word">check_paired</span> <span class="structure">{</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="227">227</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#227-1"> 
+2
+ </a> 
+</td>
+
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--subroutine.html#227-1"> 
+1
+ </a> 
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$self</span> <span class="operator">=</span> <span class="core">shift</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="228">228</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$sam</span> <span class="operator">=</span> <span class="word">sam_ob</span><span class="structure">(</span><span class="symbol">$self</span><span class="operator">-&gt;</span><span class="structure">{</span><span class="single">'bam'</span><span class="structure">});</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="229">229</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$bam</span> <span class="operator">=</span> <span class="symbol">$sam</span><span class="operator">-&gt;</span><span class="word">bam</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="230">230</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">header</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="231">231</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">my</span> <span class="symbol">$read</span> <span class="operator">=</span> <span class="symbol">$bam</span><span class="operator">-&gt;</span><span class="word">read1</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="232">232</a>
+</td>
+
+<td  class="c3" >
+ <a href="lib-PCAP-Bam-pm--branch.html#232-1"> 
+100
+ </a> 
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="word">die</span> <span class="double">&quot;ERROR: Input BAMs should be for paired end sequencing: $self-&gt;{bam}\n&quot;</span> <span class="word">unless</span><span class="structure">(</span><span class="number">1</span> <span class="operator">&amp;</span> <span class="symbol">$read</span><span class="operator">-&gt;</span><span class="word">flag</span><span class="structure">);</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="233">233</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> &nbsp;&nbsp;<span class="keyword">return</span> <span class="number">1</span><span class="structure">;</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
 <a name="234">234</a>
 </td>
 
@@ -6204,7 +6204,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="number">1</span><span class="structure">;</span> </td>
+<td class="s"> <span class="structure">}</span> </td>
 </tr>
 
 <tr>
@@ -6256,7 +6256,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="separator">__END__</span> </td>
+<td class="s"> <span class="number">1</span><span class="structure">;</span> </td>
 </tr>
 
 <tr>
@@ -6282,7 +6282,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="end"></span> </td>
+<td class="s"> &nbsp; </td>
 </tr>
 
 <tr>
@@ -6308,7 +6308,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=head1 NAME</span> </td>
+<td class="s"> <span class="separator">__END__</span> </td>
 </tr>
 
 <tr>
@@ -6334,7 +6334,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="end"></span> </td>
 </tr>
 
 <tr>
@@ -6360,7 +6360,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">PCAP::Bam - Methods that process BAM files</span> </td>
+<td class="s"> <span class="pod">=head1 NAME</span> </td>
 </tr>
 
 <tr>
@@ -6412,7 +6412,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=head2 Object Methods</span> </td>
+<td class="s"> <span class="pod">PCAP::Bam - Methods that process BAM files</span> </td>
 </tr>
 
 <tr>
@@ -6464,7 +6464,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=over 4</span> </td>
+<td class="s"> <span class="pod">=head2 Object Methods</span> </td>
 </tr>
 
 <tr>
@@ -6516,7 +6516,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item new</span> </td>
+<td class="s"> <span class="pod">=over 4</span> </td>
 </tr>
 
 <tr>
@@ -6568,7 +6568,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my $bam = PCAP::Bam-&gt;new($bam_file);</span> </td>
+<td class="s"> <span class="pod">=item new</span> </td>
 </tr>
 
 <tr>
@@ -6620,7 +6620,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Generate a BAM object to allow access to object based functions.  Primarily added to allow efficient</span> </td>
+<td class="s"> <span class="pod">  my $bam = PCAP::Bam-&gt;new($bam_file);</span> </td>
 </tr>
 
 <tr>
@@ -6646,7 +6646,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">access to header information without re-parsing once populated.</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -6672,7 +6672,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Generate a BAM object to allow access to object based functions.  Primarily added to allow efficient</span> </td>
 </tr>
 
 <tr>
@@ -6698,7 +6698,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item read_group_info</span> </td>
+<td class="s"> <span class="pod">access to header information without re-parsing once populated.</span> </td>
 </tr>
 
 <tr>
@@ -6750,7 +6750,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my $rg_data = $bam-&gt;read_group_info($required_tags);</span> </td>
+<td class="s"> <span class="pod">=item read_group_info</span> </td>
 </tr>
 
 <tr>
@@ -6802,7 +6802,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Returns an arrayref (one entry per readgroup) of hashes where the keys are the RG tags found in the @RG header line.</span> </td>
+<td class="s"> <span class="pod">  my $rg_data = $bam-&gt;read_group_info($required_tags);</span> </td>
 </tr>
 
 <tr>
@@ -6828,7 +6828,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Providing an arrayref of required_tags causes an error to be raised if any are not found:</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -6854,7 +6854,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Returns an arrayref (one entry per readgroup) of hashes where the keys are the RG tags found in the @RG header line.</span> </td>
 </tr>
 
 <tr>
@@ -6880,7 +6880,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my $rg_data = $bam-&gt;read_group_info([qw(CN LB SN)]);</span> </td>
+<td class="s"> <span class="pod">Providing an arrayref of required_tags causes an error to be raised if any are not found:</span> </td>
 </tr>
 
 <tr>
@@ -6932,7 +6932,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Resulting data structure:</span> </td>
+<td class="s"> <span class="pod">  my $rg_data = $bam-&gt;read_group_info([qw(CN LB SN)]);</span> </td>
 </tr>
 
 <tr>
@@ -6984,7 +6984,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  [ { CN =&gt; 'SI',</span> </td>
+<td class="s"> <span class="pod">Resulting data structure:</span> </td>
 </tr>
 
 <tr>
@@ -7010,7 +7010,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">      LB =&gt; 'LIBRARY_ID',</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -7036,7 +7036,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">      SM =&gt; 'Sample_name},</span> </td>
+<td class="s"> <span class="pod">  [ { CN =&gt; 'SI',</span> </td>
 </tr>
 
 <tr>
@@ -7062,7 +7062,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">    { CN =&gt; ...</span> </td>
+<td class="s"> <span class="pod">      LB =&gt; 'LIBRARY_ID',</span> </td>
 </tr>
 
 <tr>
@@ -7088,7 +7088,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">    },</span> </td>
+<td class="s"> <span class="pod">      SM =&gt; 'Sample_name},</span> </td>
 </tr>
 
 <tr>
@@ -7114,7 +7114,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">    ...];</span> </td>
+<td class="s"> <span class="pod">    { CN =&gt; ...</span> </td>
 </tr>
 
 <tr>
@@ -7140,7 +7140,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">    },</span> </td>
 </tr>
 
 <tr>
@@ -7166,7 +7166,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item single_rg_value</span> </td>
+<td class="s"> <span class="pod">    ...];</span> </td>
 </tr>
 
 <tr>
@@ -7218,7 +7218,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my $sample_name = $bam-&gt;single_rg_value('SM');</span> </td>
+<td class="s"> <span class="pod">=item single_rg_value</span> </td>
 </tr>
 
 <tr>
@@ -7270,7 +7270,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Gets the value of a single RG tag.  Errors if multiple readgroups detected.</span> </td>
+<td class="s"> <span class="pod">  my $sample_name = $bam-&gt;single_rg_value('SM');</span> </td>
 </tr>
 
 <tr>
@@ -7322,7 +7322,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item check_for_tags</span> </td>
+<td class="s"> <span class="pod">Gets the value of a single RG tag.  Errors if multiple readgroups detected.</span> </td>
 </tr>
 
 <tr>
@@ -7374,7 +7374,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $bam-&gt;check_for_tags([list of required tags]);</span> </td>
+<td class="s"> <span class="pod">=item check_for_tags</span> </td>
 </tr>
 
 <tr>
@@ -7426,7 +7426,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Check that all readgroups in this BAM have the specified tags.</span> </td>
+<td class="s"> <span class="pod">  $bam-&gt;check_for_tags([list of required tags]);</span> </td>
 </tr>
 
 <tr>
@@ -7452,7 +7452,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Errors if any are not detected.</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -7478,7 +7478,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Check that all readgroups in this BAM have the specified tags.</span> </td>
 </tr>
 
 <tr>
@@ -7504,7 +7504,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item check_paired</span> </td>
+<td class="s"> <span class="pod">Errors if any are not detected.</span> </td>
 </tr>
 
 <tr>
@@ -7556,7 +7556,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $bam-&gt;check_paired;</span> </td>
+<td class="s"> <span class="pod">=item check_paired</span> </td>
 </tr>
 
 <tr>
@@ -7608,7 +7608,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Will error if BAM file doesn't contain paired reads.</span> </td>
+<td class="s"> <span class="pod">  $bam-&gt;check_paired;</span> </td>
 </tr>
 
 <tr>
@@ -7660,7 +7660,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item comments</span> </td>
+<td class="s"> <span class="pod">Will error if BAM file doesn't contain paired reads.</span> </td>
 </tr>
 
 <tr>
@@ -7712,7 +7712,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my @comments = @{$bam-&gt;comments};</span> </td>
+<td class="s"> <span class="pod">=item comments</span> </td>
 </tr>
 
 <tr>
@@ -7764,7 +7764,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Returns an array ref of the value of each comment line.</span> </td>
+<td class="s"> <span class="pod">  my @comments = @{$bam-&gt;comments};</span> </td>
 </tr>
 
 <tr>
@@ -7790,7 +7790,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">'@CO\t' is pre-stripped.</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -7816,7 +7816,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Returns an array ref of the value of each comment line.</span> </td>
 </tr>
 
 <tr>
@@ -7842,7 +7842,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item sam_header</span> </td>
+<td class="s"> <span class="pod">'@CO\t' is pre-stripped.</span> </td>
 </tr>
 
 <tr>
@@ -7894,7 +7894,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my @header_lines = @{$bam-&gt;sam_header};</span> </td>
+<td class="s"> <span class="pod">=item sam_header</span> </td>
 </tr>
 
 <tr>
@@ -7946,7 +7946,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Returns array ref of all header lines.  One entry perl line.</span> </td>
+<td class="s"> <span class="pod">  my @header_lines = @{$bam-&gt;sam_header};</span> </td>
 </tr>
 
 <tr>
@@ -7998,7 +7998,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=back</span> </td>
+<td class="s"> <span class="pod">Returns array ref of all header lines.  One entry perl line.</span> </td>
 </tr>
 
 <tr>
@@ -8050,7 +8050,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=head2 Non Object Methods</span> </td>
+<td class="s"> <span class="pod">=back</span> </td>
 </tr>
 
 <tr>
@@ -8102,7 +8102,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=over 4</span> </td>
+<td class="s"> <span class="pod">=head2 Non Object Methods</span> </td>
 </tr>
 
 <tr>
@@ -8154,7 +8154,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item bam_to_grouped_bam</span> </td>
+<td class="s"> <span class="pod">=over 4</span> </td>
 </tr>
 
 <tr>
@@ -8206,7 +8206,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  PCAP::Bam::bam_to_grouped_bam($index, $options);</span> </td>
+<td class="s"> <span class="pod">=item bam_to_grouped_bam</span> </td>
 </tr>
 
 <tr>
@@ -8258,7 +8258,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Convert a BAM for a single readgroup to a readname grouped BAM.</span> </td>
+<td class="s"> <span class="pod">  PCAP::Bam::bam_to_grouped_bam($index, $options);</span> </td>
 </tr>
 
 <tr>
@@ -8310,7 +8310,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  index   - Which element of the 'bams' array reference found in options should be processed</span> </td>
+<td class="s"> <span class="pod">Convert a BAM for a single readgroup to a readname grouped BAM.</span> </td>
 </tr>
 
 <tr>
@@ -8336,7 +8336,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">              NOTE: index is origin 1</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8362,7 +8362,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  index   - Which element of the 'bams' array reference found in options should be processed</span> </td>
 </tr>
 
 <tr>
@@ -8388,7 +8388,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
+<td class="s"> <span class="pod">              NOTE: index is origin 1</span> </td>
 </tr>
 
 <tr>
@@ -8440,7 +8440,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -tmp  : working/output directory depending on application</span> </td>
+<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
 </tr>
 
 <tr>
@@ -8466,7 +8466,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -bams : array reference to a B&lt;sorted&gt; list of BAM files (to allow resume function)</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8492,7 +8492,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">          -tmp  : working/output directory depending on application</span> </td>
 </tr>
 
 <tr>
@@ -8518,7 +8518,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">On successful completion of a run a file is created in tmp/progress/bamcollate.$index.  If the</span> </td>
+<td class="s"> <span class="pod">          -bams : array reference to a B&lt;sorted&gt; list of BAM files (to allow resume function)</span> </td>
 </tr>
 
 <tr>
@@ -8544,7 +8544,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">program is re-run without clearing of this progress folder the execution of the command is skipped.</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8570,7 +8570,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">On successful completion of a run a file is created in tmp/progress/bamcollate.$index.  If the</span> </td>
 </tr>
 
 <tr>
@@ -8596,7 +8596,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item merge_and_mark_dup</span> </td>
+<td class="s"> <span class="pod">program is re-run without clearing of this progress folder the execution of the command is skipped.</span> </td>
 </tr>
 
 <tr>
@@ -8648,7 +8648,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  PCAP::Bam::merge_and_mark_dup($options);</span> </td>
+<td class="s"> <span class="pod">=item merge_and_mark_dup</span> </td>
 </tr>
 
 <tr>
@@ -8700,7 +8700,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Takes a list of sorted BAM files, marks duplicates and produces single output BAM in one pass.</span> </td>
+<td class="s"> <span class="pod">  PCAP::Bam::merge_and_mark_dup($options);</span> </td>
 </tr>
 
 <tr>
@@ -8752,7 +8752,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
+<td class="s"> <span class="pod">Takes a list of sorted BAM files, marks duplicates and produces single output BAM in one pass.</span> </td>
 </tr>
 
 <tr>
@@ -8804,7 +8804,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -tmp      : working/output directory depending on application</span> </td>
+<td class="s"> <span class="pod">  options - Hashref, requires the following entries:</span> </td>
 </tr>
 
 <tr>
@@ -8830,7 +8830,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -bams     : array reference to a B&lt;sorted&gt; list of BAM files (for consistent results)</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -8856,7 +8856,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -outdir   : output files written to this folder</span> </td>
+<td class="s"> <span class="pod">          -tmp      : working/output directory depending on application</span> </td>
 </tr>
 
 <tr>
@@ -8882,7 +8882,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -sample   : prefix of output file</span> </td>
+<td class="s"> <span class="pod">          -bams     : array reference to a B&lt;sorted&gt; list of BAM files (for consistent results)</span> </td>
 </tr>
 
 <tr>
@@ -8908,7 +8908,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">          -threads  : Total threads available to process</span> </td>
+<td class="s"> <span class="pod">          -outdir   : output files written to this folder</span> </td>
 </tr>
 
 <tr>
@@ -8934,7 +8934,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">          -sample   : prefix of output file</span> </td>
 </tr>
 
 <tr>
@@ -8960,7 +8960,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  returns - path_to_marked_bam</span> </td>
+<td class="s"> <span class="pod">          -threads  : Total threads available to process</span> </td>
 </tr>
 
 <tr>
@@ -9012,7 +9012,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Resulting data is of the form:</span> </td>
+<td class="s"> <span class="pod">  returns - path_to_marked_bam</span> </td>
 </tr>
 
 <tr>
@@ -9064,7 +9064,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.bam</span> </td>
+<td class="s"> <span class="pod">Resulting data is of the form:</span> </td>
 </tr>
 
 <tr>
@@ -9090,7 +9090,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.bam.bai</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9116,7 +9116,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.bam.md5</span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.bam</span> </td>
 </tr>
 
 <tr>
@@ -9142,7 +9142,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  $outdir/$sample.met</span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.bam.bai</span> </td>
 </tr>
 
 <tr>
@@ -9168,7 +9168,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.bam.md5</span> </td>
 </tr>
 
 <tr>
@@ -9194,7 +9194,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item sample_name</span> </td>
+<td class="s"> <span class="pod">  $outdir/$sample.met</span> </td>
 </tr>
 
 <tr>
@@ -9246,7 +9246,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the sample name found in the header.</span> </td>
+<td class="s"> <span class="pod">=item sample_name</span> </td>
 </tr>
 
 <tr>
@@ -9298,7 +9298,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
+<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the sample name found in the header.</span> </td>
 </tr>
 
 <tr>
@@ -9350,7 +9350,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item rg_line_for_output</span> </td>
+<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
 </tr>
 
 <tr>
@@ -9402,7 +9402,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the string representation for the RG line.</span> </td>
+<td class="s"> <span class="pod">=item rg_line_for_output</span> </td>
 </tr>
 
 <tr>
@@ -9428,7 +9428,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs</span> </td>
+<td class="s"> <span class="pod"></span> </td>
 </tr>
 
 <tr>
@@ -9454,7 +9454,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod"></span> </td>
+<td class="s"> <span class="pod">Takes BAM or Bio::DB::Sam object as input and returns the string representation for the RG line.</span> </td>
 </tr>
 
 <tr>
@@ -9480,7 +9480,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
+<td class="s"> <span class="pod">Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs</span> </td>
 </tr>
 
 <tr>
@@ -9532,7 +9532,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=item sam_ob</span> </td>
+<td class="s"> <span class="pod">The SAM object is also returned should it be useful for other calls</span> </td>
 </tr>
 
 <tr>
@@ -9584,7 +9584,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">  my $sam_ob = sam_ob('file.bam');</span> </td>
+<td class="s"> <span class="pod">=item sam_ob</span> </td>
 </tr>
 
 <tr>
@@ -9636,7 +9636,7 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">Generate a Bio::DB::Sam object from the provided BAM file.</span> </td>
+<td class="s"> <span class="pod">  my $sam_ob = sam_ob('file.bam');</span> </td>
 </tr>
 
 <tr>
@@ -9688,12 +9688,64 @@ http://www.pjcj.net
 
 </td>
 
-<td class="s"> <span class="pod">=back</span> </td>
+<td class="s"> <span class="pod">Generate a Bio::DB::Sam object from the provided BAM file.</span> </td>
 </tr>
 
 <tr>
 <td  class="h" >
 <a name="369">369</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod"></span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="370">370</a>
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td >
+
+&nbsp;
+
+</td>
+
+<td class="s"> <span class="pod">=back</span> </td>
+</tr>
+
+<tr>
+<td  class="h" >
+<a name="371">371</a>
 </td>
 
 <td >
