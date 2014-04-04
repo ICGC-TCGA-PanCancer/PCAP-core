@@ -699,9 +699,18 @@ __END__
 
 Create object and pre validate the input data.
 
+=item populate_detail
+
+Additional final checking of data structures, intent is to use this to generate tab output of
+most of the fields for the tracking spreadsheet (once finalised).
+
 =item validate_grouped_data
 
-Validates the input information via other methods, just plumbing
+Validates the input information via other methods, just plumbing.
+
+=item validate_control
+
+Checks that the control/normal sample doesn't change within a donor.
 
 =item parse_input
 
