@@ -29,8 +29,9 @@ if [[ $? -ne 0 ]] ; then
   echo "\n\tERROR: TESTS FAILED\n"
   exit 1
 fi
+
+echo '### Generating test/pod coverage reports ###'
 # removed 'condition' from coverage as '||' 'or' doesn't work properly
-#report_c0 <integer>, -report_c1 <integer> and -report_c2 <integer>.:
 cover -coverage branch,subroutine,pod -report_c0 50 -report_c1 85 -report_c2 100 -report html_basic reports -silent > /dev/null
 cover -coverage branch,subroutine,pod -report text reports -silent > docs/reports_text/coverage.txt
 rm -rf reports/structure reports/digests reports/cover.13 reports/runs
@@ -41,6 +42,10 @@ unset HARNESS_PERL_SWITCHES
 echo '### Generating POD ###'
 mkdir -p docs/pod_html
 perl -MPod::Simple::HTMLBatch -e 'Pod::Simple::HTMLBatch::go' lib:bin docs/pod_html > /dev/null
+
+echo '### Archiving docs folder ###'
+tar cz -C $INIT_DIR -f docs.tar.gz docs
+rm -rf docs
 
 # generate manifest, and cleanup
 echo '### Generating MANIFEST ###'
