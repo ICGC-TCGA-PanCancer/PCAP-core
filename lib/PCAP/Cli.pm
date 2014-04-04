@@ -53,10 +53,9 @@ sub out_dir_check {
       if($clean_if_exists) {
         my $val = fileparse($0);
         my $term = Term::ReadLine->new($val);
-        my $reply = $term->get_reply( prompt => "Output dir exists, continuing will DELETE the content of this folder (including PROTECTED)\n\tDo you wish to proceed?",
-                                      choices => [qw(yes no)],
-                                      default => 'no');
-        if($reply eq 'yes') {
+        my $reply = $term->ask_yn( prompt => "Output dir exists, continuing will DELETE the content of this folder (including PROTECTED)\n\tDo you wish to proceed?",
+                                   default => 'n');
+        if($reply) {
           remove_tree($opt_val, { safe => 0 });
         }
         else {
