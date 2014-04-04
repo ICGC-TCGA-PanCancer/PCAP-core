@@ -45,7 +45,6 @@ perl -MPod::Simple::HTMLBatch -e 'Pod::Simple::HTMLBatch::go' lib:bin docs/pod_h
 
 echo '### Archiving docs folder ###'
 tar cz -C $INIT_DIR -f docs.tar.gz docs
-rm -rf docs
 
 # generate manifest, and cleanup
 echo '### Generating MANIFEST ###'
