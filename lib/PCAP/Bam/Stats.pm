@@ -56,7 +56,7 @@ const my @PAIRED_PROPERTIES => qw(proper);
 
 1;
 
- sub new{
+sub new{
   my ($proto, @args) = @_;
   my $class = ref($proto) || $proto;
   my $self = { };
@@ -855,3 +855,168 @@ sub bas{
   };
 }
 
+__END__
+
+=head1 NAME
+
+PCAP::Bam::Stats - Generate mapping and read statistics for a BAM.
+
+=head2 Methods
+
+=over 4
+
+=item new
+
+ my $stats = PCAP::Bam::Stats->new(-path => $input_bam);
+  # or if quality plots required
+ my $stats = PCAP::Bam::Stats->new(-path => $input_bam, -qscoring => defined $plots_dir);
+
+=item init
+
+Initialise the object.
+
+=item bas
+
+  $stats->bas($fh);
+
+Generate the output *.bas file to the specified file handle
+
+=item read_groups
+
+Get the sorted list of readgroup ids.
+
+=item read_group_info
+
+Returns the RG line for this readgroup.
+
+=item read_length
+
+  $stats->read_length($rg_id, $read_end);
+
+Returns the length of read X for the specified readgroup.
+
+=item mean_gc_rg
+
+Returns the mean GC content for this readgroup.
+
+=item insert_sizes
+
+Returns the raw insert size data array for specified readgroup.
+
+=item properly_mapped_ratio
+
+Returns the ratio of properly mapped pairs
+
+=item fqplots
+
+Trigger generation of fastq quality plots.
+
+=item down_pop_quals
+
+Build data structure for quality plots from raw PBQ arrays.
+
+=item fastq2image
+
+Write a fastq quality plot as png using GD image.
+
+=item mean_insert_size_rg
+
+Calculate the insert size mean for this readgroup.
+
+=item mean_insert_size
+
+Calculate the insert size mean for this file.
+
+=item med_insert_size_rg
+
+Calculate the insert size median for this readgroup.
+
+=item med_insert_size
+
+Calculate the insert size median for this file.
+
+=item cal_insert_size_sd_rg
+
+Calculate the insert size standard deviation for this readgroup.
+
+=item cal_insert_size_sd
+
+Calculate the insert size standard deviation for this file.
+
+=item calc_frac_properly_paired_rg
+
+Calculate the fraction of properly_paired for this readgroup.
+
+=item calc_frac_properly_paired
+
+Calculate the fraction of properly_paired for this file.
+
+=item calc_frac_unmapped_rg
+
+Calculate the fraction of unmapped for this readgroup.
+
+=item calc_frac_unmapped
+
+Calculate the fraction of unmapped for this file.
+
+=item calc_frac_duplicate_reads_rg
+
+Calculate the fraction of duplicate_reads for this readgroup.
+
+=item calc_frac_duplicate_reads
+
+Calculate the fraction of duplicate_reads for this file.
+
+=item count_total_reads_rg
+
+Returns the count of total_reads for this readgroup.
+
+=item count_total_reads
+
+Returns the count of total_reads for this file.
+
+=item count_properly_paired_rg
+
+Returns the count of properly_paired for this readgroup.
+
+=item count_properly_paired
+
+Returns the count of properly_paired for this file.
+
+=item count_unmapped_rg
+
+Returns the count of unmapped for this readgroup.
+
+=item count_unmapped
+
+Returns the count of unmapped for this file.
+
+=item count_duplicate_reads_rg
+
+Returns the count of duplicate_reads for this readgroup.
+
+=item count_duplicate_reads
+
+Returns the count of duplicate_reads for this file.
+
+=item count_total_mapped_bases_rg
+
+Returns the count of total_mapped_bases for this readgroup.
+
+=item count_total_mapped_bases
+
+Returns the count of total_mapped_bases for this file.
+
+=item count_total_divergent_bases_rg
+
+Returns the count of total_divergent_bases for this readgroup.
+
+=item count_total_divergent_bases
+
+Returns the count of total_divergent_bases for this file.
+
+=item count_gc_rg
+
+Returns the count of gc_rg for this readgroup.
+
+=back
