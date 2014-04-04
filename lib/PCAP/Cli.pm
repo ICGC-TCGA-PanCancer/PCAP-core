@@ -39,8 +39,8 @@ sub file_for_reading {
   my ($opt_name, $opt_val) = @_;
   die "Option '$opt_name' has not been defined.\n" unless(defined $opt_val);
   die "Option '$opt_name' ($opt_val) should be an existing file.\n" unless(-e $opt_val);
-  die "Option '$opt_name' ($opt_val) is a directory.\n" if(-d $opt_val);
-  die "Option '$opt_name' ($opt_val) should be file with non-zero size.\n" unless(-s $opt_val);
+  die "Option '$opt_name' ($opt_val) is a directory.\n" if(-d _);
+  die "Option '$opt_name' ($opt_val) should be file with non-zero size.\n" unless(-s _);
   return $opt_val;
 }
 
@@ -49,7 +49,7 @@ sub out_dir_check {
   die "Option '$opt_name' has not been defined.\n" unless(defined $opt_val);
 
   if(-e $opt_val) {
-    if(-d $opt_val) {
+    if(-d _) {
       if($clean_if_exists) {
         my $val = fileparse($0);
         my $term = Term::ReadLine->new($val);
