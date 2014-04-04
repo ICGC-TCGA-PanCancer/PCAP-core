@@ -27,6 +27,10 @@ use strict;
 use autodie qw(:all);
 use English qw( -no_match_vars );
 use warnings FATAL => 'all';
+use Term::UI;
+use Term::ReadLine;
+use File::Basename qw(fileparse);
+use File::Path qw(remove_tree);
 
 use File::Path qw (make_path);
 use List::Util qw(first);
@@ -41,13 +45,28 @@ sub file_for_reading {
 }
 
 sub out_dir_check {
-  my ($opt_name, $opt_val) = @_;
+  my ($opt_name, $opt_val, $clean_if_exists) = @_;
   die "Option '$opt_name' has not been defined.\n" unless(defined $opt_val);
 
   if(-e $opt_val) {
     if(-d $opt_val) {
-      # check writable
-      die "Option '$opt_name' points to an existing WRITE PROTECTED directory: $opt_val\n." unless(-w $opt_val);
+      if($clean_if_exists) {
+        my $val = fileparse($0);
+        my $term = Term::ReadLine->new($val);
+        my $reply = $term->get_reply( prompt => "Output dir exists, continuing will DELETE the content of this folder (including PROTECTED)\n\tDo you wish to proceed?",
+                                      choices => [qw(yes no)],
+                                      default => 'no');
+        if($reply eq 'yes') {
+          remove_tree($opt_val, { safe => 0 });
+        }
+        else {
+          die "\nEXIT: Program has exited based on user response.\n\n";
+        }
+      }
+      else {
+        # check writable
+        die "Option '$opt_name' points to an existing WRITE PROTECTED directory: $opt_val\n." unless(-w $opt_val);
+      }
     }
     else {
       die "Option '$opt_name' points to an existing entity (not a directory): $opt_val\n.";

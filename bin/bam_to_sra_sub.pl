@@ -30,10 +30,8 @@ use strict;
 use warnings FATAL => 'all';
 use autodie qw(:all);
 
-use File::Path qw(make_path);
 use Getopt::Long;
 use Pod::Usage;
-use Data::Dumper;
 
 use PCAP::Cli;
 use PCAP::SRA;
@@ -69,7 +67,7 @@ sub setup {
   pod2usage(-msg => qq{\nERROR: 'outdir' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'outdir'});
   pod2usage(-msg => qq{\nERROR: 'gnos' must be defined.\n}, -verbose => 2,  -output => \*STDERR) unless(defined $opts{'gnos'});
 
-  PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
+  PCAP::Cli::out_dir_check('outdir', $opts{'outdir'}, 1);
 
   if(defined $opts{'type'}) {
     # check seq type is part of the controlled vocab
