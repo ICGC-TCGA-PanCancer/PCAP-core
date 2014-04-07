@@ -19,10 +19,10 @@ lib/PCAP/Threaded.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
+MANIFEST.SKIP
 patches/fileModeFix.diff
 prerelease.sh
 README.md
-setup.log
 setup.sh
 share/cv_tables/ICGC/dcc_project_code.txt
 share/cv_tables/ICGC/dcc_specimen_type.txt

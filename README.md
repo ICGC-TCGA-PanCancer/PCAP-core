@@ -41,8 +41,9 @@ Please see the [wiki](https://github.com/ICGC-TCGA-PanCancer/PCAP-core/wiki) for
 ####Cutting the release
 1. Update `lib/PCAP.pm` to the correct version (adding rc/beta to end if applicable).
 2. Ensure upgrade path for new version number is added to `lib/PCAP.pm`.
-2. Run `./prerelease.sh`
-3. Check all tests and coverage reports are acceptable.
-4. Commit the updated docs tree and updated module/version.
-5. Push commits.
-6. Use the GitHub tools to draft a release.
+3. Update `Changes` to show major items.
+4. Run `./prerelease.sh`
+5. Check all tests and coverage reports are acceptable.
+6. Commit the updated docs tree and updated module/version.
+7. Push commits.
+8. Use the GitHub tools to draft a release.
