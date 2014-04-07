@@ -58,7 +58,7 @@ const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
 const my @REQUIRED_FIELDS => qw(submitter_donor_id submitter_specimen_id submitter_sample_id
                                 dcc_project_code dcc_specimen_type
                                 total_lanes);
-const my @BAM_OB_INFO_FIELDS => qw(dcc_project_code ega_sample_accession submitter_donor_id
+const my @BAM_OB_INFO_FIELDS => qw(dcc_project_code submitter_donor_id
                                   submitter_specimen_id submitter_sample_id dcc_specimen_type
                                   use_cntl total_lanes);
 const my %CV_MAPPINGS => ('dcc_project_code' => { 'file' => 'cv_tables/ICGC/dcc_project_code.txt',
