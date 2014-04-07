@@ -34,6 +34,7 @@ WriteMakefile(
                         bin/diff_bams.pl
                         bin/monitor.pl)],
   PREREQ_PM     => {
+                     'Module::Build' => 0.42,
                      'IPC::System::Simple' => 1.25,
                      'Capture::Tiny' => 0.24,
                      'Const::Fast' => 0.014,
