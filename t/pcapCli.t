@@ -62,6 +62,12 @@ subtest 'out_dir_check' => sub {
           , qr/Permission denied/
           , 'Fails when unable to create directory (parent protected)');
     }
+    SKIP: {
+      skip q{Running as normal user, can't do superuser check.}, 1, if($EFFECTIVE_USER_ID != 0);
+      like(exception{ PCAP::Cli::out_dir_check('test', $tmp_dir, 1) }
+          , qr/EXIT: Please run as non-root user/
+          , 'Fail when executed as super-user');
+    }
   } catch{ }
   finally {
     if(-e $tmp_dir) {

@@ -51,6 +51,7 @@ sub out_dir_check {
   if(-e $opt_val) {
     if(-d _) {
       if($clean_if_exists) {
+        die "EXIT: Please run as non-root user\n" if($EFFECTIVE_USER_ID == 0);
         my $val = fileparse($0);
         my $term = Term::ReadLine->new($val);
         my $reply = $term->ask_yn( prompt => "Output dir exists, continuing will DELETE the content of this folder (including PROTECTED)\n\tDo you wish to proceed?",
