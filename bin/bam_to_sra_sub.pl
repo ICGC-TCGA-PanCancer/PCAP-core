@@ -49,7 +49,7 @@ sub setup {
   my %opts;
   GetOptions( 'h|help' => \$opts{'h'},
               'm|man' => \$opts{'m'},
-              'd|detail' => \$opts{'d'},
+#              'd|detail' => \$opts{'d'},
               'o|outdir=s' => \$opts{'outdir'},
               's|study=s' => \$opts{'study'},
               'g|gnos=s' => \$opts{'gnos'},
@@ -81,6 +81,8 @@ sub setup {
   return \%opts;
 }
 
+#    -detail    -d   Generate a detail summary file to <outdir>/detail.tsv
+
 __END__
 
 =head1 NAME
@@ -97,13 +99,10 @@ bam_to_sra_sub.pl [options] [file(s)...]
                       https://gtrepo-ebi.annailabs.com
 
   Optional:
-    -detail    -d   Generate a detail summary file to <outdir>/detail.tsv
     -study     -s   Study reference in repository [icgc_pancancer]
     -type      -t   Only required if not encoded in readgroup LB tag.
-                    Sequencing type, controlled values:
-                      WGS     - Whole Genome Seq
-                      WXS     - Whole eXome Seq
-                      RNA-Seq - RNA seq
+                      [WGS|WXS|RNA-seq]
+                      See '-m' for details
 
   Other:
     -help      -h   Brief help message.
@@ -125,9 +124,22 @@ Associated BAM files and MD5s will be symlinked into this area for easy upload.
 Please ensure that you will be able to read from the area with GeneTorrent otherwise you will need to
 copy the data into an appropriate location (remembering to follow symlinks).
 
+=item B<-gnos>
+
+The path to the GNOS server that this data should be submitted to.
+
 =item B<-study>
 
 The STUDY_REF that this data is to be assigned to in the repository.
+Defaults to icgc_pancancer when not specified.
+
+=item B<-type>
+
+Added for convenience when sequencing type is not encoded into the RG:LB tag
+
+  WGS     - Whole Genome Seq
+  WXS     - Whole eXome Seq
+  RNA-Seq - RNA seq
 
 =item B<-help>
 
