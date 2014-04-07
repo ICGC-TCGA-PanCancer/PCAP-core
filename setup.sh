@@ -84,7 +84,7 @@ echo > $INIT_DIR/setup.log
     echo; echo
 ) >>$INIT_DIR/setup.log 2>&1
 
-perlmods=( "File::ShareDir" "File::ShareDir::Install" "Const::Fast " )
+perlmods=( "File::ShareDir" "File::ShareDir::Install" "Const::Fast" )
 
 set -e
 for i in "${perlmods[@]}" ; do
