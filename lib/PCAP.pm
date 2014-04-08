@@ -23,7 +23,7 @@ package PCAP;
 use strict;
 use Const::Fast qw(const);
 
-our $VERSION = '0.2.99';
+our $VERSION = '0.3.0';
 
 const my $LICENSE =>
 "#################
