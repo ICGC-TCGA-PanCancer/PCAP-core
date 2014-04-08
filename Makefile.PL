@@ -34,18 +34,24 @@ WriteMakefile(
                         bin/diff_bams.pl
                         bin/monitor.pl)],
   PREREQ_PM     => {
+                     'Module::Build' => 0.42,
                      'IPC::System::Simple' => 1.25,
                      'Capture::Tiny' => 0.24,
                      'Const::Fast' => 0.014,
                      'Bio::DB::Sam' => 1.39,
-                     'Bio::Perl' => 0, # can't specify as make manifest can't parse the version string
-                                       # cpanmdb also doesn't have 1.6.923 indexed for some reason
+                     'Bio::Root::Version' => 1.006923, # this is the only way to get Bio::Perl to behave
+                                                       # and return the version correctly
                      'Try::Tiny' => 0.19,
                      'File::Which' => 0.05,
                      'List::Util' => 1.38,
                      'Proc::ProcessTable' => 0.50,
                      'Data::UUID' => 1.219,
                      'Test::Fatal' => 0.013,
+                     'GD' => 2.52,
+                     'Math::Gradient' => 0.04,
+                     'Devel::Cover' => 1.09,
+                     'Pod::Coverage' => 0.23,
+                     'Term::UI' => 0.42, # currently in core but scheduled for removal 5.17, no alternative recommended
                    }
 );
 

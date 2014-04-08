@@ -23,7 +23,7 @@ package PCAP;
 use strict;
 use Const::Fast qw(const);
 
-our $VERSION = '0.2.0';
+our $VERSION = '0.3.0';
 
 const my $LICENSE =>
 "#################
@@ -35,7 +35,9 @@ const my $LICENSE =>
 const my $DEFAULT_PATH => 'biobambam,samtools,bwa';
 const my %UPGRADE_PATH => ( '0.1.0' => 'biobambam,samtools,bwa',
                             '0.1.1' => 'biobambam,bwa',
-                            '0.1.2' => '',
+                            '0.1.2' => 'biobambam',
+                            '0.2.0' => 'biobambam',
+                            '0.3.0' => '',
                           );
 
 sub license {
@@ -67,5 +69,11 @@ PCAP - Base class to house version and generic functions.
   my $brief_license = PCAP::licence;
 
 Output the brief license text for use in help messages.
+
+=item upgrade_path
+
+  my $install_these = PCAP::upgrade_path('<current_version>');
+
+Return the list of tools that should be installed by setup.sh when upgrading from a previous version.
 
 =back

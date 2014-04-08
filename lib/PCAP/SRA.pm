@@ -42,6 +42,11 @@ use Data::Dumper;
 
 use PCAP::Bam;
 
+const my $DONOR_MISMATCH_MESSAGE => qq{Each execution of the script should be limited to samples from the same submitter_donor_id, seen:\n\t%s\nand\n\t%s\n};
+const my $NORMAL_MISMATCH_MESSAGE => qq{Only one normal sample can be defined for a donor, seen\n\t%s\nand\n\t%s\n};
+const my $TUMOUR_REQ_USE_CNTL_MESSAGE => qq{When dcc_specimen_type is not defined as 'Normal *', 'use_cntl' must be set, parsed details:\n%s\n};
+const my $SAMP_MULTIPLE_UUID_MESSAGE => qq{submitter_sample_id of '%s' has multiple SM UUIDs\n\t%s\n\t%s\n};
+const my $UUID_MULTIPLE_SAMP_MESSAGE => qq{SM UUID of '%s' has multiple submitter_sample_id's\n\t%s\n\t%s\n};
 const my @REQUIRED_HEADER_TAGS => qw(ID CN PL LB PI SM PU DT PM);
 const my @VALID_SEQ_TYPES => qw(WGS WXS RNA);
 const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
@@ -50,90 +55,86 @@ const my %ABBREV_TO_SOURCE => ( 'WGS' => {'source' => 'GENOMIC',
                                           'selection' => 'Hybrid Selection'},
                                 'RNA' => {'source' => 'RNA',
                                           'selection' => 'RANDOM'},);
-const my @REQUIRED_FIELDS => qw(participant_id sample_id aliquot_id submitter_participant_id
-                                submitter_sample_id submitter_aliquot_id dcc_project_code
+const my @REQUIRED_FIELDS => qw(submitter_donor_id submitter_specimen_id submitter_sample_id
+                                dcc_project_code dcc_specimen_type
                                 total_lanes);
-const my %CV_MAPPINGS => ('analyte_code'     => { 'file' => 'cv_tables/TCGA/portionAnalyte.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'sample_type'      => { 'file' => 'cv_tables/TCGA/sampleType.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'disease_abbr'     => { 'file' => 'cv_tables/TCGA/diseaseStudy.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'tss_id'           => { 'file' => 'cv_tables/TCGA/tissueSourceSite.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'dcc_donor_gender' => { 'file' => 'cv_tables/ICGC/dcc_donor_gender.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'dcc_primary_site' => { 'file' => 'cv_tables/ICGC/dcc_primary_site.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'dcc_project_code' => { 'file' => 'cv_tables/ICGC/dcc_project_code.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
-                          'dcc_project_name' => { 'file' => 'cv_tables/ICGC/dcc_project_name.txt',
+const my @BAM_OB_INFO_FIELDS => qw(dcc_project_code submitter_donor_id
+                                  submitter_specimen_id submitter_sample_id dcc_specimen_type
+                                  use_cntl total_lanes);
+const my %CV_MAPPINGS => ('dcc_project_code' => { 'file' => 'cv_tables/ICGC/dcc_project_code.txt',
                                                   'column' => 0,
                                                   'header' => 1},
                           'dcc_specimen_type' => {'file' => 'cv_tables/ICGC/dcc_specimen_type.txt',
                                                   'column' => 0,
                                                   'header' => 1},
-                          'dcc_tumour_subtype' =>{'file' => 'cv_tables/ICGC/dcc_tumour_subtype.txt',
-                                                  'column' => 0,
-                                                  'header' => 1},
                           );
 
+sub new {
+  my ($class, $files, $force_type) = @_;
+  my $self = {'raw_files' => $files,
+              '_cv_lookups' => create_cv_lookups()};
+  bless $self, $class;
+  $self->parse_input;
+  $self->group_bams($force_type);
+  $self->validate_grouped_data;
+  return $self;
+}
+
+sub validate_grouped_data {
+  my $self = shift;
+  my $grouped = $self->{'grouped_bams'};
+  for my $seq_type(keys %{$grouped}) {
+    for my $sample(keys %{$grouped->{$seq_type}}) {
+      my $total_bams = scalar @{$grouped->{$seq_type}->{$sample}};
+      for my $bam_ob(@{$grouped->{$seq_type}->{$sample}}) {
+        $bam_ob->{'info'}->{'total_lanes'} = $total_bams;
+        $self->validate_info($bam_ob);
+      }
+      $self->populate_detail($seq_type, $sample);
+    }
+  }
+  return 1;
+}
+
 sub generate_sample_SRA {
-  my ($grouped, $options) = @_;
-  my $cv_lookups = create_cv_lookups();
+  my ($self, $options) = @_;
+  my $grouped = $self->{'grouped_bams'};
   my @analysis_ids;
   my $base_path = $options->{'outdir'};
   for my $seq_type(keys %{$grouped}) {
     for my $sample(keys %{$grouped->{$seq_type}}) {
-      my $total_bams = 0;
-      for my $lib_id(keys %{$grouped->{$seq_type}->{$sample}}) {
-        $total_bams += scalar @{$grouped->{$seq_type}->{$sample}->{$lib_id}};
-      }
-      for my $lib_id(keys %{$grouped->{$seq_type}->{$sample}}) {
-        for my $bam_ob(@{$grouped->{$seq_type}->{$sample}->{$lib_id}}) {
-          info_file_data($bam_ob);
-          $bam_ob->{'info'}->{'total_lanes'} = $total_bams;
-          validate_info($cv_lookups, $bam_ob);
+      for my $bam_ob(@{$grouped->{$seq_type}->{$sample}}) {
+        my $submission_uuid = &uuid;
+        my $submission_path = "$base_path/".$submission_uuid;
+        make_path($submission_path);
+        my %exps;
+        my %runs;
+        $exps{$bam_ob->{'exp'}} = $bam_ob unless(exists $exps{$bam_ob->{'exp'}});
+        push @{$runs{$bam_ob->{'run'}}}, $bam_ob;
 
-          my $submission_uuid = &uuid;
-          my $submission_path = "$base_path/".$submission_uuid;
-          make_path($submission_path);
-          my %exps;
-          my %runs;
-          $exps{$bam_ob->{'exp'}} = $bam_ob unless(exists $exps{$bam_ob->{'exp'}});
-          push @{$runs{$bam_ob->{'run'}}}, $bam_ob;
+        my $run_xmls = run($bam_ob->{'CN'}, \%runs);
+        my $exp_xml = experiment_sets($options->{'study'}, \%exps);
 
-          my $run_xmls = run($bam_ob->{'CN'}, \%runs);
-          my $exp_xml = experiment_sets($options->{'study'}, \%exps);
+        my $analysis_xml = analysis_xml($bam_ob, $options->{'study'}, $sample);
+        open my $XML, '>', "$submission_path/analysis.xml";
+        print $XML $analysis_xml;
+        close $XML;
+        my $run_xml = run_set($bam_ob->{'CN'}, $run_xmls);
+        open $XML, '>', "$submission_path/run.xml";
+        print $XML $run_xml;
+        close $XML;
+        open $XML, '>', "$submission_path/experiment.xml";
+        print $XML $exp_xml;
+        close $XML;
 
-          my $analysis_xml = analysis_xml($bam_ob, $options->{'study'}, $sample);
-          open my $XML, '>', "$submission_path/analysis.xml";
-          print $XML $analysis_xml;
-          close $XML;
-          my $run_xml = run_set($bam_ob->{'CN'}, $run_xmls);
-          open $XML, '>', "$submission_path/run.xml";
-          print $XML $run_xml;
-          close $XML;
-          open $XML, '>', "$submission_path/experiment.xml";
-          print $XML $exp_xml;
-          close $XML;
-
-          my ($cleaned_filename, $directories, $suffix) = fileparse($bam_ob->{'file'}, '.bam');
-          $cleaned_filename .= '.bam';
-          symlink abs_path($bam_ob->{'file'}), "$submission_path/$cleaned_filename";
-          push @analysis_ids, $submission_uuid;
-        }
+        my ($cleaned_filename, $directories, $suffix) = fileparse($bam_ob->{'file'}, '.bam');
+        $cleaned_filename .= '.bam';
+        symlink abs_path($bam_ob->{'file'}), "$submission_path/$cleaned_filename";
+        push @analysis_ids, $submission_uuid;
       }
     }
   }
-  print "## Executing the following will complete the submission/upload process:\n";
+  print "\n## Executing the following will complete the submission/upload process:\n\n";
   my $full_path = abs_path($base_path);
   my $sra_sh_script = "$full_path/auto_upload.sh";
   open my $SH, '>', $sra_sh_script;
@@ -143,7 +144,7 @@ sub generate_sample_SRA {
   my $log = $sra_sh_script;
   $log .= '.log';
   print "$sra_sh_script >& $log &\n";
-  print "tail -f $log\n";
+  print "\n##Please ensure that environment variable GNOS_PERM is set and points to your GNOS keyfile\n\n";
 }
 
 sub create_cv_lookups {
@@ -173,9 +174,19 @@ sub create_cv_lookups {
   return \%cv_lookup;
 }
 
+sub validate_control {
+  my $self = shift;
+  for my $sample(keys %{$self->{'_tumours'}}) {
+    if($self->{'_tumours'}->{$sample} ne $self->{'_control'}) {
+      die qq{Input for '%s' indicates a 'Normal' of '%s'\n\tThis donor has control '%s'},
+    }
+  }
+}
+
 sub validate_info {
-  my ($cv_lookup, $bam_ob) = @_;
+  my ($self, $bam_ob) = @_;
   my %info = %{$bam_ob->{'info'}};
+  my $cv_lookup = $self->{'_cv_lookups'};
   for my $key(keys %info) {
     next unless(exists $cv_lookup->{$key});
     die "CV term '$key' has invalid value '$info{$key}' in $bam_ob->{file}\n" unless(first { $info{$key} eq $_ } @{$cv_lookup->{$key}} );
@@ -183,6 +194,62 @@ sub validate_info {
   for my $req(@REQUIRED_FIELDS) {
     die "Required comment field '$req' is missing" unless(exists $info{$req});
   }
+
+  $self->{'_donor'} = $info{'submitter_donor_id'} unless(exists $self->{'_donor'});
+  die sprintf $DONOR_MISMATCH_MESSAGE, $self->{'_donor'}, $info{'submitter_donor_id'} if($self->{'_donor'} ne $info{'submitter_donor_id'});
+
+  $self->{'_sample_to_uuid'}->{$info{'submitter_sample_id'}} = $bam_ob->{'SM'} unless(exists $self->{'_sample_to_uuid'}->{$info{'submitter_sample_id'}});
+  if($bam_ob->{'SM'} ne $self->{'_sample_to_uuid'}->{$info{'submitter_sample_id'}}) {
+    die sprintf $SAMP_MULTIPLE_UUID_MESSAGE, $info{'submitter_sample_id'}, $bam_ob->{'SM'}, $self->{'_sample_to_uuid'}->{$info{'submitter_sample_id'}};
+  }
+
+  $self->{'_uuid_to_sample'}->{$bam_ob->{'SM'}} = $info{'submitter_sample_id'} unless(exists $self->{'_uuid_to_sample'}->{$bam_ob->{'SM'}});
+  if($info{'submitter_sample_id'} ne $self->{'_uuid_to_sample'}->{$bam_ob->{'SM'}}) {
+    die sprintf $UUID_MULTIPLE_SAMP_MESSAGE, $bam_ob->{'SM'}, $info{'submitter_sample_id'}, $self->{'_uuid_to_sample'}->{$bam_ob->{'SM'}};
+  }
+
+  if($info{'dcc_specimen_type'} =~ m/^Normal /) {
+    if(exists $self->{'_control'}) {
+      die sprintf $NORMAL_MISMATCH_MESSAGE, $self->{'_control'}, $bam_ob->{'SM'} if($self->{'_control'} ne $bam_ob->{'SM'});
+    }
+    $self->{'_control'} = $bam_ob->{'SM'};
+  }
+  else {
+    if(!exists $info{'use_cntl'} || !defined $info{'use_cntl'}) {
+      die $TUMOUR_REQ_USE_CNTL_MESSAGE, Dumper(\%info);
+    }
+    $self->{'_tumours'}->{$bam_ob->{'SM'}} = $info{'use_cntl'};
+  }
+
+
+  return 1;
+}
+
+# this is not currently output in any way but it does some additional checking.
+sub populate_detail {
+  my ($self, $seq_type, $sample) = @_;
+  my $bams = $self->{'grouped_bams'}->{$seq_type}->{$sample};
+  my $sm = $bams->[0]->{'SM'};
+  my $counter = 0;
+  $self->{'_detail'}->{$sm} = { 'SM' => $sm,
+                                'seqtype' => $seq_type } unless(exists $self->{'_detail'}->{$sm});
+  my $current = $self->{'_detail'}->{$sm};
+  for my $bam_ob(@{$bams}) {
+    for my $info(@BAM_OB_INFO_FIELDS) {
+      if(exists $current->{$info}) {
+        die sprintf qq{ERROR: Previously parsed data for %s has entry for %s, bam[.info] '%s' does not\n}, $sample, $info, $bam_ob->{'file'} unless(defined $bam_ob->{'info'}->{$info});
+        die sprintf qq{ERROR: Previously parsed data gives '%s' for %s, bam[.info] '%s' gives %s\n}, $current->{$info}, $info, $bam_ob->{'file'}, $bam_ob->{'info'}->{$info} if($current->{$info} ne $bam_ob->{'info'}->{$info});
+      }
+      elsif(exists $bam_ob->{'info'}->{$info}) {
+        $current->{$info} = $bam_ob->{'info'}->{$info};
+      }
+      elsif($counter == 0) {
+        $current->{$info} = 'Not defined';
+      }
+    }
+    $counter++;
+  }
+#warn Dumper($current);
   return 1;
 }
 
@@ -203,9 +270,9 @@ sub _check_seq_type {
 }
 
 sub group_bams {
-  my ($bam_obs, $in_seq_type) = @_;
+  my ($self, $in_seq_type) = @_;
   my %grouped;
-  for my $bam_ob(@{$bam_obs}) {
+  for my $bam_ob(@{$self->{'bam_obs'}}) {
     my $sm = $bam_ob->{'SM'};
     my $lb = $bam_ob->{'LB'};
     my ($run) = $bam_ob->{'PU'} =~ m/^[[:alpha:]]+:([^_]+)_[^#]+/;
@@ -221,16 +288,18 @@ sub group_bams {
       die "Valid library type is not encoded in readgroup LB tag: $lb\n" unless(_check_seq_type($seq_type));
     }
     $bam_ob->{'type'} = $seq_type;
-    push @{$grouped{$seq_type}{$sm}{$lib_id}}, $bam_ob;
+    push @{$grouped{$seq_type}{$sm}}, $bam_ob;
   }
-  return \%grouped;
+  $self->{'grouped_bams'} = \%grouped;
+  return 1;
 }
 
 sub parse_input {
-  my $files = shift;
+  my $self = shift;
   my @bam_obs;
-  for my $file(@{$files}) {
+  for my $file(@{$self->{'raw_files'}}) {
     my $bam = PCAP::Bam->new($file);
+    info_file_data($bam);
     $bam->check_paired;
     $bam->read_group_info(\@REQUIRED_HEADER_TAGS);
     my %bam_detail;
@@ -246,10 +315,22 @@ sub parse_input {
     }
     $bam_detail{'file'} = $bam->{'bam'};
     $bam_detail{'md5'} = $bam->{'md5'};
-    $bam_detail{'comments'} = $bam->comments;
+    if(exists $bam->{'info'}) {
+      for my $info_key(keys %{$bam->{'info'}}) {
+        $bam_detail{'info'}{$info_key} = $bam->{'info'}->{$info_key};
+      }
+    }
+    if(exists $bam->{'comments'}) {
+      for my $comment(@{$bam->{'comments'}}) {
+        my ($key, $val) = $comment =~ m/^([^:]+):(.*)/;
+        $bam_detail{'info'}{$key} = $val;
+      }
+    }
+
     push @bam_obs, \%bam_detail
   }
-  return \@bam_obs;
+  $self->{'bam_obs'} = \@bam_obs;
+  return 1;
 }
 
 sub file_xml {
@@ -311,8 +392,8 @@ sub analysis_xml {
             <PIPE_SECTION>
               <STEP_INDEX>NA</STEP_INDEX>
               <PREV_STEP_INDEX>NA</PREV_STEP_INDEX>
-              <PROGRAM>BIOBAMBAM</PROGRAM>
-              <VERSION>0.0.120</VERSION>
+              <PROGRAM>SITE_SPECIFIC_CLEANUP</PROGRAM>
+              <VERSION>UNKNOWN</VERSION>
               <NOTES>VENDOR FAILED READS REMOVED BEFORE UPLOAD</NOTES>
             </PIPE_SECTION>
           </PIPELINE>
@@ -425,8 +506,8 @@ EXPXML
 sub sample_descriptor {
   my $bam_ob = shift;
   my $local_sample = q{};
-  if(exists $bam_ob->{'info'}->{'submitter_aliquot_id'}) {
-    $local_sample = qq{<SUBMITTER_ID namespace="$bam_ob->{CN}">$bam_ob->{info}->{submitter_aliquot_id}</SUBMITTER_ID>\n          };
+  if(exists $bam_ob->{'info'}->{'submitter_sample_id'}) {
+    $local_sample = qq{<SUBMITTER_ID namespace="$bam_ob->{CN}">$bam_ob->{info}->{submitter_sample_id}</SUBMITTER_ID>\n          };
   }
   my $samp_desc = <<SAMPXML;
       <SAMPLE_DESCRIPTOR refcenter="OICR" refname="%s">
@@ -441,18 +522,19 @@ SAMPXML
 
 sub info_file_data {
   my ($bam_ob) = @_;
-  my $info_file = $bam_ob->{'file'}.'.info';
+  my $info_file = $bam_ob->{'bam'}.'.info';
   if(-e $info_file) {
     open my $IN, '<', $info_file;
     while (my $line = <$IN>) {
       chomp $line;
       next if($line eq q{});
+      die "Info line incorrect format, expecting key:* got:\n\t$line\n" unless($line =~ m/^([^:]+):(.*)$/);
       die "$info_file has more that one entry for $1" if(exists $bam_ob->{'info'}->{$1});
-      $bam_ob->{'info'}->{$1} = $2 if($line =~ m/^([^:]+):(.*)$/);
+      $bam_ob->{'info'}->{$1} = $2;
     }
   }
   # also check the bam header
-  for my $comment(@{$bam_ob->{'comments'}}) {
+  for my $comment(@{$bam_ob->comments}) {
     next unless($comment =~ m/^([^:]+):(.*)/);
     my ($key, $value) = ($1, $2);
     die "$bam_ob->{file} has more that one entry for $1 (or entry is also in *.info file)" if(exists $bam_ob->{'info'}->{$1});
@@ -608,6 +690,27 @@ __END__
 =head2 Methods
 
 =over 4
+
+=item new
+
+ my $sra = PCAP::SRA->new($options->{'raw_files'});
+  # or when library type is not encoded in BAM headers
+ my $sra = PCAP::SRA->new($options->{'raw_files'}, $options->{'library_type'});
+
+Create object and pre validate the input data.
+
+=item populate_detail
+
+Additional final checking of data structures, intent is to use this to generate tab output of
+most of the fields for the tracking spreadsheet (once finalised).
+
+=item validate_grouped_data
+
+Validates the input information via other methods, just plumbing.
+
+=item validate_control
+
+Checks that the control/normal sample doesn't change within a donor.
 
 =item parse_input
 

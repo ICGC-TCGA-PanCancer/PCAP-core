@@ -6,6 +6,7 @@ use File::Path qw(make_path remove_tree);
 use Try::Tiny qw(try catch finally);
 use Fcntl qw( :mode );
 use File::Temp;
+use English qw( -no_match_vars );
 
 use constant MODULE => 'PCAP::Cli';
 
@@ -49,15 +50,24 @@ subtest 'out_dir_check' => sub {
   try {
     is(PCAP::Cli::out_dir_check('test', $tmp_dir), $tmp_dir, 'Success when able to create directory');
     is(PCAP::Cli::out_dir_check('test', $tmp_dir), $tmp_dir, 'Success when directory exists and writable');
-    ok((chmod S_IRUSR, $tmp_dir), 'make test folder readonly for next test');
-    like(exception{ PCAP::Cli::out_dir_check('test', $tmp_dir) }
-        , qr/Option '.+' points to an existing WRITE PROTECTED directory: /
-        , 'Fail when provided an existing write protected dir.');
-    my $unwriteable = File::Spec->catdir($tmp_dir, 'never_going_to_happen');
-    like(exception{ PCAP::Cli::out_dir_check('test', $unwriteable) }
-        , qr/Permission denied/
-        , 'Fails when unable to create directory (parent protected)');
 
+    SKIP: {
+      skip q{Running as superuser, certain file tests always true.}, 3 if($EFFECTIVE_USER_ID == 0);
+      ok((chmod S_IRUSR, $tmp_dir), 'make test folder readonly for next test');
+      like(exception{ PCAP::Cli::out_dir_check('test', $tmp_dir) }
+          , qr/Option '.+' points to an existing WRITE PROTECTED directory: /
+          , 'Fail when provided an existing write protected dir.');
+      my $unwriteable = File::Spec->catdir($tmp_dir, 'never_going_to_happen');
+      like(exception{ PCAP::Cli::out_dir_check('test', $unwriteable) }
+          , qr/Permission denied/
+          , 'Fails when unable to create directory (parent protected)');
+    }
+    SKIP: {
+      skip q{Running as normal user, can't do superuser check.}, 1, if($EFFECTIVE_USER_ID != 0);
+      like(exception{ PCAP::Cli::out_dir_check('test', $tmp_dir, 1) }
+          , qr/EXIT: Please run as non-root user/
+          , 'Fail when executed as super-user');
+    }
   } catch{ }
   finally {
     if(-e $tmp_dir) {

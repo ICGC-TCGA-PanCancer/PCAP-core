@@ -1,3 +1,13 @@
+0.3.0
+  Changes for the re-worked PanCancer submission SOP.
+  Patch for libmaus issue as not going to be a release in time.
+  Bug fix for *.info files (bam_to_sra_sub.pl).
+  Added bam_stats.pl.
+  Project is now defaulted when not provided (bam_to_sra_sub.pl).
+0.2.0 14-Mar-2014
+  Updated biobambam version
+  Documented additional dependencies
+  Improved install implementation
 0.0.2-beta2 04-Feb-2014
   Updated module naming in preparation for publication to GitHub.
   Added license boiler plate.

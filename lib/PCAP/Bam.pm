@@ -160,12 +160,14 @@ sub read_group_info {
 
 sub comments {
   my $self = shift;
+  return $self->{'comments'} if(exists $self->{'comments'});
   my @comments;
   for my $line(@{$self->sam_header}) {
     next unless($line =~ m/^\@CO\t(.*)/);
     push @comments, $1;
   }
-  return \@comments;
+  $self->{'comments'} = \@comments;
+  return $self->{'comments'};
 }
 
 sub sam_header {
@@ -191,6 +193,10 @@ sub check_for_tags {
     my @tags_found = keys %{$rg};
     for my $i(0..(scalar @{$sorted_tags})-1) {
       unless(first { $sorted_tags->[$i] eq $_ } @tags_found) {
+        if($sorted_tags->[$i] eq 'PM' && exists $self->{'info'}->{'PM'}) {
+          $rg->{'PM'} = $self->{'info'}->{'PM'};
+          next;
+        }
         my @pairs;
         push @pairs, "$_:$rg->{$_}" for(@tags_found);
         push @errors, "ERROR: $sorted_tags->[$i] not found in RG of $self->{bam}\n\t".(join q{,}, @pairs);

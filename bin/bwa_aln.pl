@@ -98,15 +98,15 @@ sub setup {
   my $version = PCAP::Bwa::bwa_version();
   die "bwa aln can only be used with bwa version 0.6.2, the version found in path is: $version\n" unless($version eq '0.6.2');
 
-  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'h'});
-  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'m'});
+  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
+  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
 
 
 
   # then check for no args:
   my $defined;
   for(keys %opts) { $defined++ if(defined $opts{$_}); }
-  pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 2,  -output => \*STDERR) unless($defined);
+  pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined);
 
   PCAP::Cli::file_for_reading('reference', $opts{'reference'});
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
