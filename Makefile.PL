@@ -31,6 +31,7 @@ WriteMakefile(
   EXE_FILES     => [qw( bin/bam_to_sra_sub.pl
                         bin/bwa_aln.pl
                         bin/bwa_mem.pl
+                        bin/bam_stats.pl
                         bin/diff_bams.pl
                         bin/monitor.pl)],
   PREREQ_PM     => {
