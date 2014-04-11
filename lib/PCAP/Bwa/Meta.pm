@@ -32,6 +32,7 @@ use Carp qw( croak );
 use Const::Fast qw(const);
 use List::Util qw(first);
 use File::Spec;
+use Data::UUID;
 
 use PCAP::Bam;
 
@@ -108,26 +109,32 @@ sub rg_header {
   }
   else {
     # use the BAM object to grab existing header
+    my $bam_elements = {};
     unless(exists $self->{'fastq'}) {
       my $bam = PCAP::Bam->new($self->{'in'});
       my $header_set = $bam->read_group_info->[0];
-      $elements = $header_set;
+      $bam_elements = $header_set;
     }
 
     for my $required(@REQUIRED_RG_ELEMENTS) {
-      croak "'$required' is manditory for RG header" unless(exists $elements->{$required});
+      croak "'$required' is manditory for RG header" unless(exists $elements->{$required} || exists $bam_elements->{$required});
     }
 
     my @elements = ('@RG');
-    if(exists $elements->{'ID'}) {
-      push @elements, 'ID:'.$elements->{'ID'};
-    }
-    else {
-      push @elements, 'ID:'.$self->rg;
-    }
-    for my $key(sort keys %{$elements}) {
+    push @elements, 'ID:'.(lc Data::UUID->new->create_str);
+
+    my %all_keys;
+    for my $key(sort keys %{$bam_elements}){ $all_keys{$key} = 1; }
+    for my $key(sort keys %{$elements}){ $all_keys{$key} = 1; }
+
+    for my $key(sort keys %all_keys) {
       next if($key eq 'ID');
-      push @elements, sprintf '%s:%s', $key, $elements->{$key};
+      if(exists $elements->{$key}) {
+        push @elements, sprintf '%s:%s', $key, $elements->{$key};
+      }
+      elsif(exists $bam_elements->{$key}) {
+        push @elements, sprintf '%s:%s', $key, $bam_elements->{$key};
+      }
     }
     $self->{'rg_header'} = \@elements;
   }

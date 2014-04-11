@@ -33,6 +33,7 @@ use File::Which qw(which);
 use Bio::DB::Sam;
 use Carp qw(croak);
 use List::Util qw(first);
+use Data::UUID;
 
 use PCAP::Threaded;
 
@@ -51,7 +52,7 @@ sub new {
 }
 
 sub rg_line_for_output {
-  my $bam = shift;
+  my ($bam, $uniq_id) = @_;
   my $sam = sam_ob($bam);
   my $header = $sam->header->text;
   my $rg_line;
@@ -59,6 +60,10 @@ sub rg_line_for_output {
     my $new_rg = $1;
     die "BAM file appears to contain data for multiple readgroups, not supported: \n\n$header\n" if(defined $rg_line);
     $rg_line = $new_rg;
+    if($uniq_id) {
+      my $uuid = lc Data::UUID->new->create_str;
+      $rg_line =~ s/\tID:[^\t]+/\tID:$uuid/;
+    }
     $rg_line =~ s/\t/\\t/g;
   }
   return ($rg_line, $sam); # also return the SAM object
@@ -358,6 +363,8 @@ The SAM object is also returned should it be useful for other calls
 
 Takes BAM or Bio::DB::Sam object as input and returns the string representation for the RG line.
 Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs
+
+Optional second boolean arg causes ID to be replaced with a UUID.
 
 The SAM object is also returned should it be useful for other calls
 
