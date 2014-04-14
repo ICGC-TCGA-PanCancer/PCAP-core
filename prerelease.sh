@@ -54,7 +54,7 @@ rm -f MANIFEST
 rm -rf install_tmp
 perl Makefile.PL > /dev/null
 make manifest &> /dev/null
-rm -f Makefile MYMETA.json MYMETA.yml MANIFEST.bak pm_to_blib
+rm -f Makefile MANIFEST.bak pm_to_blib
 
 # change back to original dir
 cd $INIT_DIR
