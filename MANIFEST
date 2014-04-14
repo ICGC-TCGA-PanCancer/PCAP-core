@@ -10,6 +10,7 @@ docs.tar.gz
 INSTALL
 lib/PCAP.pm
 lib/PCAP/Bam.pm
+lib/PCAP/Bam/Bas.pm
 lib/PCAP/Bam/Stats.pm
 lib/PCAP/Bwa.pm
 lib/PCAP/Bwa/Meta.pm
@@ -31,6 +32,7 @@ t/2_pl_compile.t
 t/3_external_progs.t
 t/pcap.t
 t/pcapBam.t
+t/pcapBamBas.t
 t/pcapBamStats.t
 t/pcapBwa.t
 t/pcapBwaMeta.t
@@ -44,6 +46,7 @@ testData/2_1.fq
 testData/3_2.fq
 testData/data.file
 testData/empty.bam
+testData/empty.bam.bas
 testData/empty.file
 testData/empty.fq
 testData/empty_r1_1.fq
@@ -64,4 +67,5 @@ testData/not_really_a.bam
 testData/paired.bam
 testData/Stats.bam
 testData/Stats.bam.bas
+testData/test.bam.bas
 testData/unpaired.bam
