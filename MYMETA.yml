@@ -35,4 +35,4 @@ requires:
   Term::UI: 0.42
   Test::Fatal: 0.013
   Try::Tiny: 0.19
-version: v0.3.0
+version: v1.0.0

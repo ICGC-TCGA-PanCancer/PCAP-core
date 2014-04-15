@@ -1,3 +1,8 @@
+1.0.0
+  bam_stats.pl actually installed now.
+  Basic *.bas perl access module.
+  Upgraded libmaus/biobambam to resolve patch and CentOS install issue.
+  Reference implementations ensure unique RG:ID between files.
 0.3.0
   Changes for the re-worked PanCancer submission SOP.
   Patch for libmaus issue as not going to be a release in time.
