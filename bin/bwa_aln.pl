@@ -43,9 +43,6 @@ use PCAP::Bam;
 use PCAP::Bwa;
 use PCAP::Bwa::Meta;
 
-my @mod_list = keys %INC;
-exit 0 if(first {$_ =~ m|^Devel/Cover| } @mod_list);
-
 const my @VALID_PROCESS => qw(bam2fq aln sampe mark);
 const my %INDEX_FACTOR => ( 'bam2fq' => 1,
                             'aln'    => 2,

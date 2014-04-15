@@ -101,7 +101,18 @@ sub _parse_header {
 sub _process_reads {
   my ($groups, $sam, $qualiy_scoring) = @_;
   my $bam = $sam->bam;
+  my $processed_x = 1;
+  my $start = time;
+  my $processed_x_mill = 0;
   while (my $a = $bam->read1) {
+    if($processed_x++ == 1_000_000) {
+      $processed_x_mill++;
+      $processed_x = 1;
+      my $end = time;
+      my $elapsed = $end - $start;
+      $start = $end;
+      warn "$processed_x_mill mill. reads processed [${elapsed}s. this block]\n";
+    }
     my $flag = $a->flag;
     next if($flag & $NON_PRI); # skip secondary hits so no double counts
     next if($flag & $V_FAIL); # skip vendor fail as generally aren't considered

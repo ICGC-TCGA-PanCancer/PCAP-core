@@ -43,9 +43,6 @@ use PCAP::Bwa;
 use PCAP::Bwa::Meta;
 use version;
 
-my @mod_list = keys %INC;
-exit 0 if(first {$_ =~ m|^Devel/Cover| } @mod_list);
-
 const my @VALID_PROCESS => qw(bwamem mark);
 const my %INDEX_FACTOR => ( 'bwamem' => 1,
                             'mark'   => 1,);

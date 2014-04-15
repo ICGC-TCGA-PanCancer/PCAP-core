@@ -14,14 +14,25 @@ OS:
 Other Software
   For installation to proceed you require the following packages:
 
-    zlib1g-dev
-    g++
-    dh-autoreconf
-    libncurses-dev
-    pkg-config
-    libgd2-xpm-dev
+    For Ubuntu (tested with 12.04)
+      apt-get
+        zlib1g-dev
+        g++
+        dh-autoreconf
+        libncurses-dev
+        pkg-config
+        libgd2-xpm-dev
 
-    This listing is based on Ubuntu 12.04
+    For CentOS (tested with 6.4)
+      yum install
+        zlib-devel
+        gcc-c++
+        autoconf
+        automake
+        libtool
+        boost-devel.x86_64
+        ncurses-devel.x86_64
+        gd-devel
 
   setup.sh will install
     biobambam
