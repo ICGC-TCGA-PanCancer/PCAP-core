@@ -8,6 +8,7 @@ use Const::Fast qw(const);
 const my $MODULE => 'PCAP::Bam::Bas';
 const my $RG_1 => 1;
 const my $EXP_MEDIAN => '462.000';
+const my $RG_ORDER => [qw(1 2 3 4 5 6)];
 
 use FindBin qw($Bin);
 my $test_data = "$Bin/../testData";
@@ -29,6 +30,8 @@ subtest 'Access checks' => sub {
   my $obj = new_ok($MODULE => [$bas]);
   is($obj->get($RG_1, 'median_insert_size'), $EXP_MEDIAN, 'Get expected value with correct key');
   is($obj->get($RG_1, 'wibble'), undef, 'Get undef with unknown key');
+  my @rgs = $obj->read_groups;
+  is_deeply(\@rgs, $RG_ORDER, 'Readgroups returned sorted');
   like(exception { $obj->get(99, 'wibble'); }, qr/Readgroup '.*' does not exist/, 'Expected error, unkown RG');
 };
 
