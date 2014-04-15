@@ -54,7 +54,7 @@ sub _init {
   my ($self, $opts) = @_;
   croak "'rg' is auto-populated, to initialise a start value see PCAP::Bwa::Meta::set_rg_index"
     if(exists $opts->{'rg'});
-  for my $key(keys $opts) {
+  for my $key(keys %{$opts}) {
     croak "'$key' is not a valid parameter for object initialisation" unless(first {$key eq $_} @INIT_KEYS);
     croak "'$key' is not a scalar, only simple values are expected" if(ref $opts->{$key} ne q{});
     $self->{$key} = $opts->{$key};
