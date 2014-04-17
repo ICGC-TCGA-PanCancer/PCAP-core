@@ -72,7 +72,7 @@ sub bwa_mem {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
     else {
-      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, 1);
+      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'}, 1);
     }
 
     my $bwa = which('bwa') || die "Unable to find 'bwa' in path";

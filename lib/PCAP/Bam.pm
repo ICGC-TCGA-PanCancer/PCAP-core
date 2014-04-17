@@ -52,7 +52,7 @@ sub new {
 }
 
 sub rg_line_for_output {
-  my ($bam, $uniq_id) = @_;
+  my ($bam, $sample, $uniq_id) = @_;
   my $sam = sam_ob($bam);
   my $header = $sam->header->text;
   my $rg_line;
@@ -63,6 +63,9 @@ sub rg_line_for_output {
     if($uniq_id) {
       my $uuid = lc Data::UUID->new->create_str;
       $rg_line =~ s/\tID:[^\t]+/\tID:$uuid/;
+    }
+    if(defined $sample) {
+      $rg_line =~ s/\tSM:[^\t]+/\tSM:$sample/;
     }
     $rg_line =~ s/\t/\\t/g;
   }
