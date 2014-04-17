@@ -50,7 +50,8 @@ sub new {
     $max_threads = 1;
   }
   croak "Number of threads was NAN: $max_threads" if($max_threads !~ m/^[[:digit:]]+$/xms);
-  my $self = { 'threads' => $max_threads };
+  my $self = {'threads' => $max_threads,
+              'join_interval' => 1, };
   bless $self, $class;
   return $self;
 }
@@ -66,6 +67,16 @@ sub add_function {
   $self->{'functions'}->{$function_name}->{'threads'} = $self->_suitable_threads($divisor);
 
   return 1;
+}
+
+sub thread_join_interval {
+  my ($self, $sec) = @_;
+  if(defined $sec) {
+    croak 'join_interval must be an integer' if($sec !~ m/^[[:digit:]]+$/);
+    croak 'join_interval must be 1 or more' if($sec < 1);
+    $self->{'join_interval'} = $sec;
+  }
+  $self->{'join_interval'};
 }
 
 sub run {
@@ -89,14 +100,14 @@ sub run {
         threads->create($function_ref, $index++, @params);
         last if($index > $iterations);
       }
-      sleep 10 while(threads->list(threads::joinable) == 0);
+      sleep $self->thread_join_interval while(threads->list(threads::joinable) == 0);
       for my $thr(threads->list(threads::joinable)) {
         $thr->join;
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
     }
     # last gasp for any remaining threads
-    sleep 2 while(threads->list(threads::running) > 0);
+    sleep $self->thread_join_interval while(threads->list(threads::running) > 0);
     for my $thr(threads->list(threads::joinable)) {
       $thr->join;
       if(my $err = $thr->error) { die "Thread error: $err\n"; }
