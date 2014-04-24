@@ -272,10 +272,12 @@ sub _check_seq_type {
 sub group_bams {
   my ($self, $in_seq_type) = @_;
   my %grouped;
+  my %rg_seen;
   for my $bam_ob(@{$self->{'bam_obs'}}) {
+    die "The same readgroup ID has been used in more than one BAM file, readgroup ID: ".$bam_ob->{'ID'}."\n" if $rg_seen{$bam_ob->{'ID'}}++;
     my $sm = $bam_ob->{'SM'};
     my $lb = $bam_ob->{'LB'};
-    my ($run) = $bam_ob->{'PU'} =~ m/^[[:alpha:]]+:([^_]+)_[^#]+/;
+    my ($run) = $bam_ob->{'PU'} =~ m/^.+:(.+)_\d+(#.+)?/;
     $bam_ob->{'run'} = sprintf '%s:%s', $bam_ob->{'CN'}, $run;
     my ($lib_id) = $lb =~ m/^[[:alpha:]]+:[[:alpha:]]+:(.*)$/;
     $bam_ob->{'exp'} = sprintf '%s:%s', $bam_ob->{'run'}, $lib_id;
