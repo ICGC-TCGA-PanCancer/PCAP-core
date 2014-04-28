@@ -158,12 +158,14 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
     echo -n " previously installed ..."
   else
     (
+      unset PERL5LIB
       get_distro "libmaus" $SOURCE_LIBMAUS
       cd $SETUP_DIR/libmaus
       autoreconf -i -f
       ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
       make -j$CPU
       make -j$CPU install
+      export PERL5LIB="$PERLROOT:$PERLARCH"
       touch $SETUP_DIR/libmaus.success
     ) >>$INIT_DIR/setup.log 2>&1
   fi
