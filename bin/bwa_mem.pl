@@ -23,7 +23,7 @@
 BEGIN {
   use Cwd qw(abs_path);
   use File::Basename;
-  push (@INC,dirname(abs_path($0)).'/../lib');
+  unshift (@INC,dirname(abs_path($0)).'/../lib');
 };
 
 use strict;
@@ -36,6 +36,7 @@ use File::Spec;
 use Pod::Usage qw(pod2usage);
 use List::Util qw(first);
 use Const::Fast qw(const);
+use File::Copy qw(copy);
 
 use PCAP::Cli;
 use PCAP::Bam;
@@ -50,6 +51,12 @@ const my %INDEX_FACTOR => ( 'bwamem' => 1,
 {
   my $options = setup();
   $options->{'meta_set'} = PCAP::Bwa::Meta::files_to_meta($options->{'tmp'}, $options->{'raw_files'}, $options->{'sample'});
+
+  if($options->{'reference'} =~ m/gz$/) {
+    $options->{'decomp_ref'} = "$options->{tmp}/decomp.fa";
+    system([0,2], "(gunzip -c $options->{reference} > $options->{decomp_ref}) >& /dev/null") unless(-e $options->{'decomp_ref'});
+    copy("$options->{reference}.fai", "$options->{tmp}/decomp.fa.fai") unless(-e "$options->{decomp_ref}.fai");
+  }
 
   my $bam_count = scalar @{$options->{'meta_set'}};
   PCAP::Bwa::bwa_mem($options) if(!exists $options->{'process'} || $options->{'process'} eq 'bwamem');
