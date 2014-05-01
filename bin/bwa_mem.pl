@@ -52,10 +52,22 @@ const my %INDEX_FACTOR => ( 'bwamem' => 1,
   my $options = setup();
   $options->{'meta_set'} = PCAP::Bwa::Meta::files_to_meta($options->{'tmp'}, $options->{'raw_files'}, $options->{'sample'});
 
-  if($options->{'reference'} =~ m/gz$/) {
-    $options->{'decomp_ref'} = "$options->{tmp}/decomp.fa";
-    system([0,2], "(gunzip -c $options->{reference} > $options->{decomp_ref}) >& /dev/null") unless(-e $options->{'decomp_ref'});
-    copy("$options->{reference}.fai", "$options->{tmp}/decomp.fa.fai") unless(-e "$options->{decomp_ref}.fai");
+  if($options->{'reference'} =~ m/\.gz$/) {
+    if(exists $options->{'index'}) {
+      my $tmp_ref = $options->{'reference'};
+      $tmp_ref =~ s/\.gz$//;
+      if(-e $tmp_ref) {
+        $options->{'decomp_ref'} = $tmp_ref;
+      }
+      else {
+        die "ERROR: When 'index' is defined you must provide a decompressed reference (colocated is sufficient)\n";
+      }
+    }
+    else {
+      $options->{'decomp_ref'} = "$options->{tmp}/decomp.fa";
+      system([0,2], "(gunzip -c $options->{reference} > $options->{decomp_ref}) >& /dev/null") unless(-e $options->{'decomp_ref'});
+      copy("$options->{reference}.fai", "$options->{tmp}/decomp.fa.fai") unless(-e "$options->{decomp_ref}.fai");
+    }
   }
 
   my $bam_count = scalar @{$options->{'meta_set'}};
