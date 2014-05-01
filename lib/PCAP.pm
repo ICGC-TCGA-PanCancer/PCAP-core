@@ -40,7 +40,8 @@ const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,samtools,bwa',
                             '0.2.99' => 'biobambam',
                             '0.3.0'  => 'biobambam',
                             '1.0.0'  => 'biobambam',
-                            '1.0.1'  => '',
+                            '1.0.1'  => 'biobambam,bwa',
+                            '1.0.2'  => '',
                           );
 
 sub license {

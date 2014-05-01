@@ -46,6 +46,7 @@
             "Module::Build" : "0.42",
             "Pod::Coverage" : "0.23",
             "Proc::ProcessTable" : "0.5",
+            "Sub::Exporter::Progressive" : "0.001011",
             "Term::UI" : "0.42",
             "Test::Fatal" : "0.013",
             "Try::Tiny" : "0.19"
