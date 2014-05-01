@@ -1,10 +1,10 @@
 #!/bin/bash
 
-SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.7.tar.gz"
+SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.8.tar.gz"
 SOURCE_SNAPPY="https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz"
 SOURCE_IOLIB="http://downloads.sourceforge.net/project/staden/io_lib/1.13.4/io_lib-1.13.4.tar.gz"
-SOURCE_LIBMAUS="https://github.com/gt1/libmaus/archive/0.0.115-release-20140423163910.tar.gz"
-SOURCE_BIOBAMBAM="https://github.com/gt1/biobambam/archive/0.0.135-release-20140423164503.tar.gz"
+SOURCE_LIBMAUS="https://github.com/gt1/libmaus/archive/libmaus_experimental_0_0_118.tar.gz"
+SOURCE_BIOBAMBAM="https://github.com/gt1/biobambam/archive/0.0.138-release-20140501104209.tar.gz"
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.19.tar.gz"
 
 done_message () {
@@ -158,12 +158,14 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
     echo -n " previously installed ..."
   else
     (
+      unset PERL5LIB
       get_distro "libmaus" $SOURCE_LIBMAUS
       cd $SETUP_DIR/libmaus
       autoreconf -i -f
       ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
       make -j$CPU
       make -j$CPU install
+      export PERL5LIB="$PERLROOT:$PERLARCH"
       touch $SETUP_DIR/libmaus.success
     ) >>$INIT_DIR/setup.log 2>&1
   fi

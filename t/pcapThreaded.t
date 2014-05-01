@@ -59,6 +59,18 @@ subtest 'run checks' => sub {
 #  ok($obj->run(2, 'add_one'), 'Success on multiple interations');
 };
 
+subtest 'thread object coniguration' => sub {
+  is(&PCAP::Threaded::use_out_err, 1, 'Default value for out_err = 1');
+  is(&PCAP::Threaded::disable_out_err, 0, 'Disabling out_err returns 0');
+  is(&PCAP::Threaded::use_out_err, 0, 'Value following disable_out_err 0');
+  is(&PCAP::Threaded::enable_out_err, 1, 'Enabling out_err returns 1');
+  is(&PCAP::Threaded::use_out_err, 1, 'Value following enable_out_err 1');
+  $obj = new_ok($MODULE => [1]);
+  is($obj->thread_join_interval, 1, 'Default value for thread_join_interval = 1');
+  is($obj->thread_join_interval(2), 2, 'Changing value for thread_join_interval = 2');
+  is($obj->thread_join_interval, 2, 'Following change to 2, thread_join_interval = 2');
+};
+
 subtest 'completion utility checks' => sub {
   local $SIG{__WARN__}=sub{};
   my $dir = tempdir( CLEANUP => 1 );

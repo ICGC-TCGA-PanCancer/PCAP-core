@@ -1,3 +1,9 @@
+1.0.2
+  Upgrade install to pull biobambam 0.0.138
+   - fastqtobam option 'pairedfile' for where readnames don't have trailing '/1' or '/2'.
+   - fastqtobam option to relax qscore validation without turning off... careful
+  Upgrade install to pull BWA 0.7.8
+   - performance improvements for short read alignment (100bp)
 1.0.1
   Upgrade install to pull biobambam 0.0.135
     - fastqtobam supports Casava v1.8

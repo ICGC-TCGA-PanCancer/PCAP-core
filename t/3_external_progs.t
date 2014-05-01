@@ -17,19 +17,19 @@ my %EXPECTED_VERSION = (
                         'bamcollate2'       => {
                               'get'   => q{ -h},
                               'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
-                              'version'       => ['0.0.135']},
+                              'version'       => ['0.0.138']},
                         'bammarkduplicates' => {
                               'get'   => q{ -h},
                               'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
-                              'version'       => ['0.0.135']},
+                              'version'       => ['0.0.138']},
                         'bamsort'           => {
                               'get'   => q{ -h},
                               'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
-                              'version'       => ['0.0.135']},
+                              'version'       => ['0.0.138']},
                         'bwa'           => {
                               'get'   => q{},
                               'match' => qr/Version: ([[:digit:]\.]+[[:alpha:]]?)/, # we don't care about the revision number
-                              'version'       => ['0.6.2','0.7.7']},
+                              'version'       => ['0.6.2','0.7.8']},
                         );
 
 subtest 'External programs exist on PATH' => sub {

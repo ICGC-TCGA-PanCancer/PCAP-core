@@ -39,6 +39,8 @@ BEGIN {
   if($Config{useithreads}) { use threads; }
 };
 
+our $OUT_ERR = 1;
+
 sub new {
   my ($class, $max_threads) = @_;
   unless($Config{useithreads}) {
@@ -51,9 +53,23 @@ sub new {
   }
   croak "Number of threads was NAN: $max_threads" if($max_threads !~ m/^[[:digit:]]+$/xms);
   my $self = {'threads' => $max_threads,
-              'join_interval' => 1, };
+              'join_interval' => 1,};
   bless $self, $class;
   return $self;
+}
+
+sub disable_out_err {
+  $OUT_ERR = 0;
+  return $OUT_ERR;
+}
+
+sub enable_out_err {
+  $OUT_ERR = 1;
+  return $OUT_ERR;
+}
+
+sub use_out_err {
+  return $OUT_ERR;
 }
 
 sub add_function {
@@ -157,19 +173,33 @@ sub touch_success {
 
 sub external_process_handler {
   my ($tmp, $command, @indexes) = @_;
-  my $caller = (caller(1))[3];
-  my $suffix = join q{.}, @indexes;
-  my $out = File::Spec->catfile($tmp, "$caller.$suffix.out");
-  my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
-  my $out_fh = IO::File->new($out, "w+");
-  my $err_fh = IO::File->new($err, "w+");
-  try {
-    warn "Starting: $command\n";
-    capture { system($command); } stdout => $out_fh, stderr => $err_fh;
-  } catch {
-    die $_ if($_);
-  };
+  if(&use_out_err == 0) {
+    # these may be marshalled to different files so output both
+    warn "Errors from command: $command\n";
+    print "Output from command: $command\n";
+    try {
+      system($command);
+    }
+    catch { die $_; };
+  }
+  else {
+    my $caller = (caller(1))[3];
+    my $suffix = join q{.}, @indexes;
+    my $out = File::Spec->catfile($tmp, "$caller.$suffix.out");
+    my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
+
+    my $out_fh = IO::File->new($out, "w+");
+    my $err_fh = IO::File->new($err, "w+");
+    print $err_fh "Errors from command: $command\n";
+    print $out_fh "Output from command: $command\n";
+    try {
+      capture { system($command); } stdout => $out_fh, stderr => $err_fh;
+    } catch {
+      die $_ if($_);
+    };
+  }
+
   return 1;
 }
 
@@ -225,6 +255,28 @@ callback registered in add_function.
 =head2 Utility Methods
 
 These are non-object methods which are useful to related code
+
+=head3 Configuration
+
+=over 4
+
+=item use_out_err
+
+Determines if stdout/stderr are redirected to file, by default 1/true.
+
+=item disable_out_err
+
+Prevent calls to external_process_handler from redirecting stdout/stderr to files.
+
+=item enable_out_err
+
+Enable redirect of stdout/stderr to files when calling external_process_handler.
+
+=item thread_join_interval
+
+Set/get the number of seconds to wait between thread joins.  Default 1.
+
+=back
 
 =head3 Resume Helpers
 
