@@ -81,7 +81,7 @@ sub bas_keys {
 }
 
 sub read_groups {
-  return (sort keys shift->{'_data'});
+  return (sort keys %{shift->{'_data'}});
 }
 
 sub get {
