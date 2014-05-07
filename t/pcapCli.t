@@ -13,7 +13,7 @@ use constant MODULE => 'PCAP::Cli';
 use_ok(MODULE);
 
 use FindBin qw($Bin);
-my $test_data = "$Bin/../testData";
+my $test_data = "$Bin/data";
 
 
 subtest 'file_for_reading' => sub {

@@ -40,7 +40,7 @@ const my $EXPECTED_MULTI_RG => [ {'CN' => 'SANGER',
                                 } ];
 
 use FindBin qw($Bin);
-my $test_data = "$Bin/../testData";
+my $test_data = "$Bin/data";
 
 # if you need to change the header.bam
 # edit header.sam then:

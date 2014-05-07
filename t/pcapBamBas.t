@@ -11,7 +11,7 @@ const my $EXP_MEDIAN => '462.000';
 const my $RG_ORDER => [qw(1 2 3 4 5 6)];
 
 use FindBin qw($Bin);
-my $test_data = "$Bin/../testData";
+my $test_data = "$Bin/data";
 
 my $bas = File::Spec->catfile($test_data, 'test.bam.bas');
 my $empty_bas = File::Spec->catfile($test_data, 'empty.bam.bas');
