@@ -172,14 +172,24 @@ sub touch_success {
 }
 
 sub external_process_handler {
-  my ($tmp, $command, @indexes) = @_;
+  my ($tmp, $command_in, @indexes) = @_;
+
+  my @commands;
+  if(ref $command_in eq 'ARRAY') {
+    @commands = @{$command_in}
+  }
+  else {
+    @commands = ($command_in);
+  }
 
   if(&use_out_err == 0) {
     # these may be marshalled to different files so output both
-    warn "Errors from command: $command\n";
-    print "Output from command: $command\n";
     try {
-      system($command);
+      for my $c(@commands) {
+        warn "\nErrors from command: $c\n\n";
+        print "\nOutput from command: $c\n\n";
+        system($c);
+      }
     }
     catch { die $_; };
   }
@@ -191,10 +201,12 @@ sub external_process_handler {
 
     my $out_fh = IO::File->new($out, "w+");
     my $err_fh = IO::File->new($err, "w+");
-    print $err_fh "Errors from command: $command\n";
-    print $out_fh "Output from command: $command\n";
     try {
-      capture { system($command); } stdout => $out_fh, stderr => $err_fh;
+      for my $c(@commands) {
+        print $err_fh "\nErrors from command: $c\n\n";
+        print $out_fh "\nOutput from command: $c\n\n";
+        capture { system($c); } stdout => $out_fh, stderr => $err_fh;
+      }
     } catch {
       die $_ if($_);
     };
@@ -313,10 +325,16 @@ Requires implementation of L<success_exists()|PCAP::Threaded/touch_success>.
 
 =item external_process_handler
 
-  PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, $index[, $index_2...]);
+  PCAP::Threaded::external_process_handler($logdir, $commands, $index[, $index_2...]);
+
+  @params logdir   - Path to pre-existing log directory
+  @params commands - Scalar command or arr-ref of commands
+  @params index    - Which index this is, specifically for log/err files.
 
 Wraps up command with stdout and stderr catchalls to keep the output of each threaded process
 separated from the script itself.  Added to simplify interpretation of any issues that may occur.
+
+If you don't want to capture stdout/stderr see <disable_out_err>.
 
 ($index_2... may be useful for some other implementation, see L<bwa_aln()|PCAP::Bwa/bwa_aln>).
 

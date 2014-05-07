@@ -36,6 +36,7 @@ use File::Spec;
 use Pod::Usage qw(pod2usage);
 use List::Util qw(first);
 use Const::Fast qw(const);
+use File::Copy qw(move);
 
 use PCAP::Cli;
 use PCAP::Threaded;
@@ -75,7 +76,9 @@ const my %INDEX_FACTOR => ( 'bam2fq' => 1,
 }
 
 sub cleanup {
-  my $tmpdir = shift->{'tmp'};
+  my $options = shift;
+  my $tmpdir = $options->{'tmp'};
+  move(File::Spec->catdir($tmpdir, 'logs'), File::Spec->catdir($options->{'outdir'}, 'logs')) || die $!;
   remove_tree $tmpdir if(-e $tmpdir);
 	return 0;
 }

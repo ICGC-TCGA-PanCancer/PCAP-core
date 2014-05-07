@@ -30,7 +30,7 @@ use Bio::DB::Sam;
 
 const my $MODULE => 'PCAP::Bam::Stats';
 
-my $test_data = "$Bin/../testData";
+my $test_data = "$Bin/data";
 my $test_bam_file = join('/',$test_data,'Stats.bam');
 my $test_bas_file = join('/',$test_data,'Stats.bam.bas');
 

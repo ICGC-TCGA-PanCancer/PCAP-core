@@ -23,7 +23,7 @@ package PCAP;
 use strict;
 use Const::Fast qw(const);
 
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.3';
 
 const my $LICENSE =>
 "#################
@@ -35,13 +35,14 @@ const my $LICENSE =>
 const my $DEFAULT_PATH => 'biobambam,samtools,bwa';
 const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,samtools,bwa',
                             '0.1.1'  => 'biobambam,bwa',
-                            '0.1.2'  => 'biobambam',
-                            '0.2.0'  => 'biobambam',
-                            '0.2.99' => 'biobambam',
-                            '0.3.0'  => 'biobambam',
-                            '1.0.0'  => 'biobambam',
+                            '0.1.2'  => 'biobambam,bwa',
+                            '0.2.0'  => 'biobambam,bwa',
+                            '0.2.99' => 'biobambam,bwa',
+                            '0.3.0'  => 'biobambam,bwa',
+                            '1.0.0'  => 'biobambam,bwa',
                             '1.0.1'  => 'biobambam,bwa',
-                            '1.0.2'  => '',
+                            '1.0.2'  => 'biobambam,bwa',
+                            '1.0.3'  => '',
                           );
 
 sub license {

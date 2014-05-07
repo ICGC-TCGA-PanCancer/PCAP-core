@@ -6,7 +6,7 @@ use File::Spec;
 use FindBin qw($Bin);
 use File::Temp qw(tempdir);
 
-my $test_data = "$Bin/../testData";
+my $test_data = "$Bin/data";
 
 const my $MODULE => 'PCAP::Bwa::Meta';
 const my $REF_INIT => { 'in'    => 'somefile',
@@ -17,9 +17,6 @@ const my $RG_TAGS => {'SM' => 'wibble', 'LB' => 'wobble', };
 const my $RG_STRING => qr/\@RG\\tID:[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\\tCN:SANGER\\tDS:short\\tLB:wobble\\tPI:500\\tPL:HiSeq\\tPU:1_1\\tSM:wibble/;
 const my $RG_PRINT => qr/\@RG\tID:[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\tCN:SANGER\tDS:short\tLB:wobble\tPI:500\tPL:HiSeq\tPU:1_1\tSM:wibble/;
 const my @VALID_FASTQ_EXT => qw(fastq fq fastq.gz fq.gz);
-
-
-#my $fastq_paired_one = File::Spec->catfile($test_data, 'test_1.fastq');
 
 my $bail_out = 0;
 
