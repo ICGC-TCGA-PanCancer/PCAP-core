@@ -21,7 +21,6 @@ package PCAP::Bam;
 
 
 use PCAP;
-our $VERSION = PCAP->VERSION;
 
 use strict;
 use autodie qw(:all);

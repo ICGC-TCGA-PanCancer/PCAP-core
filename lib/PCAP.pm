@@ -22,8 +22,10 @@ package PCAP;
 
 use strict;
 use Const::Fast qw(const);
+use base 'Exporter';
 
 our $VERSION = '1.0.3';
+our @EXPORT = qw($VERSION);
 
 const my $LICENSE =>
 "#################
