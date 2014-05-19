@@ -1,3 +1,8 @@
+1.0.4
+  Install biobambam 0.0.142 to prevent over-counting of duplicates when multiple
+  libraries, also required libmaus 0.0.124.
+  Improve install for those working with multiple perl installs.
+  Improve version inheritance, less code
 1.0.3
   Corrected issue from dynamic de-reference of hash, issue fort pre 5.14 perl
   and potentially unstable in future.
