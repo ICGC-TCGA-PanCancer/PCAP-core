@@ -36,10 +36,10 @@ Other Software
 
   setup.sh will install
     biobambam
-    bwa (v0.7.7)
+    bwa
     samtools
 
-    NOTE: bwa_aln.pl will only function when 0.6.2 installed
+    NOTE: bwa_aln.pl will only function when 0.6.x installed
             (you will need to make this available on path manually)
-          bwa_mem.pl will only function when 0.7.7 installed
+          bwa_mem.pl will only function when 0.7.x installed
 

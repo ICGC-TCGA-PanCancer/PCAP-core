@@ -134,6 +134,7 @@ comparing relevant information such as:
     -bam_b    -b    The second BAM file.
 
   Other:
+    -skipz    -s    Don't include reads with MAPQ=0 in comparison
     -help     -h    Brief help message.
     -man      -m    Full documentation.
 
@@ -150,6 +151,11 @@ A valid readable BAM file
 =item B<-bam_b>
 
 A valid readable BAM file (different to bam_a)
+
+=item B<-skipz>
+
+As reads with MAPQ zero can end up in multiple locations don't consider them
+as a mismatch.
 
 =item B<-help>
 

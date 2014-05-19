@@ -20,7 +20,6 @@ package PCAP::Bam::Stats;
 ##########LICENCE##########
 
 use PCAP;
-our $VERSION = PCAP->VERSION;
 
 use strict;
 use English qw( -no_match_vars );

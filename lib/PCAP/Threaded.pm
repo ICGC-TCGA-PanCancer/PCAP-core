@@ -21,7 +21,6 @@ package PCAP::Threaded;
 
 
 use PCAP;
-our $VERSION = PCAP->VERSION;
 
 use strict;
 use autodie qw(:all);
