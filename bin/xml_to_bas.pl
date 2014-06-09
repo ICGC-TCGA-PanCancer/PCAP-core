@@ -119,7 +119,7 @@ xml_to_bas.pl - Generates a file containing read statistics for a given XML anal
 
 =head1 SYNOPSIS
 
-bam_stats.pl [options] [file...]
+xml_to_bas.pl [options]
 
   Required parameters:
     -uri    -d    Same URI used by gtdownload
@@ -130,6 +130,7 @@ bam_stats.pl [options] [file...]
     -man      -m   Full documentation.
     -version  -v   Prints the version number.
 
+  Example:
     xml_to_bas.pl -d https://gtrepo-ebi.annailabs.com/cghub/metadata/analysisFull/4e183691-ba1f-4103-a517-948f363928b8 -o file.bam.bas
 
 =head1 OPTIONS
