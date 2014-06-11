@@ -98,7 +98,7 @@ sub bwa_mem {
       $command = $bwa;
     }
     else {
-      my $bam2fq = which('bamtofastq') || die "Unable to find 'bwa' in path";
+      my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
                                     File::Spec->catfile($tmp, "bamtofastq.$index.s"),
                                     File::Spec->catfile($tmp, "bamtofastq.$index.o1"),
