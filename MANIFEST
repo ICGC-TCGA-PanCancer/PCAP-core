@@ -5,6 +5,7 @@ bin/bwa_mem.pl
 bin/cpanm
 bin/diff_bams.pl
 bin/monitor.pl
+bin/xml_to_bas.pl
 Changes
 docs.tar.gz
 INSTALL
