@@ -44,9 +44,10 @@ use PCAP::Bwa;
 use PCAP::Bwa::Meta;
 use version;
 
-const my @VALID_PROCESS => qw(bwamem mark);
+const my @VALID_PROCESS => qw(bwamem mark stats);
 const my %INDEX_FACTOR => ( 'bwamem' => 1,
-                            'mark'   => 1,);
+                            'mark'   => 1,
+                            'stats'  => 1,);
 
 {
   my $options = setup();
@@ -72,8 +73,9 @@ const my %INDEX_FACTOR => ( 'bwamem' => 1,
 
   my $bam_count = scalar @{$options->{'meta_set'}};
   PCAP::Bwa::bwa_mem($options) if(!exists $options->{'process'} || $options->{'process'} eq 'bwamem');
-  if(!exists $options->{'process'} || $options->{'process'} eq 'mark') {
-    PCAP::Bam::merge_and_mark_dup($options);
+  PCAP::Bam::merge_and_mark_dup($options) if(!exists $options->{'process'} || $options->{'process'} eq 'mark');
+  if(!exists $options->{'process'} || $options->{'process'} eq 'stats') {
+    PCAP::Bam::bam_stats($options);
     &cleanup($options);
   }
 }
@@ -162,6 +164,7 @@ bwa_aln.pl [options] [file(s)...]
     -process   -p   Only process this step then exit, optionally set -index
                       bwamem - only applicable if input is bam
                         mark - Run duplicate marking (-index N/A)
+                       stats - Generates the *.bas file for the final BAM.
 
     -index     -i   Optionally restrict '-p' to single job
                       bwamem - 1..<lane_count>
