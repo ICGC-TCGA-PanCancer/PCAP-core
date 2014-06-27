@@ -1,5 +1,6 @@
 bin/bam_stats.pl
 bin/bam_to_sra_sub.pl
+bin/build_biobambam_relocatable.sh
 bin/bwa_aln.pl
 bin/bwa_mem.pl
 bin/cpanm
