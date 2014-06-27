@@ -36,4 +36,5 @@ requires:
   Term::UI: 0.42
   Test::Fatal: 0.013
   Try::Tiny: 0.19
-version: v1.1.0
+  XML::Simple: 2.2
+version: v1.1.1

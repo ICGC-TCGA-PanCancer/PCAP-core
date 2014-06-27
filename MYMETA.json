@@ -49,10 +49,11 @@
             "Sub::Exporter::Progressive" : "0.001011",
             "Term::UI" : "0.42",
             "Test::Fatal" : "0.013",
-            "Try::Tiny" : "0.19"
+            "Try::Tiny" : "0.19",
+            "XML::Simple" : "2.2"
          }
       }
    },
    "release_status" : "stable",
-   "version" : "v1.1.0"
+   "version" : "v1.1.1"
 }
