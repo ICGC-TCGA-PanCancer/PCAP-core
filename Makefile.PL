@@ -55,6 +55,7 @@ WriteMakefile(
                      'Pod::Coverage' => 0.23,
                      'Term::UI' => 0.42, # currently in core but scheduled for removal 5.17, no alternative recommended
                      'Sub::Exporter::Progressive' => 0.001011,
+                     'XML::Simple' => 2.20,
                    }
 );
 
