@@ -1,10 +1,6 @@
 #!/bin/bash
 
 SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.8.tar.gz"
-SOURCE_SNAPPY="https://snappy.googlecode.com/files/snappy-1.1.1.tar.gz"
-SOURCE_IOLIB="http://sourceforge.net/projects/staden/files/io_lib/1.13.7/io_lib-1.13.7.tar.gz/download"
-SOURCE_LIBMAUS="https://github.com/gt1/libmaus/archive/0.0.127-release-20140602112423.tar.gz"
-SOURCE_BIOBAMBAM="https://github.com/gt1/biobambam/archive/0.0.147-release-20140602113434.tar.gz"
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.19.tar.gz"
 
 done_message () {
@@ -35,14 +31,7 @@ if [ "$#" -ne "1" ] ; then
   exit 0
 fi
 
-CPU=`grep -c ^processor /proc/cpuinfo`
-if [ $? -eq 0 ]; then
-  if [ "$CPU" -gt "6" ]; then
-    CPU=6
-  fi
-else
-  CPU=1
-fi
+CPU=`cat /proc/cpuinfo | egrep "^processor" | wc -l`
 echo "Max compilation CPUs set to $CPU"
 
 INST_PATH=$1
@@ -124,63 +113,14 @@ fi
 
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
   unset PERL5LIB
-  echo -n "Building snappy ..."
-  if [ -e $SETUP_DIR/snappy.success ]; then
-    echo -n " previously installed ..."
-  else
-    (
-      get_distro "snappy" $SOURCE_SNAPPY
-      cd $SETUP_DIR/snappy
-      ./configure --prefix=$INST_PATH
-      make -j$CPU
-      make -j$CPU install
-      touch $SETUP_DIR/snappy.success
-    ) >>$INIT_DIR/setup.log 2>&1
-  fi
-  done_message "" "Failed to build snappy."
-
-  echo -n "Building io_lib ..."
-  if [ -e $SETUP_DIR/io_lib.success ]; then
-    echo -n " previously installed ... "
-  else
-    (
-      get_distro "io_lib" $SOURCE_IOLIB
-      cd $SETUP_DIR/io_lib
-      ./configure --prefix=$INST_PATH
-      make -j$CPU
-      make -j$CPU install
-      touch $SETUP_DIR/io_lib.success
-    ) >>$INIT_DIR/setup.log 2>&1
-  fi
-  done_message "" "Failed to build io_lib."
-
-  echo -n "Building libmaus ..."
-  if [ -e $SETUP_DIR/libmaus.success ]; then
-    echo -n " previously installed ..."
-  else
-    (
-      get_distro "libmaus" $SOURCE_LIBMAUS
-      cd $SETUP_DIR/libmaus
-      autoreconf -i -f
-      ./configure --prefix=$INST_PATH --with-snappy=$INST_PATH --with-io_lib=$INST_PATH
-      make -j$CPU
-      make -j$CPU install
-      touch $SETUP_DIR/libmaus.success
-    ) >>$INIT_DIR/setup.log 2>&1
-  fi
-  done_message "" "Failed to build libmaus."
-
   echo -n "Building biobambam ..."
   if [ -e $SETUP_DIR/biobambam.success ]; then
     echo -n " previously installed ..."
   else
     (
-      get_distro "biobambam" $SOURCE_BIOBAMBAM
-      cd $SETUP_DIR/biobambam
-      autoreconf -i -f
-      ./configure --with-libmaus=$INST_PATH --prefix=$INST_PATH
-      make -j$CPU
-      make -j$CPU install
+      cd $SETUP_DIR
+      $INIT_DIR/bin/build_biobambam_relocatable.sh
+      cp -r biobambam/* $INST_PATH/.
       touch $SETUP_DIR/biobambam.success
     ) >>$INIT_DIR/setup.log 2>&1
   fi
