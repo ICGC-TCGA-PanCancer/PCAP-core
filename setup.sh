@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.8.tar.gz"
+SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.10.tar.gz"
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.19.tar.gz"
 
 done_message () {
