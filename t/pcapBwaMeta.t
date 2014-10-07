@@ -12,10 +12,10 @@ const my $MODULE => 'PCAP::Bwa::Meta';
 const my $REF_INIT => { 'in'    => 'somefile',
                         'temp' => 'somepath',};
 const my $SET_RG_VAL => 5;
-const my $RG_DEFAULT => qr/\@RG\tID:[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\tCN:SANGER\tDS:short\tLB:SAMPLE_LIBRARY\tPI:500\tPL:HiSeq\tPU:1_1\tSM:SAMPLE_NAME/;
+const my $RG_DEFAULT => qr/\@RG\tID:[^\t]+\tCN:SANGER\tDS:short\tLB:SAMPLE_LIBRARY\tPI:500\tPL:HiSeq\tPU:1_1\tSM:SAMPLE_NAME/;
 const my $RG_TAGS => {'SM' => 'wibble', 'LB' => 'wobble', };
-const my $RG_STRING => qr/\@RG\\tID:[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\\tCN:SANGER\\tDS:short\\tLB:wobble\\tPI:500\\tPL:HiSeq\\tPU:1_1\\tSM:wibble/;
-const my $RG_PRINT => qr/\@RG\tID:[a-z0-9]{8}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{4}\-[a-z0-9]{12}\tCN:SANGER\tDS:short\tLB:wobble\tPI:500\tPL:HiSeq\tPU:1_1\tSM:wibble/;
+const my $RG_STRING => qr/\@RG\\tID:[^\t]+\\tCN:SANGER\\tDS:short\\tLB:wobble\\tPI:500\\tPL:HiSeq\\tPU:1_1\\tSM:wibble/;
+const my $RG_PRINT => qr/\@RG\tID:[^\t]+\tCN:SANGER\tDS:short\tLB:wobble\tPI:500\tPL:HiSeq\tPU:1_1\tSM:wibble/;
 const my @VALID_FASTQ_EXT => qw(fastq fq fastq.gz fq.gz);
 
 my $bail_out = 0;

@@ -122,29 +122,31 @@ sub _process_reads {
     my ($rg) = ($a->get_tag_values('RG'));
     $rg ||= q{.};
 
-    unless(exists $groups->{$rg}->{'length_'.$read}) {
+    my $rg_ref = $groups->{$rg};
+
+    unless(exists $rg_ref->{'length_'.$read}) {
       # various initialisation of elements here
-      $groups->{$rg}->{'length_'.$read} = $a->l_qseq;
-      $groups->{$rg}->{'fqp_'.$read} = [];
-      $groups->{$rg}->{'fqp_'.$read} = [];
-      $groups->{$rg}->{'inserts'} = {} if($flag & $FIRST);
+      $rg_ref->{'length_'.$read} = $a->l_qseq;
+      $rg_ref->{'fqp_'.$read} = [];
+      $rg_ref->{'fqp_'.$read} = [];
+      $rg_ref->{'inserts'} = {} if($flag & $FIRST);
     }
 
-    $groups->{$rg}->{'count_'.$read}++;
-    $groups->{$rg}->{'dup_'.$read}++ if($flag & $DUPLICATE);
+    $rg_ref->{'count_'.$read}++;
+    $rg_ref->{'dup_'.$read}++ if($flag & $DUPLICATE);
 
     ## GC count: Total gc bases for a read group we then need to divide by read length and read count for meaning full stats
     my $qseq = $a->qseq;
-    $groups->{$rg}->{'gc_'.$read} += $qseq =~ s/[GC]//gi;
+    $rg_ref->{'gc_'.$read} += $qseq =~ s/[GC]//gi;
 
     # Quality score collection for quality score plots.
     # This is really expensive therefore it is optional.
     if($qualiy_scoring){
-      _add_to_qplot($groups->{$rg}->{'fqp_'.$read}, scalar $a->qscore, ($flag & $REVERSED));
+      _add_to_qplot($rg_ref->{'fqp_'.$read}, scalar $a->qscore, ($flag & $REVERSED));
     }
 
     if($flag & $UNMAPPED) {
-      $groups->{$rg}->{'unmap_'.$read}++;
+      $rg_ref->{'unmap_'.$read}++;
       next;
     }
 
@@ -154,18 +156,18 @@ sub _process_reads {
     #                         This requires collecting the value from the NM tag and the mapped proportion of the query string.
     my ($nm) = ($a->get_tag_values('NM'));
     if(defined $nm) {
-      $groups->{$rg}->{'total_divergent_bases_'.$read} += $nm;
       if($nm > 0) {
+        $rg_ref->{'total_divergent_bases_'.$read} += $nm;
         my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
-        $groups->{$rg}->{'total_mapped_bases_'.$read} += sum0 @increments;
+        $rg_ref->{'total_mapped_bases_'.$read} += sum0 @increments;
       }
       else {
-        $groups->{$rg}->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos) + 1;
+        $rg_ref->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos) + 1;
       }
     }
     else {
       my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
-      $groups->{$rg}->{'total_mapped_bases_'.$read} += sum0 @increments;
+      $rg_ref->{'total_mapped_bases_'.$read} += sum0 @increments;
     }
     # calculate mapped seq from cigar
 
@@ -173,8 +175,8 @@ sub _process_reads {
     # so it is more sensible to generate the distribution based on $PROPER-pairs.
     # only assess read 1 as size is a factor of the pair
     if(($flag & ($PROPER|$FIRST)) == ($PROPER|$FIRST)) {
-      $groups->{$rg}->{'inserts'}->{abs $a->isize}++;
-      $groups->{$rg}->{'proper'}++;
+      $rg_ref->{'inserts'}->{abs $a->isize}++;
+      $rg_ref->{'proper'}++;
     }
   }
 
@@ -187,19 +189,10 @@ sub _process_reads {
 
 sub _add_to_qplot {
   my ($target, $qual_ref, $reverse) = @_;
-  my @quals;
-  if($reverse) {
-    @quals = reverse @{$qual_ref};
-  }
-  else {
-    @quals = @{$qual_ref};
-  }
-  my $pos = 0;
-  for(@quals) {
-    $target->[$pos++]->[$_]++;
-  }
+  my @quals = ($reverse) ? (reverse @{$qual_ref}) : @{$qual_ref};
+  my $pos;
+  $target->[$pos++]->[$_]++ for(@quals);
 }
-
 
 #####################
 ## Calculations

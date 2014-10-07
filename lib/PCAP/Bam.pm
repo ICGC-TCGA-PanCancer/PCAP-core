@@ -29,10 +29,12 @@ use warnings FATAL => 'all';
 use Const::Fast qw(const);
 use File::Spec;
 use File::Which qw(which);
+use FindBin qw($Bin);
 use Bio::DB::Sam;
 use Carp qw(croak);
 use List::Util qw(first);
 use Data::UUID;
+use File::Path qw(make_path);
 
 use PCAP::Threaded;
 
@@ -91,7 +93,7 @@ sub bam_to_grouped_bam {
 
 sub merge_and_mark_dup {
   # uncoverable subroutine
-  my $options = shift;
+  my ($options, $source) = @_;
   my $tmp = $options->{'tmp'};
   my $marked = File::Spec->catdir($options->{'outdir'}, $options->{'sample'});
   my $met = "$marked.met";
@@ -107,8 +109,19 @@ sub merge_and_mark_dup {
                                     $met,
                                     File::Spec->catfile($tmp, 'biormdup'),
                                     $helper_threads;
-  for(@{$options->{'meta_set'}}) {
-    $command .= ' I='.$_->tstub.'_sorted.bam';
+
+  if(defined $source) {
+    opendir(my $dh, $source);
+    while(my $file = readdir $dh) {
+      next unless($file =~ m/_sorted\.bam$/);
+      $command .= ' I='.File::Spec->catfile($source, $file);
+    }
+    closedir $dh;
+  }
+  else {
+    for(@{$options->{'meta_set'}}) {
+      $command .= ' I='.$_->tstub.'_sorted.bam';
+    }
   }
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
   return $marked;
@@ -120,10 +133,24 @@ sub bam_stats {
   my $tmp = $options->{'tmp'};
   my $bam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).'.bam';;
   my $bas = "$bam.bas";
-  my $command = which('bam_stats.pl') || die "Unable to find 'bam_stats.pl' in path";
+  my $command = "$^X ";
+  $command .= _which('bam_stats.pl') || die "Unable to find 'bam_stats.pl' in path";
   $command .= sprintf $BAM_STATS, $bam, $bas;
+  if(exists $options->{'charts'} && defined $options->{'charts'}) {
+    my $chart_dir = File::Spec->catdir($options->{'outdir'}, 'charts');
+    make_path($chart_dir) unless(-d $chart_dir);
+    $command .= ' -p '.$chart_dir;
+  }
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
   return $bas;
+}
+
+sub _which {
+  my $prog = shift;
+  my $l_bin = $Bin;
+  my $path = File::Spec->catfile($l_bin, $prog);
+  $path = which($prog) unless(-e $path);
+  return $path;
 }
 
 sub sample_name {

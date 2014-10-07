@@ -27,17 +27,30 @@ use autodie qw(:all);
 use English qw( -no_match_vars );
 use warnings FATAL => 'all';
 use Const::Fast qw(const);
+use File::Path qw(remove_tree make_path);
 use File::Spec;
 use File::Which qw(which);
 use Capture::Tiny qw(capture);
+use File::Copy qw(copy move);
 
 use PCAP::Bwa::Meta;
 
 const my $BWA_ALN => q{ aln%s -t %s -f %s_%s.sai %s %s.%s};
-const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY T=%s S=%s O=%s O2=%s filename=%s};
+const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY T=%s S=%s O=%s O2=%s gz=1 level=1 F=%s F2=%s filename=%s split=%s};
 const my $BWA_MEM => q{ mem%s -T 0 -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
 const my $BAMSORT => q{ inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
+
+const my $READPAIR_SPLITSIZE => 10,
+const my $PAIRED_FQ_LINE_MULT => 4;
+const my $INTERLEAVED_FQ_LINE_MULT => 8;
+const my $MILLION => 1_000_000;
+
+const my $BWA_MEM_MAX_CORES => 6;
+
+sub bwa_mem_max_cores {
+  return $BWA_MEM_MAX_CORES;
+}
 
 sub bwa_version {
   my $bwa = which('bwa');
@@ -50,19 +63,138 @@ sub bwa_version {
   return $version;
 }
 
-sub bwa_mem {
-  # uncoverable subroutine
+sub mem_setup {
   my $options = shift;
+  if($options->{'reference'} =~ m/\.gz$/) {
+    my $tmp_ref = $options->{'reference'};
+    $tmp_ref =~ s/\.gz$//;
+    if(-e $tmp_ref) {
+      $options->{'decomp_ref'} = $tmp_ref;
+    }
+    else {
+      $options->{'decomp_ref'} = "$options->{tmp}/decomp.fa";
+      system([0,2], "(gunzip -c $options->{reference} > $options->{decomp_ref}) >& /dev/null") unless(-e $options->{'decomp_ref'});
+      copy("$options->{reference}.fai", "$options->{tmp}/decomp.fa.fai") unless(-e "$options->{decomp_ref}.fai");
+    }
+  }
+  return 1;
+}
+
+sub mem_prepare {
+  my $options = shift;
+  $options->{'meta_set'} = PCAP::Bwa::Meta::files_to_meta($options->{'tmp'}, $options->{'raw_files'}, $options->{'sample'});
+  $options->{'max_split'} = scalar @{$options->{'meta_set'}};
+  return $options->{'max_split'};
+}
+
+sub mem_mapmax {
+  my $options = shift;
+  my $split_dir = File::Spec->catdir($options->{'tmp'}, 'split');
+  die "Please run setup and split steps prior to bwamem\n" unless(-d $split_dir);
+  my @files;
+  my @in_list = (1..$options->{'max_split'}); # get the number of folders that will exist inside of split
+  for my $subd(@in_list) {
+    my $folder = File::Spec->catdir($split_dir, $subd);
+    opendir(my $dh, $folder);
+    while(my $file = readdir $dh) {
+      next if($file =~ m/^\./);
+      next if($file =~ m/^2\.[[:digit]]+/); # captured by 1.*
+      push @files, File::Spec->catfile($folder, $file);
+    }
+    closedir($dh);
+  }
+  @files = sort @files;
+  $options->{'to_map'} = \@files;
+  return (scalar @files);
+}
+
+sub split_in {
+  my ($index, $options) = @_;
+  return 1 if(exists $options->{'index'} && $index != $options->{'index'});
+
   my $tmp = $options->{'tmp'};
+  return 1 if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
+
   my $input_meta = $options->{'meta_set'};
-  my $index = 0;
+  my $iter = 1;
   for my $input(@{$input_meta}) {
-    $index++;
-    next if(exists $options->{'index'} && $index != $options->{'index'});
-    # uncoverable branch true
-    # uncoverable branch false
-    next if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
-    my $this_stub = $input->tstub;
+    next if($iter++ != $index); # skip to the relevant element in the list
+
+    # one split folder for each 'lane' of input
+    my $split_folder = File::Spec->catdir($options->{'tmp'}, 'split', $index);
+    my $sort_folder = File::Spec->catdir($options->{'tmp'}, 'sorted');
+
+    make_path($split_folder) unless(-d $split_folder);
+    make_path($sort_folder) unless(-d $sort_folder);
+
+
+    my $fragment_size = $options->{'fragment'};
+    $fragment_size ||= $READPAIR_SPLITSIZE;
+
+    my @commands;
+    # if fastq input
+    if($input->fastq) {
+      # paired fq input
+      if($input->paired_fq) {
+        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
+                                , $input->in.'_1.'.$input->fastq
+                                , File::Spec->catfile($split_folder, '1');
+        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                , $fragment_size * $PAIRED_FQ_LINE_MULT
+                                , $input->in.'_2.'.$input->fastq
+                                , File::Spec->catfile($split_folder, '2');
+      }
+      # interleaved FQ
+      else {
+        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                , $fragment_size * $MILLION * $INTERLEAVED_FQ_LINE_MULT
+                                , $input->in.'.'.$input->fastq
+                                , File::Spec->catfile($split_folder, 'i');
+      }
+    }
+    # if bam input
+    else {
+      my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
+      $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
+                                    File::Spec->catfile($tmp, "bamtofastq.$index.s"),
+                                    File::Spec->catfile($tmp, "bamtofastq.$index.o1"),
+                                    File::Spec->catfile($tmp, "bamtofastq.$index.o2"),
+                                    File::Spec->catfile($split_folder, 'i'),
+                                    File::Spec->catfile($split_folder, 'i'),
+                                    $input->in,
+                                    $fragment_size * $MILLION;
+      # treat as interleaved fastq
+      push @commands, $bam2fq;
+    }
+
+    PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), \@commands, $index);
+    PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), $index);
+  }
+  return 1;
+}
+
+sub bwa_mem {
+  my ($index, $options) = @_;
+  return 1 if(exists $options->{'index'} && $index != $options->{'index'});
+
+  my $tmp = $options->{'tmp'};
+  return 1 if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
+
+  my $input_meta = $options->{'meta_set'};
+  my $to_map = $options->{'to_map'};
+  my $iter = 1;
+  for my $split(@{$to_map}) {
+    next if($iter++ != $index); # skip to the relevant element in the list
+
+    # this needs to come from the meta_set now,
+    # use the folder in the split path to determine which BAM in the input list the RG line should come from
+    # need to finish defining how the split_in step should make the file list be a stubbed dataset rather than full paths
+    # primarily to ensure that non-interleaved aren't counted as 2 jobs
+
+    # determine meta by path of input
+    my ($split_element) = $split =~ m|/split/([[:digit:]]+)/|;
+    my $input = $input_meta->[$split_element - 1]; # as array origin 0
 
     my $rg_line;
     # uncoverable branch true
@@ -71,52 +203,47 @@ sub bwa_mem {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
     else {
-      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'}, 1);
+      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'});
+      $rg_line = q{'}.$rg_line.q{'};
     }
+
+    my $threads = $BWA_MEM_MAX_CORES;
+    $threads = $options->{'threads'} if($options->{'threads'} < $BWA_MEM_MAX_CORES);
 
     my $bwa = which('bwa') || die "Unable to find 'bwa' in path";
 
-    my $command;
+    $ENV{SHELL} = '/bin/bash'; # ensure bash to allow pipefail
+    my $command = 'set -o pipefail; ';
 
+    my $interleaved_fq = q{};
     # uncoverable branch true
     # uncoverable branch false
-    if($input->fastq) {
-      my $interleaved_fq = q{};
-      # uncoverable branch true
-      # uncoverable branch false
-      $interleaved_fq = q{ -p}, unless($input->paired_fq);
-      $bwa .= sprintf $BWA_MEM, $interleaved_fq, $rg_line, $options->{'threads'}, $options->{'reference'};
-      # uncoverable branch true
-      # uncoverable branch false
-      if($input->paired_fq) {
-        $bwa .= ' '.$input->in.'_1.'.$input->fastq; # add correct file extension for various types
-        $bwa .= ' '.$input->in.'_2.'.$input->fastq;
-      }
-      else {
-        $bwa .= ' '.$input->in.'.'.$input->fastq;
-      }
-      $command = $bwa;
+    $interleaved_fq = q{ -p}, unless($input->paired_fq);
+    $bwa .= sprintf $BWA_MEM, $interleaved_fq, $rg_line, $threads, $options->{'reference'};
+    # uncoverable branch true
+    # uncoverable branch false
+    if($input->paired_fq) {
+      my $split2 = $split;
+      $split2 =~ s/1(\.[[:digit:]]+)$/2$2/;
+      $bwa .= ' '.$split;
+      $bwa .= ' '.$split2;
     }
     else {
-      my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
-      $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.s"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.o1"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.o2"),
-                                    $input->in;
-      $bwa .= sprintf $BWA_MEM, ' -p', qq{'$rg_line'}, $options->{'threads'}, $options->{'reference'};
-      $bwa .= ' -';
-      $command = "$bam2fq | $bwa";
+      $bwa .= ' '.$split;
     }
+    $command .= $bwa;
 
     my $helpers = 1;
     # uncoverable branch true
     # uncoverable branch false
     $helpers = 2 if($options->{'threads'} > 3);
 
+    my $sorted_bam_stub = $split;
+    $sorted_bam_stub =~ s|/split/([[:digit:]]+)/(.+)$|/sorted/$1_$2|;
+
     my $ref = exists $options->{'decomp_ref'} ? $options->{'decomp_ref'} : $options->{'reference'};
     my $sort = which('bamsort') || die "Unable to find 'bamsort' in path\n";
-    $sort .= sprintf $BAMSORT, File::Spec->catfile($tmp, "bamsort.$index"), $input->tstub, $helpers, $helpers, $ref;
+    $sort .= sprintf $BAMSORT, File::Spec->catfile($tmp, "bamsort.$index"), $sorted_bam_stub, $helpers, $helpers, $ref;
 
     $command .= " | $sort";
 

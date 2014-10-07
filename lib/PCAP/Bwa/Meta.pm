@@ -120,7 +120,7 @@ sub rg_header {
     }
 
     my @elements = ('@RG');
-    push @elements, 'ID:'.(lc Data::UUID->new->create_str);
+    push @elements, 'ID:'.$self->rg;
 
     my %all_keys;
     for my $key(sort keys %{$bam_elements}){ $all_keys{$key} = 1; }

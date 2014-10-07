@@ -1,7 +1,7 @@
 #! /bin/bash
-LIBMAUSVERSION=0.0.130-release-20140618101704
-BIOBAMBAMVERSION=0.0.148-release-20140618101902
-SNAPPYVERSION=1.1.1
+LIBMAUSVERSION=0.0.167-release-20140917101853
+BIOBAMBAMVERSION=0.0.171-release-20140917102804
+SNAPPYVERSION=1.1.2
 IOLIBVERSION=1.13.7
 CHRPATHVERSION=0.16
 BUILDDIR=${PWD}
@@ -22,7 +22,8 @@ fi
 
 # get snappy
 if [ ! -f snappy-${SNAPPYVERSION}.tar.gz ] ; then
-	wget -O - https://snappy.googlecode.com/files/snappy-${SNAPPYVERSION}.tar.gz > snappy-${SNAPPYVERSION}.tar.gz
+  cp $BUILDDIR/../dists/snappy-${SNAPPYVERSION}.tar.gz snappy-${SNAPPYVERSION}.tar.gz
+#	wget -O - https://snappy.googlecode.com/files/snappy-${SNAPPYVERSION}.tar.gz > snappy-${SNAPPYVERSION}.tar.gz
 fi
 
 # get libmaus

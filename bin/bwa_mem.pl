@@ -42,38 +42,36 @@ use PCAP::Cli;
 use PCAP::Bam;
 use PCAP::Bwa;
 use PCAP::Bwa::Meta;
+use PCAP::Threaded;
 use version;
 
-const my @VALID_PROCESS => qw(bwamem mark stats);
-const my %INDEX_FACTOR => ( 'bwamem' => 1,
+const my @VALID_PROCESS => qw(setup split bwamem mark stats);
+const my %INDEX_FACTOR => ( 'setup' => 1,
+                            'split' => -1,
+                            'bwamem' => -1,
                             'mark'   => 1,
                             'stats'  => 1,);
 
 {
   my $options = setup();
-  $options->{'meta_set'} = PCAP::Bwa::Meta::files_to_meta($options->{'tmp'}, $options->{'raw_files'}, $options->{'sample'});
 
-  if($options->{'reference'} =~ m/\.gz$/) {
-    if(exists $options->{'index'}) {
-      my $tmp_ref = $options->{'reference'};
-      $tmp_ref =~ s/\.gz$//;
-      if(-e $tmp_ref) {
-        $options->{'decomp_ref'} = $tmp_ref;
-      }
-      else {
-        die "ERROR: When 'index' is defined you must provide a decompressed reference (colocated is sufficient)\n";
-      }
-    }
-    else {
-      $options->{'decomp_ref'} = "$options->{tmp}/decomp.fa";
-      system([0,2], "(gunzip -c $options->{reference} > $options->{decomp_ref}) >& /dev/null") unless(-e $options->{'decomp_ref'});
-      copy("$options->{reference}.fai", "$options->{tmp}/decomp.fa.fai") unless(-e "$options->{decomp_ref}.fai");
-    }
+ 	my $threads = PCAP::Threaded->new($options->{'threads'});
+	&PCAP::Threaded::disable_out_err if(exists $options->{'index'});
+
+  # register processes
+	$threads->add_function('split', \&PCAP::Bwa::split_in);
+	$threads->add_function('bwamem', \&PCAP::Bwa::bwa_mem, exists $options->{'index'} ? 1 : &PCAP::Bwa::bwa_mem_max_cores);
+
+  PCAP::Bwa::mem_setup($options) if(!exists $options->{'process'} || $options->{'process'} eq 'setup');
+
+	$threads->run($options->{'max_split'}, 'split', $options) if(!exists $options->{'process'} || $options->{'process'} eq 'split');
+
+  if(!exists $options->{'process'} || $options->{'process'} eq 'bwamem') {
+    $options->{'max_index'} = PCAP::Bwa::mem_mapmax($options);
+    $threads->run($options->{'max_index'}, 'bwamem', $options);
   }
 
-  my $bam_count = scalar @{$options->{'meta_set'}};
-  PCAP::Bwa::bwa_mem($options) if(!exists $options->{'process'} || $options->{'process'} eq 'bwamem');
-  PCAP::Bam::merge_and_mark_dup($options) if(!exists $options->{'process'} || $options->{'process'} eq 'mark');
+  PCAP::Bam::merge_and_mark_dup($options, File::Spec->catdir($options->{'tmp'}, 'sorted')) if(!exists $options->{'process'} || $options->{'process'} eq 'mark');
   if(!exists $options->{'process'} || $options->{'process'} eq 'stats') {
     PCAP::Bam::bam_stats($options);
     &cleanup($options);
@@ -92,16 +90,25 @@ sub setup {
   my %opts;
   GetOptions( 'h|help' => \$opts{'h'},
               'm|man' => \$opts{'m'},
+              'v|version' => \$opts{'v'},
+              'j|jobs' => \$opts{'jobs'},
               't|threads=i' => \$opts{'threads'},
               'r|reference=s' => \$opts{'reference'},
               'o|outdir=s' => \$opts{'outdir'},
               's|sample=s' => \$opts{'sample'},
+              'c|charts' => \$opts{'charts'},
+              'f|fragment=s' => \$opts{'fragment'},
               'p|process=s' => \$opts{'process'},
               'i|index=i' => \$opts{'index'},
   ) or pod2usage(2);
 
   pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
   pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
+
+  if(defined $opts{'v'}) {
+    print PCAP->VERSION,"\n";
+    exit 0;
+  }
 
   my $version = PCAP::Bwa::bwa_version();
   die "bwa mem can only be used with bwa version 0.7+, the version found in path is: $version\n" unless(version->parse($version) >= version->parse('0.7.0'));
@@ -117,18 +124,6 @@ sub setup {
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
 
-  if(exists $opts{'process'}) {
-    PCAP::Cli::valid_process('process', $opts{'process'}, \@VALID_PROCESS);
-    if(exists $opts{'index'}) {
-      PCAP::Cli::opt_requires_opts('index', \%opts, ['process']);
-      # theres a small assumption that @ARGV is correct but that is still checked before exec
-      PCAP::Cli::valid_index_by_factor('index', $opts{'index'}, \@ARGV, $INDEX_FACTOR{$opts{'process'}});
-    }
-  }
-  elsif(exists $opts{'index'}) {
-    die "ERROR: -index cannot be defined without -process\n";
-  }
-
   # now safe to apply defaults
   $opts{'threads'} = 1 unless(defined $opts{'threads'});
 
@@ -137,10 +132,35 @@ sub setup {
   my $progress = File::Spec->catdir($tmpdir, 'progress');
   make_path($progress) unless(-d $progress);
   my $logs = File::Spec->catdir($tmpdir, 'logs');
-   make_path($logs) unless(-d $logs);
+  make_path($logs) unless(-d $logs);
 
   $opts{'tmp'} = $tmpdir;
   $opts{'raw_files'} = \@ARGV;
+
+  my $max_split = PCAP::Bwa::mem_prepare(\%opts);
+
+  if(exists $opts{'process'}) {
+    PCAP::Cli::valid_process('process', $opts{'process'}, \@VALID_PROCESS);
+    my $max_index = $INDEX_FACTOR{$opts{'process'}};
+    if($max_index == -1) {
+      $max_index = $max_split                     if($opts{'process'} eq 'split');
+      $max_index = PCAP::Bwa::mem_mapmax(\%opts)  if($opts{'process'} eq 'bwamem');
+    }
+    $opts{'max_index'} = $max_index;
+    if(exists $opts{'index'}) {
+      PCAP::Cli::opt_requires_opts('index', \%opts, ['process']);
+      PCAP::Cli::valid_index_by_factor('index', $opts{'index'}, \@ARGV, $max_index);
+    }
+    elsif(defined $opts{'jobs'}) {
+      # tell me the max processes required for this step
+      print "Requires: $max_index\n";
+      exit 0;
+    }
+  }
+  elsif(exists $opts{'index'}) {
+    die "ERROR: -index cannot be defined without -process\n";
+  }
+
   return \%opts;
 }
 
@@ -160,6 +180,10 @@ bwa_aln.pl [options] [file(s)...]
     -sample    -s   Sample name to be applied to output file.
     -threads   -t   Number of threads to use. [1]
 
+  Optional parameters:
+    -fragment  -f   Split input into fragements of X million repairs
+    -charts    -c   Generate perl-base-quality plots (+30% runtime on stats step)
+
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index
                       bwamem - only applicable if input is bam
@@ -170,6 +194,7 @@ bwa_aln.pl [options] [file(s)...]
                       bwamem - 1..<lane_count>
 
   Other:
+    -jobs      -j   For a parallel step report the number of jobs required
     -help      -h   Brief help message.
     -man       -m   Full documentation.
 
