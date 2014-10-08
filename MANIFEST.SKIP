@@ -61,3 +61,4 @@
 # specific things from this project
 ^docs/
 ^setup.log
+^bin/biobambam/
