@@ -28,6 +28,7 @@ install_share module => 'PCAP::SRA', 'share';
 WriteMakefile(
   NAME          => 'PCAP',
   VERSION_FROM  => 'lib/PCAP.pm',
+  LICENSE       => 'gpl_2', # http://search.cpan.org/~dagolden/CPAN-Meta-2.142690/lib/CPAN/Meta/Spec.pm#license
   EXE_FILES     => [qw( bin/bam_to_sra_sub.pl
                         bin/bwa_aln.pl
                         bin/bwa_mem.pl
