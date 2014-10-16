@@ -1,7 +1,7 @@
 #!/use/bin/perl
 
 use strict;
-use LWP::Simple;
+use Capture::Tiny qw(capture);
 use XML::Simple qw(:strict);
 use JSON;
 use PCAP;
@@ -12,6 +12,12 @@ use Pod::Usage qw(pod2usage);
 my $options = &setup;
 xml_to_bas($options);
 
+sub get {
+  my $uri = shift;
+  my ($raw_xml, $e_str, $e_code) = capture { system('curl '.$uri); };
+  die "ERROR: $e_str\n" if($e_code);
+  return $raw_xml;
+}
 
 sub xml_to_bas {
   my $options = shift;
