@@ -62,3 +62,4 @@
 ^docs/
 ^setup.log
 ^bin/biobambam/
+^perltidy.LOG
