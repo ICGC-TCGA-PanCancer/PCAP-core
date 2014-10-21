@@ -141,7 +141,7 @@ sub split_in {
                                 , $input->in.'_1.'.$input->fastq
                                 , File::Spec->catfile($split_folder, '1');
         push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $PAIRED_FQ_LINE_MULT
+                                , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
                                 , $input->in.'_2.'.$input->fastq
                                 , File::Spec->catfile($split_folder, '2');
       }
