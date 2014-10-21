@@ -224,7 +224,7 @@ sub bwa_mem {
     # uncoverable branch false
     if($input->paired_fq) {
       my $split2 = $split;
-      $split2 =~ s/1(\.[[:digit:]]+)$/2$2/;
+      $split2 =~ s/1(\.[[:digit:]]+)$/2$1/;
       $bwa .= ' '.$split;
       $bwa .= ' '.$split2;
     }
