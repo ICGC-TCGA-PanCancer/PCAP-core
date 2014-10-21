@@ -24,7 +24,7 @@ use strict;
 use Const::Fast qw(const);
 use base 'Exporter';
 
-our $VERSION = '1.2.1';
+our $VERSION = '1.2.2';
 our @EXPORT = qw($VERSION);
 
 const my $LICENSE =>
@@ -35,20 +35,22 @@ const my $LICENSE =>
 #################";
 
 const my $DEFAULT_PATH => 'biobambam,samtools,bwa';
-const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,samtools,bwa',
-                            '0.1.1'  => 'biobambam,bwa',
-                            '0.1.2'  => 'biobambam,bwa',
-                            '0.2.0'  => 'biobambam,bwa',
-                            '0.2.99' => 'biobambam,bwa',
-                            '0.3.0'  => 'biobambam,bwa',
-                            '1.0.0'  => 'biobambam,bwa',
-                            '1.0.1'  => 'biobambam,bwa',
-                            '1.0.2'  => 'biobambam,bwa',
-                            '1.0.3'  => 'biobambam,bwa',
-                            '1.0.4'  => 'biobambam,bwa',
-                            '1.1.0'  => 'biobambam,bwa',
-                            '1.1.1'  => 'biobambam,bwa',
-                            '1.1.2'  => 'biobambam,bwa',
+const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,bwa,samtools',
+                            '0.1.1'  => 'biobambam,bwa,samtools',
+                            '0.1.2'  => 'biobambam,bwa,samtools',
+                            '0.2.0'  => 'biobambam,bwa,samtools',
+                            '0.2.99' => 'biobambam,bwa,samtools',
+                            '0.3.0'  => 'biobambam,bwa,samtools',
+                            '1.0.0'  => 'biobambam,bwa,samtools',
+                            '1.0.1'  => 'biobambam,bwa,samtools',
+                            '1.0.2'  => 'biobambam,bwa,samtools',
+                            '1.0.3'  => 'biobambam,bwa,samtools',
+                            '1.0.4'  => 'biobambam,bwa,samtools',
+                            '1.1.0'  => 'biobambam,bwa,samtools',
+                            '1.1.1'  => 'biobambam,bwa,samtools',
+                            '1.1.2'  => 'biobambam,bwa,samtools',
+                            '1.2.0'  => '', # if later versions have new versions then all preceding need that tool listing
+                            '1.2.1'  => '',
                           );
 
 sub license {
