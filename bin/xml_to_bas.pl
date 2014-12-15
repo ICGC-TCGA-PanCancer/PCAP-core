@@ -8,6 +8,7 @@ use PCAP;
 use autodie qw(:all);
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
+use Bio::DB::Sam;
 
 my $options = &setup;
 xml_to_bas($options);
@@ -26,21 +27,22 @@ sub xml_to_bas {
                       , KeyAttr => [],);
 
   my $bas_json = find_bas_json($document);
-  json_to_bas_file($bas_json, $options->{'output'});
+  json_to_bas_file($bas_json, $options);
   return 1;
 }
 
 sub json_to_bas_file {
-  my ($bas_json, $out_path) = @_;
+  my ($bas_json, $options) = @_;
 
   my $bas_data = decode_json $bas_json;
+  validate_bas($bas_data, $options);
   my @metrics = @{$bas_data->{'qc_metrics'}};
 
   my @columns = bas_columns($metrics[0]);
 
   my $OUT;
-  if(defined $out_path) {
-    open $OUT, '>', $out_path;
+  if(defined $options->{'output'}) {
+    open $OUT, '>', $options->{'output'};
   }
   else {
     $OUT = *STDOUT;
@@ -64,6 +66,59 @@ sub bas_columns {
   my $first_record = shift;
   my @columns = sort keys $first_record->{'metrics'};
   return @columns;
+}
+
+sub validate_bas {
+  my ($bas_data, $options) = @_;
+  # first look for read_group_id clash
+  my %ids;
+  my $clash = clash_check($bas_data);
+  if($clash) {
+    unless($options->{'bam'}) {
+      die "ERROR: multiple metric entries with the same read_group_id. May be recoverable with '-b' defined.\n";
+    }
+    else {
+      warn "WARNING: multiple metric entries with the same read_group_id attempting to compensate...\n";
+      correct_clash($bas_data, $options->{'bam'});
+    }
+  }
+}
+
+sub correct_clash {
+  my ($bas_data, $bamfile) = @_;
+  my $bam = Bio::DB::Sam->new(-bam => $options->{'bam'});
+  my %rg_by_pu;
+  foreach my $hl(split /\n/, $bam->header->text) {
+    next unless($hl =~ m/^\@RG/);
+    my ($pu) = $hl =~ m/\tPU:([^\t]+)/;
+    my ($id) = $hl =~ m/\tID:([^\t]+)/;
+    die "ERROR: Unable to recover read_group_id clash using PU field.\n" if(exists $rg_by_pu{$pu});
+    $rg_by_pu{$pu} = $id;
+  }
+
+  my @metrics = @{$bas_data->{'qc_metrics'}};
+  for my $row(@metrics) {
+    $row->{'read_group_id'} = $rg_by_pu{ $row->{'metrics'}->{'platform_unit'} };
+    $row->{'metrics'}->{'readgroup'} = $rg_by_pu{ $row->{'metrics'}->{'platform_unit'} };
+  }
+  die "ERROR: Unable to recover read_group_id clash using PU field.\n" if(clash_check($bas_data));
+  return 1;
+}
+
+sub clash_check {
+  my $bas_data = shift;
+  my @metrics = @{$bas_data->{'qc_metrics'}};
+  my %ids;
+  my $clash = 0;
+  for my $row(@metrics) {
+    if(exists $ids{$row->{'read_group_id'}}) {
+      $clash++;
+    }
+    else {
+      $ids{$row->{'read_group_id'}} = 1;
+    }
+  }
+  return $clash;
 }
 
 
@@ -97,6 +152,7 @@ sub setup{
               'm|man' => \$opts{'m'},
               'v|version' => \$opts{'v'},
               'd|uri=s' => \$opts{'uri'},
+              'b|bam=s' => \$opts{'bam'},
               'o|output=s' => \$opts{'output'},
               '<>' => sub{push(@random_args,shift(@_));}
   ) or pod2usage(2);
@@ -130,6 +186,12 @@ xml_to_bas.pl [options]
   Required parameters:
     -uri    -d    Same URI used by gtdownload
     -output -o    Name for output file. Defaults to STDOUT.
+
+  Optional parameters:
+    -bam    -b    BAM file this data relates to
+                   - checks retrieved data correlates with expected BAM
+                   - additionally can correct read_group_id if other fields correlate when
+                     clashes occur.
 
   Other:
     -help     -h   Brief help message.
