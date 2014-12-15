@@ -24,7 +24,7 @@ use strict;
 use Const::Fast qw(const);
 use base 'Exporter';
 
-our $VERSION = '1.2.2';
+our $VERSION = '1.2.3';
 our @EXPORT = qw($VERSION);
 
 const my $LICENSE =>
@@ -51,6 +51,7 @@ const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,bwa,samtools',
                             '1.1.2'  => 'biobambam,bwa,samtools',
                             '1.2.0'  => '', # if later versions have new versions then all preceding need that tool listing
                             '1.2.1'  => '',
+                            '1.2.2'  => '',
                           );
 
 sub license {

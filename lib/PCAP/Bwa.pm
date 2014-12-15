@@ -44,6 +44,7 @@ const my $BAMSORT => q{ inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam i
 const my $READPAIR_SPLITSIZE => 10,
 const my $PAIRED_FQ_LINE_MULT => 4;
 const my $INTERLEAVED_FQ_LINE_MULT => 8;
+const my $BAM_MULT => 2;
 const my $MILLION => 1_000_000;
 
 const my $BWA_MEM_MAX_CORES => 6;
@@ -163,7 +164,7 @@ sub split_in {
                                     File::Spec->catfile($split_folder, 'i'),
                                     File::Spec->catfile($split_folder, 'i'),
                                     $input->in,
-                                    $fragment_size * $MILLION;
+                                    $fragment_size * $MILLION * $BAM_MULT;
       # treat as interleaved fastq
       push @commands, $bam2fq;
     }
@@ -224,7 +225,7 @@ sub bwa_mem {
     # uncoverable branch false
     if($input->paired_fq) {
       my $split2 = $split;
-      $split2 =~ s/1(\.[[:digit:]]+)$/2$2/;
+      $split2 =~ s/1(\.[[:digit:]]+)$/2$1/;
       $bwa .= ' '.$split;
       $bwa .= ' '.$split2;
     }
