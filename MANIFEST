@@ -58,6 +58,7 @@ t/data/no_readgroups.bam
 t/data/no_readgroups.sam
 t/data/not_really_a.bam
 t/data/paired.bam
+t/data/reconcile_bas.bam
 t/data/Stats.bam
 t/data/Stats.bam.bas
 t/data/test.bam.bas
