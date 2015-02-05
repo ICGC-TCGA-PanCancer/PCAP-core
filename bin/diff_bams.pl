@@ -35,7 +35,7 @@ use PCAP::Cli;
 
 use Bio::DB::Sam;
 
-my ($file_a, $file_b, $skip_z) = setup();
+my ($file_a, $file_b, $skip_z, $count_flag_diff) = setup();
 
 my $bam_a = Bio::DB::Bam->open($file_a);
 my $bam_b = Bio::DB::Bam->open($file_b);
@@ -59,6 +59,7 @@ for(0..($target_count_a-1)) {
 print "Reference sequence order passed\n";
 
 my ($align_a, $align_b, $count);
+my $flag_diffs = 0;
 $|++;
 while(1) {
   $count++;
@@ -74,12 +75,26 @@ while(1) {
   die "Files have different number of records\n" if((!defined $align_a && defined $align_b) || (defined $align_a && !defined $align_b));
 
   die sprintf "Files differ at record $count (qname) a=%s b=%s\n", $align_a->qname, $align_b->qname if($align_a->qname ne $align_b->qname);
-  die sprintf "Files differ at record $count (flags) a=%s b=%s\n", $align_a->qname, $align_b->qname if($align_a->flag ne $align_b->flag);
+  if($align_a->flag ne $align_b->flag) {
+    if($count_flag_diff) {
+      $flag_diffs++;
+      print $align_a->pos."\n";
+    }
+    else {
+      die sprintf "Files differ at record $count (flags) a=%s b=%s\n", $align_a->qname, $align_b->qname
+    }
+  }
 
-  print "Matching records: $count\r" if($count % 100_000 == 0);
+  if($count % 100_000 == 0) {
+    my $message = "Matching records: $count";
+    $message .= "\t(flag mismatch: $flag_diffs)"if($count_flag_diff);
+    print $message."\r";
+  }
+
 }
 print "Matching records: $count\n";
-print "Files match\n";
+print "Flag mismatches: $flag_diffs\n";
+#print "Files match\n";
 
 sub setup {
   my %opts;
@@ -87,6 +102,7 @@ sub setup {
               'm|man' => \$opts{'m'},
               'a|bam_a=s' => \$opts{'a'},
               'b|bam_b=s' => \$opts{'b'},
+              'c|count' => \$opts{'c'},
               's|skip' => \$opts{'s'},
   ) or pod2usage(2);
 
@@ -95,19 +111,19 @@ sub setup {
 
   my $defined = 0;
   for(keys %opts) { $defined++ if(defined $opts{$_}); }
-  if(@ARGV == 2) {
+  if($defined == 0 && @ARGV == 2) {
     $opts{'a'} = shift @ARGV;
     $opts{'b'} = shift @ARGV;
     $defined = 2;
   }
-  pod2usage(-msg  => "\nERROR: Options 'a' & 'b' must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined == 2);
+  pod2usage(-msg  => "\nERROR: Options 'a' & 'b' must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined >= 2);
 
   die pod2usage(-msg  => "\nERROR: bam_a and bam_b cannot be the same file\n", -verbose => 1,  -output => \*STDERR) if($opts{'a'} eq $opts{'b'});
 
   PCAP::Cli::file_for_reading('bam_a', $opts{'a'});
   PCAP::Cli::file_for_reading('bam_a', $opts{'b'});
 
-  return ($opts{'a'}, $opts{'b'}, $opts{'s'});
+  return ($opts{'a'}, $opts{'b'}, $opts{'s'}, $opts{'c'});
 }
 
 __END__
@@ -134,6 +150,7 @@ comparing relevant information such as:
     -bam_b    -b    The second BAM file.
 
   Other:
+    -count    -c    Count flag differences
     -skipz    -s    Don't include reads with MAPQ=0 in comparison
     -help     -h    Brief help message.
     -man      -m    Full documentation.
