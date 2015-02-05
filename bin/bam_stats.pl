@@ -34,6 +34,14 @@ use Getopt::Long;
 use File::Spec;
 use Try::Tiny;
 use Pod::Usage qw(pod2usage);
+use Config; # so we can see if threads are enabled
+use Data::Dumper;
+
+BEGIN {
+  if($Config{useithreads}) {
+    require threads;
+  }
+};
 
 use PCAP::Bam::Stats;
 
@@ -52,14 +60,39 @@ use PCAP::Bam::Stats;
   }
 
   try{
-    my $stats = new PCAP::Bam::Stats(-path => $opts->{'input'}, -qscoring => defined $plots_dir);
+    my $stats;
+    if($opts->{'threads'} > 1 && $Config{useithreads}) {
+      for my $thread(0..($opts->{'threads'}-1)) {
+         my ($thr) = threads->create(\&stat_thread, $opts, $thread);
+      }
+      sleep 2 while(threads->list(threads::running) > 0);
+      my @bas_objs;
+      for my $thr(threads->list(threads::joinable)) {
+        push @bas_objs, $thr->join;
+        if(my $err = $thr->error) { die "Thread error: $err\n"; }
+      }
+      # something to merge the stats into a single element of the object
+      $stats = PCAP::Bam::Stats->new(-path => $opts->{'input'},
+                                     -no_proc => 1);
+      $stats->merge_json_stats(\@bas_objs);
+    }
+    else {
+      $stats = PCAP::Bam::Stats->new(-path => $opts->{'input'},
+                                     -qscoring => defined $plots_dir);
+      $stats->fqplots($plots_dir) if($plots_dir);
+    }
     $stats->bas($output);
-    $stats->fqplots($plots_dir) if($plots_dir);
-  }catch{
+  } catch{
     die 'Reading: |'.$opts->{'input'}."| Writing to: |$out_location| Error: $_";
-  }finally{
+  } finally{
     close $output or die "Unable to close |".$opts->{'output'}."|: $!" if($opts->{'output'});
-  }
+  };
+}
+
+sub stat_thread {
+  my ($opts, $thread) = @_;
+  my $stats = PCAP::Bam::Stats->new(-path => $opts->{'input'}, -mod => $opts->{'threads'}, -rem => $thread);
+  return $stats->json_stats;
 }
 
 sub setup{
@@ -70,6 +103,7 @@ sub setup{
               'v|version' => \$opts{'v'},
               'i|input=s' => \$opts{'input'},
               'o|output=s' => \$opts{'output'},
+              't|threads=i' => \$opts{'threads'},
               'p|plots=s' => \$opts{'plots'},
               '<>' => sub{push(@random_args,shift(@_));}
   ) or pod2usage(2);
@@ -87,6 +121,15 @@ sub setup{
   pod2usage(-message  => "\nERROR: unrecognised commandline arguments: ".join(', ',@random_args).".\n", -verbose => 1,  -output => \*STDERR) if(scalar @random_args) ;
   pod2usage(-message  => "\nERROR: i|input must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($opts{'input'});
   pod2usage(-message  => "\nERROR: i|input |".$opts{'input'}."| must be a valid file.\n", -verbose => 1,  -output => \*STDERR) unless(-f $opts{'input'});
+
+  # technically can be done but not a priority
+  pod2usage(-message  => "\nERROR: '-p' and '-t' cannot be used together\n", -verbose => 1,  -output => \*STDERR) if(defined $opts{'plots'} && defined $opts{'threads'});
+
+  $opts{'threads'} = 1 unless(defined $opts{'threads'});
+  if(!$Config{useithreads} && $opts{'threads'} > 1) {
+    warn qq{\nNOTE: Perl not compiled with threads enabled, running un-threaded\n};
+    $opts{'threads'} = 1;
+  }
 
   return \%opts;
 }
@@ -114,7 +157,7 @@ bam_stats.pl [options] [file...]
     -version  -v   Prints the version number.
 
     bam_stats.pl -i my.bam -o my.bam.bas
-    cat my.bam | bam_stats.pl > my.bam.bas
+    bam_stats.pl -i my.bam > my.bam.bas
 
 =head1 OPTIONS
 
