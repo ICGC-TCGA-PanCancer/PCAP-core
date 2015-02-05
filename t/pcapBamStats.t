@@ -102,7 +102,7 @@ subtest 'Object funcions' => sub {
 
   subtest 'read_groups' => sub {
     my $test_obj = _create_test_object();
-    is_deeply($test_obj->read_groups,[$rg1, $rg2],'read_groups');
+    is_deeply($test_obj->read_groups,[$rgAnon, $rg1, $rg2],'read_groups');
   };
 
   subtest 'read_group_info' => sub {

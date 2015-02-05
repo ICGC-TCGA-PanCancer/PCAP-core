@@ -12,8 +12,8 @@ use Capture::Tiny qw(capture);
 use Data::Dumper;
 
 const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates bamsort bwa);
-const my $BIOBAMBAM_VERSION => ['0.0.171'];
-const my $BWA_VERSIONS => ['0.6.2','0.7.8','0.7.10'];
+const my $BIOBAMBAM_VERSION => ['0.0.185'];
+const my $BWA_VERSIONS => ['0.7.10'];
 
 # can't put regex in const
 my %EXPECTED_VERSION = (

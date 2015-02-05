@@ -35,6 +35,7 @@ use Math::Gradient;
 use List::Util qw(sum sum0 first);
 use Bio::DB::Sam;
 use GD::Image;
+use JSON;
 
 const my $PAIRED     => 1; # not needed
 const my $PROPER     => 2;
@@ -64,22 +65,69 @@ sub new{
   return $self;
 }
 
+sub json_stats {
+  my $self = shift;
+  return encode_json $self->{_groups};
+}
+
 sub init{
   my($self,%args) = @_;
 
   my $path = $args{-path};
-  my $sam  = $args{-sam};
+  my $sam;
   my $q_scoring = $args{-qscoring};
 
   unless ($sam && ref $sam eq 'Bio::DB::Sam'){
     $sam = Bio::DB::Sam->new(-bam => $path);
   }
 
+  my $mod = $args{-mod};
+  my $rem = $args{-rem};
+  unless(defined $mod) {
+    $mod = 1;
+    $rem = 0;
+  }
+
   my $groups = _parse_header($sam);
-  _process_reads($groups,$sam,$q_scoring);
+  _process_reads($groups,$sam,$q_scoring, $mod, $rem) unless(defined $args{-no_proc});
   $self->{_file_path} = $path;
   $self->{_qualiy_scoring} = $q_scoring ? 1 : 0;
   $self->{_groups} = $groups;
+}
+
+sub merge_json_stats {
+  my ($self, $json_stats) = @_;
+  my %new_stats = %{$self->{_groups}};
+
+  for my $json_groups(@{$json_stats}) {
+    my $groups = decode_json $json_groups;
+    for my $group_id(keys %{$groups}) {
+      for my $data_type(keys %{$groups->{$group_id}}) {
+        next if($data_type =~ m/^fqp/); # technically can be done but not a priority
+
+        my $value = $groups->{$group_id}->{$data_type};
+        if($data_type eq 'inserts') {
+          for my $sub_value_key(keys %{$value}){
+            $new_stats{$group_id}{$data_type}{$sub_value_key} += $value->{$sub_value_key};
+          }
+          next;
+        }
+        if(first {$data_type eq $_} (qw(head length_1 length_2))) {
+          if(exists $new_stats{$group_id}{$data_type}) {
+            die "\nERROR: '$data_type' data doesn't match, aborting merge\n" unless($new_stats{$group_id}{$data_type} eq $value);
+          }
+          else {
+            $new_stats{$group_id}{$data_type} = $value;
+          }
+          next;
+        }
+
+        # there should only be numbers remaining
+        $new_stats{$group_id}{$data_type} += $value;
+      }
+    }
+  }
+  $self->{_groups} = \%new_stats;
 }
 
 sub _parse_header {
@@ -98,19 +146,22 @@ sub _parse_header {
 }
 
 sub _process_reads {
-  my ($groups, $sam, $qualiy_scoring) = @_;
+  my ($groups, $sam, $qualiy_scoring, $mod, $rem) = @_;
+
   my $bam = $sam->bam;
-  my $processed_x = 1;
+  my $processed_x = 0;
   my $start = time;
   my $processed_x_mill = 0;
   while (my $a = $bam->read1) {
-    if($processed_x++ == 1_000_000) {
+    next if(($processed_x++ % $mod) != $rem);
+    if($processed_x % 1_000_000 == 0) {
       $processed_x_mill++;
-      $processed_x = 1;
       my $end = time;
       my $elapsed = $end - $start;
       $start = $end;
-      warn "$processed_x_mill mill. reads processed [${elapsed}s. this block]\n";
+      if($mod == 1) {
+        warn "$processed_x_mill mill. reads processed [${elapsed}s. this block]\n";
+      }
     }
     my $flag = $a->flag;
     next if($flag & $NON_PRI); # skip secondary hits so no double counts
@@ -178,12 +229,6 @@ sub _process_reads {
       $rg_ref->{'inserts'}->{abs $a->isize}++;
       $rg_ref->{'proper'}++;
     }
-  }
-
-  ## Clear out empty read groups with no data
-  for my $rg(keys %{$groups}) {
-    my @elements = keys %{$groups->{$rg}};
-    delete $groups->{$rg} if(scalar @elements == 1);
   }
 }
 
@@ -756,6 +801,13 @@ sub bas{
     )."\n";
 
     print $output_fh $header or croak "Unable to write header line";
+
+
+    ## Clear out empty read groups with no data
+    for my $rg(keys %{$self->{_groups}}) {
+      my @elements = keys %{$self->{_groups}->{$rg}};
+      delete $self->{_groups}->{$rg} if(scalar @elements == 1);
+    }
 
     foreach my $rg (@{$self->read_groups}){
 
