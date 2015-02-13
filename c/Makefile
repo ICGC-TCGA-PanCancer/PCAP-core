@@ -60,7 +60,7 @@ BAM_STATS_TARGET=../bin/bam_stats
 
 .NOTPARALLEL: test
 
-all: clean remove_htslib_tmp make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp
+all: clean make_htslib_tmp $(BAM_STATS_TARGET) remove_htslib_tmp
 	@echo  bam_stats compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
@@ -82,7 +82,8 @@ make_htslib_tmp:
 	ln -s $(HTSLOC)/libhts.a $(HTSTMP)/libhts.a
 
 remove_htslib_tmp:
-	rm -rf $(HTSTMP)
+	@echo remove tmp hts location
+	-rm -rf $(HTSTMP)
 
 copyscript:
 	rsync -uE ./scripts/* ./bin/
@@ -100,7 +101,9 @@ valgrind:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
 
 clean:
+	@echo clean
 	$(RM) ./*.o *~ $(BAM_STATS_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
+
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^
