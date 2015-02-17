@@ -1,7 +1,12 @@
 #!/bin/bash
 
 SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.10.tar.gz"
+# for bio db sam
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.20.tar.gz"
+
+# for bamstats
+SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.1.tar.gz"
+SOURCE_SAMTOOLS_1="https://github.com/samtools/samtools/archive/1.1.tar.gz"
 
 done_message () {
     if [ $? -eq 0 ]; then
@@ -92,6 +97,62 @@ if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
   COMPILE=`perl -I $INST_PATH/lib/perl5 -MPCAP -e 'print PCAP->VERSION,"\n";' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
 fi
 
+#Need to add CaVEMan stuff here... will depend on samtools too (for now).
+
+echo -n "Building htslib ..."
+if [ -e $SETUP_DIR/htslib.success ]; then
+  echo -n " previously installed ...";
+else
+  cd $SETUP_DIR
+  (
+  set -xe
+  if [ ! -e htslib ]; then
+    get_distro "htslib" $SOURCE_HTSLIB
+  fi
+  make -C htslib -j$CPU
+  touch $SETUP_DIR/htslib.success
+  )>>$INIT_DIR/setup.log 2>&1
+fi
+done_message "" "Failed to build htslib."
+
+export HTSLIB="$SETUP_DIR/htslib"
+
+echo -n "Building samtools v1+ ..."
+if [ -e $SETUP_DIR/samtools_1.success ]; then
+  echo -n " previously installed ...";
+else
+  cd $SETUP_DIR
+  (
+  set -xe
+  if [ ! -e samtools_1 ]; then
+    get_distro "samtools_1" $SOURCE_SAMTOOLS_1
+  fi
+  make -C samtools_1 -j$CPU HTSDIR=$SETUP_DIR/htslib
+  touch $SETUP_DIR/samtools_1.success
+  )>>$INIT_DIR/setup.log 2>&1
+fi
+done_message "" "Failed to build samtools v1+."
+
+export SAMTOOLS="$SETUP_DIR/samtools_1"
+
+echo -n "Building bam_stats ..."
+if [ -e $SETUP_DIR/bam_stats.success ]; then
+  echo -n " previously installed ...";
+else
+  cd $INIT_DIR
+  (
+  set -xe
+  make -C c clean
+  make -C c -j$CPU
+  cp bin/bam_stats $INST_PATH/bin/.
+  touch $SETUP_DIR/bam_stats.success
+  # need to clean up as will clash with other version
+  rm -rf $SAMTOOLS
+  make -C c clean
+  )>>$INIT_DIR/setup.log 2>&1
+fi
+done_message "" "Failed to build bam_stats."
+
 cd $SETUP_DIR
 if [[ ",$COMPILE," == *,bwa,* ]] ; then
   echo -n "Building BWA ..."
@@ -133,7 +194,7 @@ fi
 cd $INIT_DIR
 
 if [[ ",$COMPILE," == *,samtools,* ]] ; then
-  echo -n "Building samtools ..."
+  echo -n "Building samtools v0.x ..."
   if [ -e $SETUP_DIR/samtools.success ]; then
     echo -n " previously installed ...";
   else
@@ -152,7 +213,7 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
       )>>$INIT_DIR/setup.log 2>&1
     fi
   fi
-  done_message "" "Failed to build samtools."
+  done_message "" "Failed to build samtools v0.x."
 else
   echo "samtools - No change between PCAP versions"
 fi
