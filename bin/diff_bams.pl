@@ -34,10 +34,12 @@ use Pod::Usage qw(pod2usage);
 use PCAP::Cli;
 
 use Bio::DB::Sam;
+use Bio::DB::Bam::AlignWrapper;
 
 my ($file_a, $file_b, $skip_z, $count_flag_diff) = setup();
 
-my $bam_a = Bio::DB::Bam->open($file_a);
+my $sam_a = Bio::DB::Sam->new($file_a);
+my $bam_a = $sam_a->bam;
 my $bam_b = Bio::DB::Bam->open($file_b);
 
 my $header_a       = $bam_a->header;
@@ -61,6 +63,8 @@ print "Reference sequence order passed\n";
 my ($align_a, $align_b, $count);
 my $flag_diffs = 0;
 $|++;
+my $last_coord = 0;
+my %dup_pileup;
 while(1) {
   $count++;
   $align_a = $bam_a->read1;
@@ -78,22 +82,36 @@ while(1) {
   if($align_a->flag ne $align_b->flag) {
     if($count_flag_diff) {
       $flag_diffs++;
-      print $align_a->pos."\n";
+      my $pos = $align_a->pos;
+      if(($pos - $last_coord) >= 0) { # saves checking for different chr
+        my $aw = Bio::DB::Bam::AlignWrapper->new($align_a, $sam_a);
+        $dup_pileup{$aw->seq_id}{$pos} += 1;
+      }
+      $last_coord = $pos;
     }
     else {
       die sprintf "Files differ at record $count (flags) a=%s b=%s\n", $align_a->qname, $align_b->qname
     }
   }
 
-  if($count % 100_000 == 0) {
+  if($count % 1_000_000 == 0) {
     my $message = "Matching records: $count";
     $message .= "\t(flag mismatch: $flag_diffs)"if($count_flag_diff);
     print $message."\r";
   }
-
 }
 print "Matching records: $count\n";
-print "Flag mismatches: $flag_diffs\n";
+if($count_flag_diff) {
+  print "Flag mismatches: $flag_diffs\n";
+  print "Locations of flag differences:\n";
+  print "#Chr\tPos\tCount\n";
+  for my $chr(sort keys %dup_pileup) {
+    for my $pos(sort {$a<=>$b} keys %{$dup_pileup{$chr}}){
+      print sprintf "%s\t%s\t%s\n", $chr, $pos, $dup_pileup{$chr}{$pos};
+    }
+  }
+}
+
 #print "Files match\n";
 
 sub setup {

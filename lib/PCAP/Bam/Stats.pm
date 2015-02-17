@@ -886,7 +886,7 @@ sub bas{
         $divergent_bases_r1,
         $divergent_bases_r2,
         $total_reads,
-        $total_reads_r2,
+        $total_reads_r1,
         $total_reads_r2,
         $mapped_reads,
         $mapped_reads_r1,
