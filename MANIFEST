@@ -1,5 +1,6 @@
 bin/bam_stats.pl
 bin/bam_to_sra_sub.pl
+bin/bamToBw.pl
 bin/build_biobambam_relocatable.sh
 bin/bwa_aln.pl
 bin/bwa_mem.pl
@@ -19,6 +20,7 @@ lib/PCAP.pm
 lib/PCAP/Bam.pm
 lib/PCAP/Bam/Bas.pm
 lib/PCAP/Bam/Stats.pm
+lib/PCAP/BigWig.pm
 lib/PCAP/Bwa.pm
 lib/PCAP/Bwa/Meta.pm
 lib/PCAP/Cli.pm
