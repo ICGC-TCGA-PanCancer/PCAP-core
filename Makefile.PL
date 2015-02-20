@@ -35,7 +35,8 @@ WriteMakefile(
                         bin/bam_stats.pl
                         bin/diff_bams.pl
                         bin/monitor.pl
-                        bin/xml_to_bas.pl)],
+                        bin/xml_to_bas.pl
+                        bin/bamToBw.pl )],
   PREREQ_PM     => {
                      'Module::Build' => 0.42,
                      'IPC::System::Simple' => 1.25,

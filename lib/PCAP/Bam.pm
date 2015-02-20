@@ -226,6 +226,18 @@ sub sam_header {
   return $self->{'header'};
 }
 
+sub header_sq {
+  my $self = shift;
+  my $header = $self->sam_header;
+  my @sq_names;
+  for(@{$header}) {
+    if($_ =~ m/^[@]SQ.*[\t]SN:([^\t]+)/) {
+      push @sq_names, $1;
+    }
+  }
+  return \@sq_names;
+}
+
 sub single_rg_value {
   my ($self, $tag) = @_;
   my $rgs = $self->read_group_info([$tag]);
