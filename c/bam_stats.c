@@ -26,11 +26,11 @@
 #include <string.h>
 #include <math.h>
 #include "dbg.h"
-#include "sam.h"
 #include <bam_access.h>
 
 static char *input_file;
 static char *output_file;
+static char *ref_file;
 int grps_size = 0;
 stats_rd_t*** grp_stats;
 static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\n";
@@ -53,8 +53,9 @@ void print_version (int exit_code){
 
 void print_usage (int exit_code){
 
-	printf ("Usage: bam_stats [-i file] [-o file] [-p plots] [-h] [-v]\n\n");
+	printf ("Usage: bam_stats [-i file] [-o file] [-p plots] [-r reference.fa.fai] [-h] [-v]\n\n");
   printf ("-i --input     File path to read in.\n");
+  printf ("-r --ref-file  File path to reference index (.fai) file.\n");
   printf ("-o --output    File path to output.\n\n");
 	printf ("Optional:\n");
 	printf ("-p --plots     Folder to contain quality score plots.\n\n");
@@ -70,6 +71,7 @@ void options(int argc, char *argv[]){
              	{"version", no_argument, 0, 'v'},
              	{"help",no_argument,0,'h'},
               {"input",required_argument,0,'i'},
+              {"ref-file",required_argument,0,'r'},
               {"output",required_argument,0,'o'},
               {"plots",required_argument,0,'p'},
               { NULL, 0, NULL, 0}
@@ -80,7 +82,7 @@ void options(int argc, char *argv[]){
    int iarg = 0;
 
    //Iterate through options
-   while((iarg = getopt_long(argc, argv, "i:o:pvh", long_opts, &index)) != -1){
+   while((iarg = getopt_long(argc, argv, "i:o:r:pvh", long_opts, &index)) != -1){
    	switch(iarg){
    		case 'i':
         input_file = optarg;
@@ -89,6 +91,10 @@ void options(int argc, char *argv[]){
    		case 'o':
 				output_file = optarg;
    			break;
+
+   		case 'r':
+   		  ref_file = optarg;
+   		  break;
 
    		case 'p':
    		  print_usage(1);
@@ -117,6 +123,10 @@ void options(int argc, char *argv[]){
    //Do some checking to ensure required arguments were passed and are accessible files
    if(check_exist(input_file) != 1){
    	printf("Input file (-i) %s does not exist.\n",input_file);
+   	print_usage(1);
+   }
+   if(check_exist(ref_file) != 1){
+   	printf("Reference fasta index file (-r) %s does not exist.\n",ref_file);
    	print_usage(1);
    }
 
@@ -294,8 +304,9 @@ int main(int argc, char *argv[]){
 	bam_hdr_t *head;
 
   //Open bam file as object
-  input = sam_open(input_file);
-
+  input = hts_open(input_file,"r");
+  //Set reference index file
+  hts_set_fai_filename(input, ref_file);
   //Read header from bam file
   head = sam_hdr_read(input);
   rg_info_t **grps = parse_header(head, &grps_size, &grp_stats);
@@ -309,14 +320,14 @@ int main(int argc, char *argv[]){
   check(res==0,"Error writing bam_stats output to file.");
 
   bam_hdr_destroy(head);
-  sam_close(input);
+  hts_close(input);
 
   return 0;
 
   error:
     if(grps) free(grps);
     if(head) bam_hdr_destroy(head);
-    if(input) sam_close(input);
+    if(input) hts_close(input);
     return 1;
 }
 

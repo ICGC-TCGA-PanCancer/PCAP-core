@@ -6,7 +6,6 @@ SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.20.tar.gz"
 
 # for bamstats
 SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.1.tar.gz"
-SOURCE_SAMTOOLS_1="https://github.com/samtools/samtools/archive/1.1.tar.gz"
 
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64"
@@ -156,24 +155,6 @@ fi
 done_message "" "Failed to build htslib."
 
 export HTSLIB="$SETUP_DIR/htslib"
-
-echo -n "Building samtools v1+ ..."
-if [ -e $SETUP_DIR/samtools_1.success ]; then
-  echo -n " previously installed ...";
-else
-  cd $SETUP_DIR
-  (
-  set -xe
-  if [ ! -e samtools_1 ]; then
-    get_distro "samtools_1" $SOURCE_SAMTOOLS_1
-  fi
-  make -C samtools_1 -j$CPU HTSDIR=$SETUP_DIR/htslib
-  touch $SETUP_DIR/samtools_1.success
-  )>>$INIT_DIR/setup.log 2>&1
-fi
-done_message "" "Failed to build samtools v1+."
-
-export SAMTOOLS="$SETUP_DIR/samtools_1"
 
 echo -n "Building bam_stats ..."
 if [ -e $SETUP_DIR/bam_stats.success ]; then

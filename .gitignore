@@ -8,3 +8,5 @@
 /reports
 /bin/biobambam
 /perltidy.LOG
+bin/bam_stats
+c/*.o
