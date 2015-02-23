@@ -22,7 +22,8 @@
 
 #include <stdint.h>
 #include <math.h>
-#include "sam.h"
+#include <stdlib.h>
+#include "htslib/sam.h"
 #include "dbg.h"
 
 typedef struct {
