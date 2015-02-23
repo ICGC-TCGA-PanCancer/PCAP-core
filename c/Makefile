@@ -11,23 +11,22 @@ CC = gcc -O3 -DVERSION='"$(VERSION)"' -g
 CFLAGS = -Wall
 
 HTSLOC?=$(HTSLIB)
-SAMTOOLSLOC?=$(SAMTOOLS)
 
 HTSTMP?=./htslib_tmp
 
 #Define locations of header files
-OPTINC?= -I$(SAMTOOLSLOC)/ -I$(HTSLOC)/ -I$(HTSLOC)/htslib
+OPTINC?= -I$(HTSLOC)/
 INCLUDES= -I./ $(OPTINC) -rdynamic
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
-LFLAGS?= -L$(HTSTMP) -L$(SAMTOOLSLOC)
+LFLAGS?= -L$(HTSTMP)
 
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
 #   option, something like (this will link in libmylib.so and libm.so:
-LIBS =-lhts -lbam -lpthread -lz -lm
+LIBS =-lhts -lpthread -lz -lm
 
 # define the C source files
 SRCS = ./bam_access.c ./bam_stats.c

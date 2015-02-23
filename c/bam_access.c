@@ -202,7 +202,7 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
   //Iterate through each read in bam file.
   b = bam_init1();
   int ret;
-  while((ret = bam_read1(input->fp.bgzf, b)) >= 0){
+  while((ret = sam_read1(input, head, b)) >= 0){
     if (b->core.flag & BAM_FSECONDARY) continue; //skip secondary hits so no double counts
     if (b->core.flag & BAM_FQCFAIL) continue; // skip vendor fail as generally aren't considered
     if (b->core.flag & BAM_FSUPPLEMENTARY) continue; // skip supplimentary
@@ -228,7 +228,7 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
     //Get the count of GCs in the sequence.
     int i=0;
     for(i=0;i<b->core.l_qseq;i++){
-      uint8_t base = bam1_seqi(bam1_seq(b),i);
+      uint8_t base = bam_seqi(bam_get_seq(b),i);
       if(base==4||base==2) (*grp_stats)[rg_index][read]->gc++; //Check for G/C
     }
 
@@ -251,7 +251,7 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
         (*grp_stats)[rg_index][read]->divergent += nm_val;
         (*grp_stats)[rg_index][read]->mapped_bases += get_mapped_base_count_from_cigar(b);
       }else{
-        (*grp_stats)[rg_index][read]->mapped_bases +=  (bam_calend(&(b->core),bam1_cigar(b)) - b->core.pos) + 1;
+        (*grp_stats)[rg_index][read]->mapped_bases += (bam_endpos(b) - b->core.pos) + 1;
       }
     }else{
       (*grp_stats)[rg_index][read]->mapped_bases += get_mapped_base_count_from_cigar(b);
@@ -283,7 +283,7 @@ uint64_t get_mapped_base_count_from_cigar(bam1_t *b){
 #define _cln(c) ((c)>>BAM_CIGAR_SHIFT)
   assert(b != NULL);
   uint64_t count = 0;
-  uint32_t *cigar = bam1_cigar(b);
+  uint32_t *cigar = bam_get_cigar(b);
   //iterate through each cigar operation
   int i=0;
   for(i=0;i<b->core.n_cigar;i++){
