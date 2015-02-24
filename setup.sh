@@ -8,7 +8,7 @@ SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.20.tar.gz"
 SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.1.tar.gz"
 
 # for bigwig
-SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/tree/master/bin/linux.x86_64"
+SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 done_message () {
     if [ $? -eq 0 ]; then
