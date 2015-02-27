@@ -44,7 +44,7 @@ use PCAP::BigWig;
 use PCAP::Threaded;
 use version;
 
-const my @VALID_PROCESS => qw(bamToBw catBw generateBw);
+const my @VALID_PROCESS => qw(bamToBw mergeBw generateBw);
 const my %INDEX_FACTOR => ( 'bamToBw' => -1,
                             'mergeBw' => 1,
                             'generateBw' => 1,
@@ -189,7 +189,8 @@ bamToBw.pl [options] [file(s)...]
     bamToBw.pl -b in.bam -o out.bw -p bamToBw -i 1..X
      # X can be determined with 'bamToBw.pl -b in.bam -o out.bw -j'
      # once all above steps completed
-    bamToBw.pl -b in.bam -o out.bw -p catBw -i 1
+    bamToBw.pl -b in.bam -o out.bw -p mergeBw -i 1
+    bamToBw.pl -b in.bam -o out.bw -p generateBw -i 1
 
 
   Run with '-m' for possible input file types.
