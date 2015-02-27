@@ -24,9 +24,12 @@
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>
+#include <libgen.h>
 #include <math.h>
 #include "dbg.h"
 #include <bam_access.h>
+
+#include "khash.h"
 
 static char *input_file;
 static char *output_file;
@@ -133,11 +136,19 @@ void options(int argc, char *argv[]){
    return;
 }
 
-int calculate_mean_sd_median_insert_size(uint64_t *inserts,double *mean, double *sd, double *median){
+int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, double *sd, double *median){
 
     uint64_t pp_mean = 0;
     uint64_t tt_mean = 0;
+    uint32_t key;
+    uint64_t val;
 
+    kh_foreach(inserts,key,val,
+        { pp_mean += key * val;
+          tt_mean += val;
+        });
+
+    /*
     int i = 0;
     for(i=0;i<200000;i++){
       if(inserts[i]>0){
@@ -145,6 +156,7 @@ int calculate_mean_sd_median_insert_size(uint64_t *inserts,double *mean, double 
         tt_mean += inserts[i];
       }
     }
+    */
 
     if(tt_mean){//Calculate mean , median, sd
       *mean = (double) ((double)pp_mean/(double)tt_mean);
@@ -155,7 +167,16 @@ int calculate_mean_sd_median_insert_size(uint64_t *inserts,double *mean, double 
       uint32_t prev_insert = 0;
       uint64_t running_total = 0;
 
+      kh_foreach(inserts,key,val,
+            { insert = key;
+              running_total += val;
+              if(running_total >= midpoint) break;
+              prev_insert = key;
+            });
+
+      /*
       int j=0;
+
       for(j=0;j<200000;j++){
         if(inserts[j]>0){
           insert = j+1;
@@ -163,7 +184,7 @@ int calculate_mean_sd_median_insert_size(uint64_t *inserts,double *mean, double 
           if(running_total >= midpoint) break ;
           prev_insert = j+1;
         }
-      }
+      }*/
 
       if(tt_mean %2 == 0 && ( running_total - midpoint2 >= insert )){
         //warn "Thinks is even AND split between bins ";
@@ -176,6 +197,14 @@ int calculate_mean_sd_median_insert_size(uint64_t *inserts,double *mean, double 
       //We have mean and median so calculate the SD
       uint64_t pp_sd = 0;
       uint64_t tt_sd = 0;
+
+      kh_foreach(inserts,key,val,
+            { double diff = (double)(key) - (*mean);
+              pp_sd += (diff * diff) * (double)val;
+              tt_sd += val;
+            });
+
+      /*
       int k=0;
       for(k=0;k<200000;k++){
         if(inserts[k]>0){
@@ -183,7 +212,8 @@ int calculate_mean_sd_median_insert_size(uint64_t *inserts,double *mean, double 
           pp_sd += (diff * diff) * inserts[k];
           tt_sd += inserts[k];
         }
-      }
+      }*/
+      kh_destroy(ins, inserts);
 
       if(tt_sd){
         double variance = fabs((double)((double)pp_sd / (double)tt_sd));
@@ -256,8 +286,10 @@ int print_results(rg_info_t **grps){
     uint32_t read_length_r1 = grp_stats[i][0]->length;
     uint32_t read_length_r2 = grp_stats[i][1]->length;
 
+    char *file = basename(input_file);
+
     chk = fprintf(out,rg_line_pattern,
-                      input_file,
+                      file,
                       grps[i]->sample,
                       grps[i]->platform,
                       grps[i]->platform_unit,
