@@ -12,6 +12,7 @@ c/bam_access.c
 c/bam_access.h
 c/bam_stats.c
 c/dbg.h
+c/khash.h
 Changes
 dists/snappy-1.1.2.tar.gz
 docs.tar.gz
