@@ -35,7 +35,7 @@ void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
 //Now tokenise tmp_line on \t and read in
   char *tag = strtok(tmp_line,"\t");
   while(tag != NULL){
-    int chk = sscanf(tag,"ID:%s",id);
+    int chk = sscanf(tag,"ID:%[^\t\n]",id);
     if(chk == 1){
       groups[idx]->id = malloc(sizeof(char) * 1000);
       strcpy(groups[idx]->id,id);
@@ -43,7 +43,7 @@ void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
       continue;
     }
     chk=0;
-    chk = sscanf(tag,"SM:%s",sm);
+    chk = sscanf(tag,"SM:%[^\t\n]",sm);
     if(chk == 1){
       groups[idx]->sample = (char *) malloc(sizeof(char) * 1000);
       strcpy(groups[idx]->sample,sm);
@@ -51,7 +51,7 @@ void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
       continue;
     }
     chk = 0;
-    chk = sscanf(tag,"PL:%s",pl);
+    chk = sscanf(tag,"PL:%[^\t\n]",pl);
     if(chk == 1){
       groups[idx]->platform =  (char *) malloc(sizeof(char) * 1000);
       strcpy(groups[idx]->platform,pl);
@@ -59,7 +59,7 @@ void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
       continue;
     }
     chk = 0;
-    chk = sscanf(tag,"PU:%s",pu);
+    chk = sscanf(tag,"PU:%[^\t\n]",pu);
     if(chk == 1){
       groups[idx]->platform_unit = (char *) malloc(sizeof(char) * 1000);
       strcpy(groups[idx]->platform_unit,pu);
@@ -67,7 +67,7 @@ void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
       continue;
     }
     chk = 0;
-    chk = sscanf(tag,"LB:%s",lib);
+    chk = sscanf(tag,"LB:%[^\t\n]",lib);
     if(chk == 1){
       groups[idx]->lib = (char *) malloc(sizeof(char) * 1000);
       strcpy(groups[idx]->lib,lib);
@@ -166,12 +166,7 @@ rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_sta
     (*grp_stats)[j][0]->divergent= 0;
     (*grp_stats)[j][0]->mapped_bases= 0;
     (*grp_stats)[j][0]->proper= 0;
-    (*grp_stats)[j][0]->inserts = malloc(sizeof(uint64_t)*200000);
-    check_mem((*grp_stats)[j][0]->inserts);
-    int k=0;
-    for(k=0;k<200000;k++){
-      (*grp_stats)[j][0]->inserts[k] = 0;
-    }
+    (*grp_stats)[j][0]->inserts = kh_init(ins);
     (*grp_stats)[j][1] = (stats_rd_t *)malloc(sizeof(stats_rd_t));//Setup read two stats store
     check_mem((*grp_stats)[j][1]);
     (*grp_stats)[j][1]->length= 0;
@@ -263,11 +258,14 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
     if((b->core.flag & (BAM_FPROPER_PAIR|BAM_FREAD1)) == (BAM_FPROPER_PAIR|BAM_FREAD1)){
       (*grp_stats)[rg_index][read]->proper++;
       uint32_t ins = b->core.isize;
-      //if(abs(ins)>49999){
-      // fprintf(stderr,"Absolute insert size above 49999 : %d. Not in useful range, ignoring.\n",abs(ins));
-     // }else{
-        (*grp_stats)[rg_index][read]->inserts[abs(ins)-1]++;
-     // }
+      int res;
+      khint_t k;
+      k = kh_put(ins,(*grp_stats)[rg_index][read]->inserts,abs(ins),&res);
+      if(res){
+        kh_value((*grp_stats)[rg_index][read]->inserts,k) = 1;
+      }else{
+        kh_value((*grp_stats)[rg_index][read]->inserts,k) = kh_value((*grp_stats)[rg_index][read]->inserts,k)+1;
+      }
     }
 
   }

@@ -26,6 +26,10 @@
 #include "htslib/sam.h"
 #include "dbg.h"
 
+#include "khash.h"
+KHASH_MAP_INIT_INT(ins,uint64_t)
+//KHASH_INIT2(ins,, khint32_t, uint64_t, 1, kh_int_hash_func, kh_int_hash_equal)
+
 typedef struct {
   uint32_t length;
 	uint64_t count;
@@ -36,7 +40,7 @@ typedef struct {
   uint64_t mapped_bases;
   uint64_t proper;
   //list of counts of possible insert sizes....
-  uint64_t *inserts; //from counts of insert size from 0-200000 bp. See how this works, might need amore dynamic means for some data.
+  khash_t(ins) *inserts; //from counts of insert size from 0-200000 bp. See how this works, might need amore dynamic means for some data.
   //FQP is not included as we're not covering quality plots yet.
 } stats_rd_t;
 
