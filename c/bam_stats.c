@@ -56,11 +56,12 @@ void print_version (int exit_code){
 
 void print_usage (int exit_code){
 
-	printf ("Usage: bam_stats [-i file] [-o file] [-p plots] [-r reference.fa.fai] [-h] [-v]\n\n");
+	printf ("Usage: bam_stats -i file -o file [-p plots] [-r reference.fa.fai] [-h] [-v]\n\n");
   printf ("-i --input     File path to read in.\n");
-  printf ("-r --ref-file  File path to reference index (.fai) file.\n");
   printf ("-o --output    File path to output.\n\n");
 	printf ("Optional:\n");
+	printf ("-r --ref-file  File path to reference index (.fai) file.\n");
+	printf ("               NB. If cram format is supplied via -b and the reference listed in the cram header can't be found bam_stats may fail to work correctly.\n");
 	printf ("-p --plots     Folder to contain quality score plots.\n\n");
 	printf ("Other:\n");
 	printf ("-h --help      Display this usage information.\n");
@@ -69,6 +70,9 @@ void print_usage (int exit_code){
 }
 
 void options(int argc, char *argv[]){
+
+  ref_file = NULL;
+
 	const struct option long_opts[] =
 	  {
              	{"version", no_argument, 0, 'v'},
@@ -128,9 +132,11 @@ void options(int argc, char *argv[]){
    	printf("Input file (-i) %s does not exist.\n",input_file);
    	print_usage(1);
    }
-   if(check_exist(ref_file) != 1){
-   	printf("Reference fasta index file (-r) %s does not exist.\n",ref_file);
-   	print_usage(1);
+   if(ref_file){
+     if(check_exist(ref_file) != 1){
+      printf("Reference fasta index file (-r) %s does not exist.\n",ref_file);
+      print_usage(1);
+     }
    }
 
    return;
@@ -338,7 +344,12 @@ int main(int argc, char *argv[]){
   //Open bam file as object
   input = hts_open(input_file,"r");
   //Set reference index file
-  hts_set_fai_filename(input, ref_file);
+  if(ref_file){
+    hts_set_fai_filename(input, ref_file);
+  }else{
+    if(input->format.format == cram) log_warn("No reference file provided for a cram input file, if the reference described in the cram header can't be located bam_stats may fail.");
+  }
+
   //Read header from bam file
   head = sam_hdr_read(input);
   rg_info_t **grps = parse_header(head, &grps_size, &grp_stats);
