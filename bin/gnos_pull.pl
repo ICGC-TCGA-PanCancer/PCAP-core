@@ -33,11 +33,13 @@ use Const::Fast qw(const);
 use File::Copy qw(move);
 use File::Fetch;
 use File::Path qw(make_path);
+use File::Spec;
 use File::Which qw(which);
 use IO::File;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use JSON qw(decode_json);
 use List::Util qw(first any);
+use FindBin qw($Bin);
 
 
 use Data::Dumper;
@@ -45,11 +47,12 @@ use Data::Dumper;
 use PCAP;
 use PCAP::Cli;
 
-# perl-5.16.3 -I lib bin/gnos_pull.pl -o $SCRATCH112/gnos_pull -a CALLS -c ~/GitHub/PCAP-core/examples/cgp_gnos_pull.ini
-# perl-5.16.3 -I lib bin/gnos_pull.pl -o $SCRATCH112/gnos_pull -a ALIGNMENTS -c ~/GitHub/PCAP-core/examples/cgp_gnos_pull.ini
+# perl-5.16.3 ~kr2/GitHub/PCAP-core/bin/gnos_pull.pl -o $SCRATCH112/PanCancerDownloads/automated -a CALLS -c ~kr2/GitHub/PCAP-core/examples/cgp_gnos_pull.ini
+# perl-5.16.3 ~kr2/GitHub/PCAP-core/bin/gnos_pull.pl -o $SCRATCH112/PanCancerDownloads/automated -a ALIGNMENTS -c ~kr2/GitHub/PCAP-core/examples/cgp_gnos_pull.ini > & $SCRATCH112/PanCancerDownloads/automated/Lung_bams.log &
 
 
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
+const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
 const my $GTDL_COMMAND => '%s -v -c %s -d %scghub/data/analysis/download/%s -p %s';
 
@@ -58,6 +61,7 @@ const my $GTDL_COMMAND => '%s -v -c %s -d %scghub/data/analysis/download/%s -p %
   load_config($options);
   my $gz_manifest = manifest($options);
   my $to_process = load_data($options, $gz_manifest);
+  exit 0 if(defined $options->{'info'});
   pull_data($options, $to_process);
 }
 
@@ -75,6 +79,10 @@ sub load_config {
       @vals = split /,/, $val;
     }
     $options->{'FILTERS'}->{$param} = \@vals;
+  }
+
+  for my $comp_fil(@AVAILABLE_COMPOSITE_FILTERS) {
+    $options->{'COMPOSITE_FILTERS'}->{$comp_fil} = $cfg->val('COMPOSITE_FILTERS', $comp_fil) if($cfg->exists('COMPOSITE_FILTERS', $comp_fil));
   }
 
   croak sprintf q{'KEY_FILE' Ssection is absent from %s}, $options->{'config'} unless($cfg->SectionExists('KEY_FILES'));
@@ -106,6 +114,8 @@ sub pull_data {
 
   for my $donor(@{$to_process}) {
     my $donor_uniq = $donor->{'donor_unique_id'};
+    # is PROJECT::donor, so convert to folder
+    $donor_uniq =~ s|[:]{2}|/|;
     my $donor_base = "$symbase/$donor_uniq";
     my $orig_base = "$outbase/$donor_uniq";
     make_path($orig_base) unless(-e $orig_base);
@@ -139,6 +149,12 @@ sub pull_bam {
                                           $outbase;
   my $f_base = $outbase.'/'.$gnos_id;
   my $success = $f_base.'/.success.t';
+
+  make_path($sample_base) unless(-e $sample_base);
+  my $aliq_id = $bam_data->{'aliquot_id'};
+  my $orig_bam = $f_base.'/'.$bam_data->{'aligned_bam'}->{'bam_file_name'};
+  my $sym_bam = $sample_base.'/'.$bam_data->{'aliquot_id'}.'.bam';
+
   return if(-e $success);
 
   my $out_fh = IO::File->new("$f_base.out.log", "w+");
@@ -153,12 +169,20 @@ sub pull_bam {
   unlink "$f_base.out.log";
   unlink "$f_base.err.log";
 
-  make_path($sample_base) unless(-e $sample_base);
-  my $aliq_id = $bam_data->{'aliquot_id'};
-  my $orig_bam = $f_base.'/'.$bam_data->{'aligned_bam'}->{'bam_file_name'};
-  my $sym_bam = $sample_base.'/'.$bam_data->{'aliquot_id'}.'.bam';
   symlink($orig_bam, $sym_bam) unless(-e $sym_bam);
   symlink($orig_bam.'.bai', $sym_bam.'.bai') unless(-e $sym_bam.'.bai');
+
+  # pull the bas file, done here to handle back fill of this data
+  my $get_bas = sprintf '%s %s/xml_to_bas.pl -d %scghub/metadata/analysisFull/%s -o %s -b %s',
+                        $^X,
+                        $Bin,
+                        $repo,
+                        $gnos_id,
+                        $sym_bam.'.bas',
+                        $sym_bam;
+  warn "Executing: $get_bas\n";
+  my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
+  die "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n" if($exit_c);
 
   # touch a success file in the output loc
   open my $S, '>', $success; close $S;
@@ -166,10 +190,13 @@ sub pull_bam {
 
 sub pull_calls {
   my ($options, $donor, $outbase, $donor_base) = @_;
+  my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
   # this should loop over the data found in 'is_sanger_vcf_in_jamboree' once modified to be array
-  for my $caller(qw(sanger)) {
-    # if we can get access to transfer metrics we want to select the fastest, or use list in config file
+  for my $caller(@callers) {
 
+    next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'} && $donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
+
+    # if we can get access to transfer metrics we want to select the fastest, or use list in config file
     my $repo = select_repo($options, $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_repo'});
     my $gnos_id = $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_id'};
     my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
@@ -222,6 +249,7 @@ sub load_data {
   my ($options, $gz_manifest) = @_;
   my $total = 0;
   my @to_process;
+  my %project_dist;
   my @filter_keys = keys %{$options->{'FILTERS'}};
   my $z = IO::Uncompress::Gunzip->new($gz_manifest, MultiStream => 1) or die "IO::Uncompress::Gunzip failed: $GunzipError\n";
   DONOR: while(my $jsonl = <$z>) {
@@ -259,30 +287,72 @@ sub load_data {
       next;
     }
 
+    if(exists $options->{'COMPOSITE_FILTERS'}->{'multi_tumour'} && $donor->{'flags'}->{'all_tumor_specimen_aliquot_counts'} == 1) {
+      warn sprintf "Donor: %s only has 1 tumour sample, requested 'COMPOSITE_FILTER.multi_tumour' is set\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+      next;
+    }
+
+
     if($options->{'analysis'} eq 'CALLS') {
-      if(!$donor->{'flags'}->{'is_sanger_variant_calling_performed'} && $donor->{'flags'}->{'is_sanger_vcf_in_jamboree'}) {
-        warn sprintf "Donor: %s is_sanger_variant_calling_performed=false BUT is_sanger_vcf_in_jamboree=true\n", $donor->{'donor_unique_id'} if($options->{'debug'});
-        next;
+
+      my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
+      my $keep;
+      for my $caller(@callers) {
+        next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'} && $donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
+        $keep = 1;
+        last;
       }
 
-      unless($donor->{'flags'}->{'is_sanger_vcf_in_jamboree'}) {
-        warn sprintf "Donor: %s results not in jamboree\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+      unless($keep) {
+        warn sprintf "Donor: %s has no variant calling available\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+        next;
+      }
+    }
+    else {
+      my $size = data_size_alignments_gb($options, $donor);
+      if(exists $options->{'COMPOSITE_FILTERS'}->{'max_dataset_GB'} && $size > $options->{'COMPOSITE_FILTERS'}->{'max_dataset_GB'}) {
+        warn sprintf "Donor: %s alignments exceed specified size limit of %s GB\n", $donor->{'donor_unique_id'}, $options->{'COMPOSITE_FILTERS'}->{'max_dataset_GB'} if($options->{'debug'});
         next;
       }
     }
 
     push @to_process, $donor;
+    $project_dist{$donor->{'dcc_project_code'}}{'count'}++;
+    $project_dist{$donor->{'dcc_project_code'}}{'total'} += $donor->{'_total_size'} || 0;
   }
   close $z;
   my $retained = scalar @to_process;
-  warn sprintf "Retained donors: %s\nRejected donors: %s\n", $retained, $total - $retained;
+  print sprintf "Retained donors: %s\nRejected donors: %s\n", $retained, $total - $retained;
+  print "Project Distribution\n";
+  for(sort keys %project_dist) {
+    my $avg = (int $project_dist{$_}{'total'} / $project_dist{$_}{'count'});
+    $avg = $avg == 0 ? '?' : $avg+1;
+    print "\t$_:\t$project_dist{$_}{count}\t(avg $avg GB)\n";
+  }
   return \@to_process;
+}
+
+sub data_size_alignments_gb {
+  my ($options, $donor) = @_;
+  my $total_size = $donor->{'normal_alignment_status'}->{'aligned_bam'}->{'bam_file_size'};
+  for my $tumour(@{$donor->{'tumor_alignment_status'}}) {
+    $total_size += $tumour->{'aligned_bam'}->{'bam_file_size'};
+  }
+  $donor->{'_total_size'} = $total_size/1024/1024/1024;
+  return $total_size/1024/1024/1024;
+}
+
+sub data_size_calls_gb {
+  my ($options, $donor) = @_;
+  my $total_size = 0;
+  # not possible yet
+  return $total_size/1024/1024/1024;
 }
 
 sub manifest {
   my $options = shift;
   my $url = $options->{'url'} ? $options->{'url'} : $DEFAULT_URL;
-  my $ff = File::Fetch->new(uri => $url);
+  my $ff = File::Fetch->new(uri => $url, tempdir_root => File::Spec->tmpdir);
   my $listing;
   my $where = $ff->fetch( to => \$listing );
   my ($file) = $listing =~ m/(donor_p_[[:digit:]]+[.]jsonl[.]gz)/xms;
@@ -303,6 +373,7 @@ sub option_builder {
 	my $result = &GetOptions (
 		'h|help' => \$opts{'h'},
 		'm|man' => \$opts{'m'},
+		'i|info' => \$opts{'info'},
 		'u|url=s' => \$opts{'url'},
 		'a|analysis=s' => \$opts{'analysis'},
 		'c|config=s' => \$opts{'config'},
@@ -336,7 +407,7 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
 
 =head1 SYNOPSIS
 
-gnos_pull.pl [-h] -u http://XXX/gnos_metadata/latest/ -c pem_map.ini -o local_mirror/
+./gnos_pull.pl [-h] -u http://pancancer.info/gnos_metadata/latest/ -c gnos_pull.ini -o local_mirror/
 
   Required input:
 
@@ -351,8 +422,9 @@ gnos_pull.pl [-h] -u http://XXX/gnos_metadata/latest/ -c pem_map.ini -o local_mi
     --url       (-u)  The base URL to retrieve jsonl file from
                         [http://pancancer.info/gnos_metadata/latest/]
 
-    --debug     (-d)  prints extra debug information
+    --info      (-i)  Just prints how many donor's will be included in pull and some stats.
 
+    --debug     (-d)  prints extra debug information
 
     --help      (-h)  Brief documentation
 
@@ -416,6 +488,12 @@ The config.ini file to be used.  There is a full example of this in the distribu
 Provide if you don't want to use the 'latest' jsonl file.
 
 Recommended if you want to complete a first pass on a fixed file.
+
+=item i|info
+
+Find out how much data you will potentially retrieve.  Can also be used to see how data is distributed.
+
+This doesn't take into account data already downloaded.
 
 =item d|debug
 
