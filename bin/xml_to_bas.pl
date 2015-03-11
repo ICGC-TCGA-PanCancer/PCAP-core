@@ -15,14 +15,24 @@ xml_to_bas($options);
 
 sub get {
   my $uri = shift;
-  my ($raw_xml, $e_str, $e_code) = capture { system('curl '.$uri); };
-  die "ERROR: $e_str\n" if($e_code);
-  return $raw_xml;
+   if ($uri =~ /http:\/\// || $uri =~ /https:\/\//) {
+     my ($raw_xml, $e_str, $e_code) = capture { system('curl '.$uri); };
+     die "ERROR: $e_str\n" if($e_code);
+     return $raw_xml;
+   } else {
+     my ($raw_xml, $e_str, $e_code) = capture { system('cat '.$uri); };
+     die "ERROR: $e_str\n" if($e_code);
+     return $raw_xml;
+   }
 }
 
 sub xml_to_bas {
   my $options = shift;
-  my $document = XMLin( get($options->{'uri'})
+  my $input_path = $options->{'uri'};
+   if (defined $options->{'local-path'}) {
+     $input_path = $options->{'local-path'};
+   }
+  my $document = XMLin( get($input_path)
                       , ForceArray => 1
                       , KeyAttr => [],);
 
@@ -152,6 +162,7 @@ sub setup{
               'm|man' => \$opts{'m'},
               'v|version' => \$opts{'v'},
               'd|uri=s' => \$opts{'uri'},
+              'l|local-path=s' => \$opts{'local-path'},
               'b|bam=s' => \$opts{'bam'},
               'o|output=s' => \$opts{'output'},
               '<>' => sub{push(@random_args,shift(@_));}
@@ -168,7 +179,7 @@ sub setup{
   pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
 
   pod2usage(-message  => "\nERROR: unrecognised commandline arguments: ".join(', ',@random_args).".\n", -verbose => 1,  -output => \*STDERR) if(scalar @random_args) ;
-  pod2usage(-message  => "\nERROR: d|uri must be defined.\n", -verbose => 1,  -output => \*STDERR) unless(defined $opts{'uri'});
+  pod2usage(-message  => "\nERROR: d|uri must be defined.\n", -verbose => 1,  -output => \*STDERR) unless(defined $opts{'uri'} || defined $opts{'local-path'});
 
   return \%opts;
 }
@@ -184,14 +195,15 @@ xml_to_bas.pl - Generates a file containing read statistics for a given XML anal
 xml_to_bas.pl [options]
 
   Required parameters:
-    -uri    -d    Same URI used by gtdownload
-    -output -o    Name for output file. Defaults to STDOUT.
+    -uri        -d    Same URI used by gtdownload
+    -output     -o    Name for output file. Defaults to STDOUT.
 
   Optional parameters:
-    -bam    -b    BAM file this data relates to
+    -bam       -b  BAM file this data relates to
                    - checks retrieved data correlates with expected BAM
                    - additionally can correct read_group_id if other fields correlate when
                      clashes occur.
+    -local-path -l Local file path for XML from GNOS.
 
   Other:
     -help     -h   Brief help message.
