@@ -42,6 +42,7 @@ WriteMakefile(
                      'Module::Build' => 0.42,
                      'IPC::System::Simple' => 1.25,
                      'Capture::Tiny' => 0.24,
+                     'Config::IniFiles' => 2.83,
                      'Const::Fast' => 0.014,
                      'Bio::DB::Sam' => 1.39,
                      'Bio::Root::Version' => 1.006923, # this is the only way to get Bio::Perl to behave

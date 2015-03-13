@@ -52,7 +52,7 @@ use PCAP::Cli;
 
 
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
-const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour));
+const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
 const my $GTDL_COMMAND => '%s -v -c %s -d %scghub/data/analysis/download/%s -p %s';
 
@@ -81,8 +81,12 @@ sub load_config {
     $options->{'FILTERS'}->{$param} = \@vals;
   }
 
-  for my $comp_fil(@AVAILABLE_COMPOSITE_FILTERS) {
-    $options->{'COMPOSITE_FILTERS'}->{$comp_fil} = $cfg->val('COMPOSITE_FILTERS', $comp_fil) if($cfg->exists('COMPOSITE_FILTERS', $comp_fil));
+  $options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} = 1;
+  for my $comp_fil($cfg->Parameters('COMPOSITE_FILTERS')) {
+    my $val = $cfg->val('COMPOSITE_FILTERS', $comp_fil);
+    next unless($val);
+    die sprintf "COMPOSITE_FILTERS.%s is not a supported filter type\n", $comp_fil unless(any{$comp_fil eq $_}@AVAILABLE_COMPOSITE_FILTERS);
+    $options->{'COMPOSITE_FILTERS'}->{$comp_fil} = $val;
   }
 
   croak sprintf q{'KEY_FILE' Ssection is absent from %s}, $options->{'config'} unless($cfg->SectionExists('KEY_FILES'));
@@ -128,18 +132,23 @@ sub pull_alignments {
   my ($options, $donor, $outbase, $donor_base) = @_;
 
   # for normal:
-  pull_bam($options, $donor->{'normal_alignment_status'}, $outbase, $donor_base.'/normal');
+  pull_bam($options, $donor->{'donor_unique_id'}, $donor->{'normal_alignment_status'}, $outbase, $donor_base, 'normal');
 
   # for tumour
   for my $tumour_data(@{$donor->{'tumor_alignment_status'}}) {
-    pull_bam($options, $tumour_data, $outbase, $donor_base.'/tumour');
+    pull_bam($options, $donor->{'donor_unique_id'}, $tumour_data, $outbase, $donor_base, 'tumour');
   }
 }
 
 sub pull_bam {
-  my ($options, $bam_data, $outbase, $sample_base) = @_;
+  my ($options, $donor_id, $bam_data, $outbase, $donor_base, $type) = @_;
+  my $sample_base = "$donor_base/$type";
 
   my $repo = select_repo($options, $bam_data->{'aligned_bam'}->{'gnos_repo'});
+  unless(exists $options->{'keys'}->{$repo}) {
+    warn sprintf "Skipping %s BAM for Donor %s - No permission key for repo %s", $type, $donor_id, $repo;
+    return 0;
+  }
   my $gnos_id = $bam_data->{'aligned_bam'}->{'gnos_id'};
 
   my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
@@ -186,6 +195,7 @@ sub pull_bam {
 
   # touch a success file in the output loc
   open my $S, '>', $success; close $S;
+  return 1;
 }
 
 sub pull_calls {
@@ -194,11 +204,19 @@ sub pull_calls {
   # this should loop over the data found in 'is_sanger_vcf_in_jamboree' once modified to be array
   for my $caller(@callers) {
 
-    next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'} && $donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
+    next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'});
+    next if($options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} == 1 && !$donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
 
     # if we can get access to transfer metrics we want to select the fastest, or use list in config file
     my $repo = select_repo($options, $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_repo'});
+    unless(exists $options->{'keys'}->{$repo}) {
+      warn sprintf "Skipping caller %s for Donor %s - No permission key for repo %s", $caller, $donor->{'donor_unique_id'}, $repo;
+      next;
+    }
+
+
     my $gnos_id = $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_id'};
+
     my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
                                           $options->{'keys'}->{$repo},
                                           $repo,
@@ -227,6 +245,7 @@ sub pull_calls {
     # touch a success file in the output loc
     open my $S, '>', $success; close $S;
   }
+  return 1;
 }
 
 sub select_repo {
@@ -296,16 +315,36 @@ sub load_data {
     if($options->{'analysis'} eq 'CALLS') {
 
       my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
-      my $keep;
+      my $keep = 0;
       for my $caller(@callers) {
-        next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'} && $donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
+        next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'});
         $keep = 1;
         last;
       }
-
       unless($keep) {
         warn sprintf "Donor: %s has no variant calling available\n", $donor->{'donor_unique_id'} if($options->{'debug'});
         next;
+      }
+
+      $keep = 0;
+      for my $caller(@callers) {
+        next if($options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} == 1 && !$donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
+        $keep = 1;
+        last;
+      }
+      unless($keep) {
+        warn sprintf "Donor: %s has no variant calling available\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+        next;
+      }
+
+
+      #@TODO make this work for all workflow versions
+      if(exists $options->{'COMPOSITE_FILTERS'}->{'sanger_version'}) {
+        my $sanger_version = $donor->{'variant_calling_results'}->{'sanger_variant_calling'}->{'workflow_details'}->{'variant_workflow_version'};
+        unless($sanger_version eq $options->{'COMPOSITE_FILTERS'}->{'sanger_version'}) {
+          warn sprintf "Donor: %s calls not from sanger version %s GB\n", $donor->{'donor_unique_id'}, $options->{'COMPOSITE_FILTERS'}->{'sanger_version'} if($options->{'debug'});
+          next;
+        }
       }
     }
     else {
