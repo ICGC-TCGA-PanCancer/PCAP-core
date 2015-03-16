@@ -47,10 +47,6 @@ use Data::Dumper;
 use PCAP;
 use PCAP::Cli;
 
-# perl-5.16.3 ~kr2/GitHub/PCAP-core/bin/gnos_pull.pl -o $SCRATCH112/PanCancerDownloads/automated -a CALLS -c ~kr2/GitHub/PCAP-core/examples/cgp_gnos_pull.ini
-# perl-5.16.3 ~kr2/GitHub/PCAP-core/bin/gnos_pull.pl -o $SCRATCH112/PanCancerDownloads/automated -a ALIGNMENTS -c ~kr2/GitHub/PCAP-core/examples/cgp_gnos_pull.ini > & $SCRATCH112/PanCancerDownloads/automated/Lung_bams.log &
-
-
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
 const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
@@ -313,7 +309,6 @@ sub load_data {
 
 
     if($options->{'analysis'} eq 'CALLS') {
-
       my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
       my $keep = 0;
       for my $caller(@callers) {
