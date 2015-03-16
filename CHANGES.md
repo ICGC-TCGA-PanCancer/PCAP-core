@@ -1,7 +1,10 @@
+1.6.0
+  * Adding local file mode for sites that cannot download from GNOS when the xml_to_bas.pl script runs
+  * [gnos_pull.pl](https://github.com/ICGC-TCGA-PanCancer/PCAP-core/wiki/Scripts-PanCancer-Specific#gnos_pullpl) - see linked docs
 1.5.4
-  bam_stats C 
-  * Reference file parameter is now optional to replicate bam_stats.pl functionality. 
-  * Warnings in help, and when a cram file is given as reference from header may not be found, and bam stats will fail. 
+  bam_stats C
+  * Reference file parameter is now optional to replicate bam_stats.pl functionality.
+  * Warnings in help, and when a cram file is given as reference from header may not be found, and bam stats will fail.
 1.5.3
   bam_stats C - changed array for khash in insert size calculations in order to make code more robust.
   Header RG line reading now reads anything not a tab or newline as it should when determining what the values of tags are.
