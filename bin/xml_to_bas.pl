@@ -178,8 +178,8 @@ sub setup{
   pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
   pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
 
-  pod2usage(-message  => "\nERROR: unrecognised commandline arguments: ".join(', ',@random_args).".\n", -verbose => 1,  -output => \*STDERR) if(scalar @random_args) ;
-  pod2usage(-message  => "\nERROR: d|uri must be defined.\n", -verbose => 1,  -output => \*STDERR) unless(defined $opts{'uri'} || defined $opts{'local-path'});
+  pod2usage(-message  => "\nERROR: unrecognised commandline arguments: ".join(', ',@random_args).".\n", -verbose => 1,  -output => \*STDERR) if(scalar @random_args);
+  pod2usage(-message  => "\nERROR: either d|uri or l|local-path must be defined.\n", -verbose => 1,  -output => \*STDERR) unless(defined $opts{'uri'} || defined $opts{'local-path'});
 
   return \%opts;
 }
