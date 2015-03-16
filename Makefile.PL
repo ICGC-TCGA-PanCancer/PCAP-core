@@ -36,11 +36,13 @@ WriteMakefile(
                         bin/diff_bams.pl
                         bin/monitor.pl
                         bin/xml_to_bas.pl
-                        bin/bamToBw.pl )],
+                        bin/bamToBw.pl
+                        bin/gnos_pull.pl )],
   PREREQ_PM     => {
                      'Module::Build' => 0.42,
                      'IPC::System::Simple' => 1.25,
                      'Capture::Tiny' => 0.24,
+                     'Config::IniFiles' => 2.83,
                      'Const::Fast' => 0.014,
                      'Bio::DB::Sam' => 1.39,
                      'Bio::Root::Version' => 1.006923, # this is the only way to get Bio::Perl to behave

@@ -6,6 +6,7 @@ bin/bwa_aln.pl
 bin/bwa_mem.pl
 bin/cpanm
 bin/diff_bams.pl
+bin/gnos_pull.pl
 bin/monitor.pl
 bin/xml_to_bas.pl
 c/bam_access.c
@@ -13,9 +14,10 @@ c/bam_access.h
 c/bam_stats.c
 c/dbg.h
 c/khash.h
-Changes
+CHANGES.md
 dists/snappy-1.1.2.tar.gz
 docs.tar.gz
+examples/gnos_pull.ini
 INSTALL
 lib/PCAP.pm
 lib/PCAP/Bam.pm
