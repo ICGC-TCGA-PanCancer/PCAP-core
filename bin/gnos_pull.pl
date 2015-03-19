@@ -40,9 +40,7 @@ use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use JSON qw(decode_json);
 use List::Util qw(first any);
 use FindBin qw($Bin);
-
-
-use Data::Dumper;
+use Proc::PID::File;
 
 use PCAP;
 use PCAP::Cli;
@@ -50,10 +48,19 @@ use PCAP::Cli;
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
 const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
-const my $GTDL_COMMAND => '%s -v -c %s -d %scghub/data/analysis/download/%s -p %s';
+const my $GTDL_COMMAND => '%s%s -v -c %s -d %scghub/data/analysis/download/%s -p %s';
 
 {
   my $options = option_builder();
+
+  my $proc = Proc::PID::File->new(-verify => 1);
+  $proc->file('dir' => $options->{'outdir'});
+  if($proc->alive) {
+    warn "Already running against output location: '$options->{outdir}' ... exiting!\n" if($options->{'debug'});
+    exit 0;
+  }
+  $proc->touch;
+
   load_config($options);
   my $gz_manifest = manifest($options);
   my $to_process = load_data($options, $gz_manifest);
@@ -96,6 +103,13 @@ sub load_config {
   else {
     $options->{'gtdownload'} = which('gtdownload');
   }
+  if($cfg->exists('GENERAL', 'gt_timeout_min')) {
+    $options->{'gt_timeout'} = ' -k '.$cfg->val('GENERAL', 'gt_timeout_min');
+  }
+  else {
+    $options->{'gt_timeout'} = q{};
+  }
+
 
   if($cfg->exists('TRANSFER', 'order')) {
     $options->{'transfer'} = [$cfg->val('TRANSFER', 'order')]
@@ -148,6 +162,7 @@ sub pull_bam {
   my $gnos_id = $bam_data->{'aligned_bam'}->{'gnos_id'};
 
   my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
+                                          $options->{'gt_timeout'},
                                           $options->{'keys'}->{$repo},
                                           $repo,
                                           $gnos_id,
@@ -162,13 +177,17 @@ sub pull_bam {
 
   return if(-e $success);
 
+  my $err_file = "$f_base.err.log";
   my $out_fh = IO::File->new("$f_base.out.log", "w+");
-  my $err_fh = IO::File->new("$f_base.err.log", "w+");
+  my $err_fh = IO::File->new($err_file, "w+");
   warn "Executing: $download\n";
   my $exit;
   capture { $exit = system($download); } stdout => $out_fh, stderr => $err_fh;
   $out_fh->close;
   $err_fh->close;
+
+  return 0 if($exit && download_abandoned($err_file));
+
   die "A problem occured while executing: $download\n\tPlease check $f_base.err.log and proxy settings\n" if($exit);
   # as successful clean up logs
   unlink "$f_base.out.log";
@@ -187,6 +206,7 @@ sub pull_bam {
                         $sym_bam;
   warn "Executing: $get_bas\n";
   my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
+
   die "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n" if($exit_c);
 
   # touch a success file in the output loc
@@ -214,6 +234,7 @@ sub pull_calls {
     my $gnos_id = $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_id'};
 
     my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
+                                          $options->{'gt_timeout'},
                                           $options->{'keys'}->{$repo},
                                           $repo,
                                           $gnos_id,
@@ -222,13 +243,16 @@ sub pull_calls {
     my $success = $f_base.'/.success.t';
     next if(-e $success);
 
+    my $err_file = "$f_base.err.log";
     my $out_fh = IO::File->new("$f_base.out.log", "w+");
-    my $err_fh = IO::File->new("$f_base.err.log", "w+");
+    my $err_fh = IO::File->new($err_file, "w+");
     warn "Executing: $download\n";
     my $exit;
     capture { $exit = system($download); } stdout => $out_fh, stderr => $err_fh;
     $out_fh->close;
     $err_fh->close;
+    return 0 if($exit && download_abandoned($err_file));
+
     die "A problem occured while executing: $download\n\tPlease check $f_base.err.log and proxy settings\n" if($exit);
     # as successful clean up logs
     unlink "$f_base.out.log";
@@ -242,6 +266,17 @@ sub pull_calls {
     open my $S, '>', $success; close $S;
   }
   return 1;
+}
+
+sub download_abandoned {
+  my $err_file = shift;
+  my ($g_stdout, $g_stderr, $g_exit) = capture { system( sprintf q{grep -cF 'Inactivity timeout triggered after' %s}, $err_file); };
+  chomp $g_stdout;
+  if($g_exit == 0 && $g_stdout == 1) {
+    warn "Abandoned download due to inactivity, skipping\n";
+    return 1;
+  }
+  return 0;
 }
 
 sub select_repo {
