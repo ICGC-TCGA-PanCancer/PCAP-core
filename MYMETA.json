@@ -4,7 +4,7 @@
       "unknown"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 6.68, CPAN::Meta::Converter version 2.131560",
+   "generated_by" : "ExtUtils::MakeMaker version 6.68, CPAN::Meta::Converter version 2.142690",
    "license" : [
       "gpl_2"
    ],
@@ -46,6 +46,7 @@
             "Math::Gradient" : "0.04",
             "Module::Build" : "0.42",
             "Pod::Coverage" : "0.23",
+            "Proc::PID::File" : "1.27",
             "Proc::ProcessTable" : "0.5",
             "Sub::Exporter::Progressive" : "0.001011",
             "Term::UI" : "0.42",
@@ -56,5 +57,5 @@
       }
    },
    "release_status" : "stable",
-   "version" : "v1.6.0"
+   "version" : "v1.6.1"
 }
