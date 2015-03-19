@@ -118,7 +118,7 @@ if [ -e $SETUP_DIR/jkentUtils.success ]; then
   echo -n " previously installed ...";
 else
   cd $SETUP_DIR
-  if [[ $MACHTYPE == x86_64 ]] ; then
+  if [[ `uname -m` == x86_64 ]] ; then
     (
     get_file $INST_PATH/bin/wigToBigWig $SOURCE_JKENT_BIN/wigToBigWig
     chmod +x $INST_PATH/bin/wigToBigWig
