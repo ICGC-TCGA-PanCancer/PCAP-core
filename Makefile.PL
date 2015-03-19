@@ -39,6 +39,7 @@ WriteMakefile(
                         bin/bamToBw.pl
                         bin/gnos_pull.pl )],
   PREREQ_PM     => {
+                     'Proc::PID::File' => 1.27,
                      'Module::Build' => 0.42,
                      'IPC::System::Simple' => 1.25,
                      'Capture::Tiny' => 0.24,
