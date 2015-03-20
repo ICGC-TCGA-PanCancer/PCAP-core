@@ -10,6 +10,9 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
+# for biobambam
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam/releases/download/0.0.189-release-20150219144725/biobambam-0.0.189-release-20150219144725-x86_64-etch-linux-gnu.tar.gz"
+
 done_message () {
     if [ $? -eq 0 ]; then
         echo " done."
@@ -25,7 +28,7 @@ done_message () {
 
 get_distro () {
   if hash curl 2>/dev/null; then
-    curl -sS -o $1.tar.gz -L $2
+    curl --insecure -sS -o $1.tar.gz -L $2
   else
     wget -nv -O $1.tar.gz $2
   fi
@@ -36,7 +39,7 @@ get_distro () {
 get_file () {
 # output, source
   if hash curl 2>/dev/null; then
-    curl -sS -o $1 -L $2
+    curl --insecure -sS -o $1 -L $2
   else
     wget -nv -O $1 $2
   fi
@@ -194,15 +197,19 @@ else
 fi
 
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
-  unset PERL5LIB
   echo -n "Building biobambam ..."
   if [ -e $SETUP_DIR/biobambam.success ]; then
     echo -n " previously installed ..."
   else
     (
       cd $SETUP_DIR
-      $INIT_DIR/bin/build_biobambam_relocatable.sh
-      cp -r biobambam/* $INST_PATH/.
+      mkdir -p biobambam
+      get_distro "biobambam" $SOURCE_BBB_BIN_DIST
+      mkdir -p $INST_PATH/bin $INST_PATH/include $INST_PATH/lib $INST_PATH/share
+      cp -r biobambam/bin/* $INST_PATH/bin/.
+      cp -r biobambam/include/* $INST_PATH/include/.
+      cp -r biobambam/lib/* $INST_PATH/lib/.
+      cp -r biobambam/share/* $INST_PATH/share/.
       touch $SETUP_DIR/biobambam.success
     ) >>$INIT_DIR/setup.log 2>&1
   fi

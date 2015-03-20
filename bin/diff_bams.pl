@@ -19,19 +19,14 @@
 #   http://www.gnu.org/licenses/gpl-2.0.html
 ##########LICENCE##########
 
-
-BEGIN {
-  use Cwd qw(abs_path);
-  use File::Basename;
-  push (@INC,dirname(abs_path($0)).'/../lib');
-};
-
 use strict;
 use autodie qw(:all);
 use warnings FATAL => 'all';
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
 use PCAP::Cli;
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
 
 use Bio::DB::Sam;
 use Bio::DB::Bam::AlignWrapper;

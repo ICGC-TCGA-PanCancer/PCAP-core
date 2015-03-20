@@ -9,6 +9,8 @@ use autodie qw(:all);
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
 use Bio::DB::Sam;
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
 
 my $options = &setup;
 xml_to_bas($options);
@@ -74,7 +76,7 @@ sub json_to_bas_file {
 
 sub bas_columns {
   my $first_record = shift;
-  my @columns = sort keys $first_record->{'metrics'};
+  my @columns = sort keys %{$first_record->{'metrics'}};
   return @columns;
 }
 

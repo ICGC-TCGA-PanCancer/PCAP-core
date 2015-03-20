@@ -19,16 +19,11 @@
 #   http://www.gnu.org/licenses/gpl-2.0.html
 ##########LICENCE##########
 
-
-BEGIN {
-  use Cwd qw(abs_path);
-  use File::Basename;
-  push (@INC,dirname(abs_path($0)).'/../lib');
-};
-
 use strict;
 use warnings FATAL => 'all';
 use autodie qw(:all);
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
 
 use File::Path qw(remove_tree make_path);
 use Getopt::Long;
