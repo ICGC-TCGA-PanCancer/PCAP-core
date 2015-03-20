@@ -22,6 +22,9 @@
 use strict;
 use warnings FATAL => 'all';
 use English qw( -no_match_vars );
+use FindBin qw($Bin);
+use lib "$Bin/../lib";
+
 use Carp qw(croak);
 use Getopt::Long;
 use Pod::Usage;
@@ -39,7 +42,6 @@ use IO::File;
 use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use JSON qw(decode_json);
 use List::Util qw(first any);
-use FindBin qw($Bin);
 use Proc::PID::File;
 
 use PCAP;
