@@ -1,3 +1,7 @@
+### 1.7.0
+* Switched to bam_stats C in ``bwa_mem.pl``.
+* Updates to ``bam_to_sra.pl`` to prevent bad SM values in unaligned BAM uploads.
+
 ### 1.6.0
 * Adding local file mode for sites that cannot download from GNOS when the xml_to_bas.pl script runs
 * [gnos_pull.pl](https://github.com/ICGC-TCGA-PanCancer/PCAP-core/wiki/Scripts-PanCancer-Specific#gnos_pullpl) - see linked docs
