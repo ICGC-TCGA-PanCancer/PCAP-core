@@ -1,4 +1,4 @@
-VERSION=1.6.3
+VERSION=1.7.0
 
 #Compiler
 CC = gcc -O3 -DVERSION='"$(VERSION)"' -g
