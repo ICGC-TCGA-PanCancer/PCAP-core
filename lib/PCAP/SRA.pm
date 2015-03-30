@@ -307,9 +307,13 @@ sub parse_input {
     for my $tag(@REQUIRED_HEADER_TAGS) {
       $bam_detail{$tag} = $bam->single_rg_value($tag);
       if($tag eq 'SM') {
-        my $sm = lc $bam_detail{$tag};
+        my $sm = $bam_detail{$tag};
         if($sm =~ /^([a-f0-9]{8})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{4})([a-f0-9]{12})$/) {
           $sm = join q{-}, ($1,$2,$3,$4,$5);
+        }
+        # check after format change
+        unless($sm =~ /^([a-f0-9]{8})-([a-f0-9]{4})-([a-f0-9]{4})-([a-f0-9]{4})-([a-f0-9]{12})$/) {
+          croak sprintf 'SM tag is not a lowercase UUID: %s (%s)', $bam_detail{$tag}, $file;
         }
         $bam_detail{$tag} = $sm;
       }
