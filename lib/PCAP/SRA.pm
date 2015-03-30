@@ -317,6 +317,10 @@ sub parse_input {
         }
         $bam_detail{$tag} = $sm;
       }
+
+      if($tag eq 'PL' && $bam_detail{$tag} ne 'ILLUMINA') {
+        croak sprintf 'PanCancer WGS only supports ILLUMINA as a value for PL: %s ($s)', $bam_detail{$tag}, $file;
+      }
     }
     $bam_detail{'file'} = $bam->{'bam'};
     $bam_detail{'md5'} = $bam->{'md5'};
