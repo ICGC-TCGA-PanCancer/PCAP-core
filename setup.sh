@@ -11,7 +11,7 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 # for biobambam
-SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam/releases/download/0.0.189-release-20150219144725/biobambam-0.0.189-release-20150219144725-x86_64-etch-linux-gnu.tar.gz"
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam/releases/download/0.0.191-release-20150401083643/biobambam-0.0.191-release-20150401083643-x86_64-etch-linux-gnu.tar.gz"
 
 done_message () {
     if [ $? -eq 0 ]; then

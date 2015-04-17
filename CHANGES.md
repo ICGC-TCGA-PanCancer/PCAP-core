@@ -1,3 +1,7 @@
+### 1.7.1
+* Turns out BWA mem still requires fixmates to get proper isize distributions
+* bumped biobambam to [0.0.191](https://github.com/gt1/biobambam/releases/tag/0.0.191-release-20150401083643)
+
 ### 1.7.0
 * Switched to bam_stats C in ``bwa_mem.pl``.
 * Updates to ``bam_to_sra.pl`` to prevent bad SM values in unaligned BAM uploads.
