@@ -12,7 +12,7 @@ use Capture::Tiny qw(capture);
 use Data::Dumper;
 
 const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates bamsort bwa);
-const my $BIOBAMBAM_VERSION => ['0.0.189'];
+const my $BIOBAMBAM_VERSION => ['0.0.191'];
 const my $BWA_VERSIONS => ['0.7.10'];
 
 # can't put regex in const
