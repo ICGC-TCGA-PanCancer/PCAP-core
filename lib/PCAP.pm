@@ -24,12 +24,12 @@ use strict;
 use Const::Fast qw(const);
 use base 'Exporter';
 
-our $VERSION = '1.7.1';
+our $VERSION = '1.8.0';
 our @EXPORT = qw($VERSION);
 
 const my $LICENSE =>
 "#################
-# PCAP version %s, Copyright (C) 2014 ICGC/TCGA Pan-Cancer Analysis Project
+# PCAP version %s, Copyright (C) 2014-2015 ICGC/TCGA Pan-Cancer Analysis Project
 # PCAP comes with ABSOLUTELY NO WARRANTY
 # See LICENSE for full details.
 #################";
@@ -49,22 +49,23 @@ const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,bwa,samtools',
                             '1.1.0'  => 'biobambam,bwa,samtools',
                             '1.1.1'  => 'biobambam,bwa,samtools',
                             '1.1.2'  => 'biobambam,bwa,samtools',
-                            '1.2.0'  => 'biobambam', # if later versions have new versions then all preceding need that tool listing
-                            '1.2.1'  => 'biobambam',
-                            '1.2.2'  => 'biobambam',
-                            '1.3.0'  => 'biobambam',
-                            '1.4.0'  => 'biobambam',
-                            '1.5.0'  => 'biobambam',
-                            '1.5.1'  => 'biobambam',
-                            '1.5.2'  => 'biobambam',
-                            '1.5.3'  => 'biobambam',
-                            '1.5.4'  => 'biobambam',
-                            '1.6.0'  => 'biobambam',
-                            '1.6.1'  => 'biobambam',
-                            '1.6.2'  => 'biobambam',
-                            '1.6.3'  => 'biobambam',
-                            '1.7.0'  => 'biobambam',
-                            '1.7.1'  => '',
+                            '1.2.0'  => 'biobambam,bwa', # if later versions have new versions then all preceding need that tool listing
+                            '1.2.1'  => 'biobambam,bwa',
+                            '1.2.2'  => 'biobambam,bwa',
+                            '1.3.0'  => 'biobambam,bwa',
+                            '1.4.0'  => 'biobambam,bwa',
+                            '1.5.0'  => 'biobambam,bwa',
+                            '1.5.1'  => 'biobambam,bwa',
+                            '1.5.2'  => 'biobambam,bwa',
+                            '1.5.3'  => 'biobambam,bwa',
+                            '1.5.4'  => 'biobambam,bwa',
+                            '1.6.0'  => 'biobambam,bwa',
+                            '1.6.1'  => 'biobambam,bwa',
+                            '1.6.2'  => 'biobambam,bwa',
+                            '1.6.3'  => 'biobambam,bwa',
+                            '1.7.0'  => 'biobambam,bwa',
+                            '1.7.1'  => 'bwa',
+                            '1.8.0'  => '',
                           );
 
 sub license {

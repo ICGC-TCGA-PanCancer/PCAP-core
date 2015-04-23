@@ -56,7 +56,7 @@ const my $GTDL_COMMAND => '%s%s -v -c %s -d %scghub/data/analysis/download/%s -p
   my $options = option_builder();
 
   my $proc = Proc::PID::File->new(-verify => 1);
-  $proc->file('dir' => $options->{'outdir'});
+  $proc->file('dir' => $options->{'outdir'}, 'name' => 'gnos_pull.pl.'.$options->{'analysis'});
   if($proc->alive) {
     warn "Already running against output location: '$options->{outdir}' ... exiting!\n" if($options->{'debug'});
     exit 0;
@@ -100,7 +100,11 @@ sub load_config {
   }
 
   if($cfg->exists('GENERAL', 'gtbin')) {
-    $options->{'gtdownload'} = $cfg->val('GENERAL', 'gtbin').'/gtdownload';
+    my $gtbin = $cfg->val('GENERAL', 'gtbin');
+    $options->{'gtdownload'} = $gtbin.'/gtdownload';
+    my $gtshare = $gtbin;
+    $gtshare =~ s|bin/?$|share/GeneTorrent|;
+    $options->{'gtdownload'} .= ' -R '.$gtshare;
   }
   else {
     $options->{'gtdownload'} = which('gtdownload');

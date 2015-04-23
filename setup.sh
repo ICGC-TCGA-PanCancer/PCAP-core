@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.10.tar.gz"
+SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.12.tar.gz"
 # for bio db sam
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/archive/0.1.20.tar.gz"
 
@@ -211,6 +211,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       mkdir -p biobambam
       get_distro "biobambam" $SOURCE_BBB_BIN_DIST
       mkdir -p $INST_PATH/bin $INST_PATH/include $INST_PATH/lib $INST_PATH/share
+      rm -f biobambam/bin/curl* # breaks OS installs
       cp -r biobambam/bin/* $INST_PATH/bin/.
       cp -r biobambam/include/* $INST_PATH/include/.
       cp -r biobambam/lib/* $INST_PATH/lib/.
