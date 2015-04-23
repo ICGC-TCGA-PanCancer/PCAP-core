@@ -13,7 +13,7 @@ use Data::Dumper;
 
 const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates bamsort bwa);
 const my $BIOBAMBAM_VERSION => ['0.0.191'];
-const my $BWA_VERSIONS => ['0.7.10'];
+const my $BWA_VERSIONS => ['0.7.12'];
 
 # can't put regex in const
 my %EXPECTED_VERSION = (
