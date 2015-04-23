@@ -100,7 +100,11 @@ sub load_config {
   }
 
   if($cfg->exists('GENERAL', 'gtbin')) {
-    $options->{'gtdownload'} = $cfg->val('GENERAL', 'gtbin').'/gtdownload';
+    my $gtbin = $cfg->val('GENERAL', 'gtbin');
+    $options->{'gtdownload'} = $gtbin.'/gtdownload';
+    my $gtshare = $gtbin;
+    $gtshare =~ s|bin/?$|share/GeneTorrent|;
+    $options->{'gtdownload'} .= ' -R '.$gtshare;
   }
   else {
     $options->{'gtdownload'} = which('gtdownload');
