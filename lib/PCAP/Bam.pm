@@ -133,8 +133,7 @@ sub bam_stats {
   my $tmp = $options->{'tmp'};
   my $bam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).'.bam';;
   my $bas = "$bam.bas";
-  my $command = "$^X ";
-  $command .= _which('bam_stats') || die "Unable to find 'bam_stats' in path";
+  my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
   $command .= sprintf $BAM_STATS, $bam, $bas;
   if(exists $options->{'charts'} && defined $options->{'charts'}) {
     my $chart_dir = File::Spec->catdir($options->{'outdir'}, 'charts');
