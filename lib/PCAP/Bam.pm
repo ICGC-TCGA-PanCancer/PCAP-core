@@ -98,6 +98,7 @@ sub merge_and_mark_dup {
   my $marked = File::Spec->catdir($options->{'outdir'}, $options->{'sample'});
   my $met = "$marked.met";
   $marked .= '.bam';
+  return $marked if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
   my $helper_threads = $options->{'threads'}-1;
   # uncoverable branch true
   # uncoverable branch false
@@ -124,6 +125,7 @@ sub merge_and_mark_dup {
     }
   }
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
+  PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $marked;
 }
 
@@ -133,8 +135,7 @@ sub bam_stats {
   my $tmp = $options->{'tmp'};
   my $bam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).'.bam';;
   my $bas = "$bam.bas";
-  my $command = "$^X ";
-  $command .= _which('bam_stats') || die "Unable to find 'bam_stats' in path";
+  my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
   $command .= sprintf $BAM_STATS, $bam, $bas;
   if(exists $options->{'charts'} && defined $options->{'charts'}) {
     my $chart_dir = File::Spec->catdir($options->{'outdir'}, 'charts');

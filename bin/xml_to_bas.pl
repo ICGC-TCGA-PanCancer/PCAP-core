@@ -18,7 +18,7 @@ xml_to_bas($options);
 sub get {
   my $uri = shift;
    if ($uri =~ /http:\/\// || $uri =~ /https:\/\//) {
-     my ($raw_xml, $e_str, $e_code) = capture { system('curl '.$uri); };
+     my ($raw_xml, $e_str, $e_code) = capture { system('curl -ksS '.$uri); };
      die "ERROR: $e_str\n" if($e_code);
      return $raw_xml;
    } else {

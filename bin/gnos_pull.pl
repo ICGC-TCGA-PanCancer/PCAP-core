@@ -48,9 +48,9 @@ use PCAP;
 use PCAP::Cli;
 
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
-const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved));
+const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved manual_donor_blacklist));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
-const my $GTDL_COMMAND => '%s%s -v -c %s -d %scghub/data/analysis/download/%s -p %s';
+const my $GTDL_COMMAND => '%s%s --max-children 4 --rate-limit 200 -v -c %s -d %scghub/data/analysis/download/%s -p %s';
 
 {
   my $options = option_builder();
@@ -94,6 +94,11 @@ sub load_config {
     $options->{'COMPOSITE_FILTERS'}->{$comp_fil} = $val;
   }
 
+  if(exists $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'}) {
+    my %bl_donors = map { $_ => 1 } split /\n/, $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'};
+    $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'} = \%bl_donors;
+  }
+
   croak sprintf q{'KEY_FILE' Ssection is absent from %s}, $options->{'config'} unless($cfg->SectionExists('KEY_FILES'));
   for my $params($cfg->Parameters('KEY_FILES')) {
     $options->{'keys'}->{$params} = $cfg->val('KEY_FILES', $params);
@@ -124,6 +129,8 @@ sub load_config {
   return 1;
 }
 
+use threads;
+
 sub pull_data {
   my ($options, $to_process) = @_;
 
@@ -132,15 +139,55 @@ sub pull_data {
   make_path($outbase) unless(-e $outbase);
   make_path($symbase) unless(-e $symbase);
 
-  for my $donor(@{$to_process}) {
-    my $donor_uniq = $donor->{'donor_unique_id'};
-    # is PROJECT::donor, so convert to folder
-    $donor_uniq =~ s|[:]{2}|/|;
-    my $donor_base = "$symbase/$donor_uniq";
-    my $orig_base = "$outbase/$donor_uniq";
-    make_path($orig_base) unless(-e $orig_base);
-    pull_calls($options, $donor, $orig_base, $donor_base) if($options->{'analysis'} eq 'CALLS');
-    pull_alignments($options, $donor, $orig_base, $donor_base) if($options->{'analysis'} eq 'ALIGNMENTS');
+  my $code_ref;
+  if($options->{'analysis'} eq 'CALLS') {
+    $code_ref = \&pull_calls;
+  }
+  elsif($options->{'analysis'} eq 'ALIGNMENTS') {
+    $code_ref = \&pull_alignments;
+  }
+
+  my $thread_count = $options->{'threads'};
+
+  if($thread_count > 1) {
+    while(@{$to_process} > 0) {
+      if(threads->list(threads::all) < $thread_count) {
+        my $donor = shift @{$to_process};
+        my $donor_uniq = $donor->{'donor_unique_id'};
+        # is PROJECT::donor, so convert to folder
+        $donor_uniq =~ s|[:]{2}|/|;
+        my $donor_base = "$symbase/$donor_uniq";
+        my $orig_base = "$outbase/$donor_uniq";
+        make_path($orig_base) unless(-e $orig_base);
+
+        threads->create($code_ref, $options, $donor, $orig_base, $donor_base);
+
+        # don't sleep if not full yet
+        next if(threads->list(threads::all) < $thread_count);
+      }
+      sleep 10 while(threads->list(threads::joinable) == 0);
+      for my $thr(threads->list(threads::joinable)) {
+        $thr->join;
+        if(my $err = $thr->error) { die "Thread error: $err\n"; }
+      }
+    }
+    # last gasp for any remaining threads
+    sleep 10 while(threads->list(threads::running) > 0);
+    for my $thr(threads->list(threads::joinable)) {
+      $thr->join;
+      if(my $err = $thr->error) { die "Thread error: $err\n"; }
+    }
+  }
+  else {
+    for my $donor(@{$to_process}) {
+      my $donor_uniq = $donor->{'donor_unique_id'};
+      # is PROJECT::donor, so convert to folder
+      $donor_uniq =~ s|[:]{2}|/|;
+      my $donor_base = "$symbase/$donor_uniq";
+      my $orig_base = "$outbase/$donor_uniq";
+      make_path($orig_base) unless(-e $orig_base);
+      $code_ref->($options, $donor, $orig_base, $donor_base);
+    }
   }
 }
 
@@ -183,21 +230,23 @@ sub pull_bam {
 
   return if(-e $success);
 
+  my $out_file = "$f_base.out.log";
   my $err_file = "$f_base.err.log";
-  my $out_fh = IO::File->new("$f_base.out.log", "w+");
-  my $err_fh = IO::File->new($err_file, "w+");
+  $download .= "> $f_base.out.log";
+  $download = "($download) >& $err_file";
   warn "Executing: $download\n";
-  my $exit;
-  capture { $exit = system($download); } stdout => $out_fh, stderr => $err_fh;
-  $out_fh->close;
-  $err_fh->close;
+
+  my $exit = system($download);
 
   return 0 if($exit && download_abandoned($err_file));
 
-  die "A problem occured while executing: $download\n\tPlease check $f_base.err.log and proxy settings\n" if($exit);
+  if($exit) {
+    warn "ERROR: A problem occured while executing: $download\n\tPlease check $err_file and proxy settings\n";
+    return 0;
+  }
   # as successful clean up logs
-  unlink "$f_base.out.log";
-  unlink "$f_base.err.log";
+  unlink $out_file;
+  unlink $err_file;
 
   symlink($orig_bam, $sym_bam) unless(-e $sym_bam);
   symlink($orig_bam.'.bai', $sym_bam.'.bai') unless(-e $sym_bam.'.bai');
@@ -348,6 +397,11 @@ sub load_data {
       next;
     }
 
+    if(exists $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'} && exists $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'}->{ $donor->{'donor_unique_id'} }) {
+      warn sprintf "Donor: %s has been defined in a filter 'COMPOSITE_FILTERS.manual_donor_blacklist'\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+      next;
+    }
+
 
     if($options->{'analysis'} eq 'CALLS') {
       my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
@@ -450,6 +504,7 @@ sub option_builder {
 		'm|man' => \$opts{'m'},
 		'i|info' => \$opts{'info'},
 		'u|url=s' => \$opts{'url'},
+		't|threads=i' => \$opts{'threads'},
 		'a|analysis=s' => \$opts{'analysis'},
 		'c|config=s' => \$opts{'config'},
 		'o|outdir=s' => \$opts{'outdir'},
@@ -465,6 +520,8 @@ sub option_builder {
     print sprintf 'VERSION: %s\n', ();
     exit 0;
   }
+
+  $opts{'threads'} = 1 unless(defined $opts{'threads'});
 
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
   PCAP::Cli::file_for_reading('config', $opts{'config'});
@@ -493,6 +550,8 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
     --config    (-c)  Mapping of GNOS repos to permissions keys
 
   Other options:
+
+    --threads   (-t)  Number of parallel GNOS retrievals.
 
     --url       (-u)  The base URL to retrieve jsonl file from
                         [http://pancancer.info/gnos_metadata/latest/]
