@@ -191,6 +191,24 @@ sub pull_data {
   }
 }
 
+sub check_or_create_symlink {
+  my ($source, $target) = @_;
+  if(-e $target) {
+    unless(-l _) {
+      die "Can't generate link $source -> $target as non-link target exists\n";
+    }
+    my $existing_target = readlink $target;
+    if($source ne $existing_target) {
+      unlink $target;
+      symlink($source, $target);
+    }
+  }
+  else {
+    symlink($source, $target);
+  }
+  return 1;
+}
+
 sub pull_alignments {
   my ($options, $donor, $outbase, $donor_base) = @_;
 
@@ -228,7 +246,12 @@ sub pull_bam {
   my $orig_bam = $f_base.'/'.$bam_data->{'aligned_bam'}->{'bam_file_name'};
   my $sym_bam = $sample_base.'/'.$bam_data->{'aliquot_id'}.'.bam';
 
-  return if(-e $success);
+  if(-e $success) {
+    check_or_create_symlink($orig_bam, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
+    return;
+  }
+  return if($options->{'symlinks'});
 
   my $out_file = "$f_base.out.log";
   my $err_file = "$f_base.err.log";
@@ -248,8 +271,8 @@ sub pull_bam {
   unlink $out_file;
   unlink $err_file;
 
-  symlink($orig_bam, $sym_bam) unless(-e $sym_bam);
-  symlink($orig_bam.'.bai', $sym_bam.'.bai') unless(-e $sym_bam.'.bai');
+  check_or_create_symlink($orig_bam, $sym_bam);
+  check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
 
   # pull the bas file, done here to handle back fill of this data
   my $get_bas = sprintf '%s %s/xml_to_bas.pl -d %scghub/metadata/analysisFull/%s -o %s -b %s',
@@ -296,7 +319,12 @@ sub pull_calls {
                                           $outbase;
     my $f_base = $outbase.'/'.$gnos_id;
     my $success = $f_base.'/.success.t';
-    next if(-e $success);
+    if(-e $success) {
+      make_path($donor_base) unless(-e $donor_base);
+      check_or_create_symlink($f_base, "$donor_base/$caller");
+      next;
+    }
+    next if($options->{'symlinks'});
 
     my $err_file = "$f_base.err.log";
     my $out_fh = IO::File->new("$f_base.out.log", "w+");
@@ -315,7 +343,7 @@ sub pull_calls {
 
     # now build symlinks
     make_path($donor_base) unless(-e $donor_base);
-    symlink($f_base, "$donor_base/$caller") unless(-e "$donor_base/$caller");
+    check_or_create_symlink($f_base, "$donor_base/$caller");
 
     # touch a success file in the output loc
     open my $S, '>', $success; close $S;
@@ -503,6 +531,7 @@ sub option_builder {
 		'h|help' => \$opts{'h'},
 		'm|man' => \$opts{'m'},
 		'i|info' => \$opts{'info'},
+		's|symlinks' => \$opts{'symlinks'},
 		'u|url=s' => \$opts{'url'},
 		't|threads=i' => \$opts{'threads'},
 		'a|analysis=s' => \$opts{'analysis'},
@@ -550,6 +579,8 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
     --config    (-c)  Mapping of GNOS repos to permissions keys
 
   Other options:
+
+    --symlinks  (-s)  Rebuild symlinks only
 
     --threads   (-t)  Number of parallel GNOS retrievals.
 
