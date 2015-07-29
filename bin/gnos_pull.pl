@@ -39,7 +39,6 @@ use File::Path qw(make_path);
 use File::Spec;
 use File::Which qw(which);
 use IO::File;
-use IO::Uncompress::Gunzip qw(gunzip $GunzipError);
 use JSON qw(decode_json);
 use List::Util qw(first any);
 use Proc::PID::File;
@@ -50,7 +49,7 @@ use PCAP::Cli;
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
 const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved manual_donor_blacklist));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
-const my $GTDL_COMMAND => '%s%s --max-children 4 --rate-limit 200 -v -c %s -d %scghub/data/analysis/download/%s -p %s';
+const my $GTDL_COMMAND => '%s%s --max-children 3 --rate-limit 200 -v -c %s -d %scghub/data/analysis/download/%s -p %s';
 
 {
   my $options = option_builder();
@@ -191,6 +190,24 @@ sub pull_data {
   }
 }
 
+sub check_or_create_symlink {
+  my ($source, $target) = @_;
+  unless(-e $source) {
+    die "FATAL: Source file doesn't exist: $source\n";
+  }
+  if(-l $target) {
+    my $existing_target = readlink $target;
+    if($source ne $existing_target) {
+      unlink $target;
+      symlink($source, $target);
+    }
+  }
+  else {
+    symlink($source, $target);
+  }
+  return 1;
+}
+
 sub pull_alignments {
   my ($options, $donor, $outbase, $donor_base) = @_;
 
@@ -228,11 +245,17 @@ sub pull_bam {
   my $orig_bam = $f_base.'/'.$bam_data->{'aligned_bam'}->{'bam_file_name'};
   my $sym_bam = $sample_base.'/'.$bam_data->{'aliquot_id'}.'.bam';
 
-  return if(-e $success);
+  if(-e $success) {
+    check_or_create_symlink($orig_bam, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
+    create_bas($repo, $gnos_id, $sym_bam);
+    return;
+  }
+  return if($options->{'symlinks'});
 
   my $out_file = "$f_base.out.log";
   my $err_file = "$f_base.err.log";
-  $download .= "> $f_base.out.log";
+  $download .= " > $f_base.out.log";
   $download = "($download) >& $err_file";
   warn "Executing: $download\n";
 
@@ -248,24 +271,31 @@ sub pull_bam {
   unlink $out_file;
   unlink $err_file;
 
-  symlink($orig_bam, $sym_bam) unless(-e $sym_bam);
-  symlink($orig_bam.'.bai', $sym_bam.'.bai') unless(-e $sym_bam.'.bai');
+  check_or_create_symlink($orig_bam, $sym_bam);
+  check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
+  create_bas($repo, $gnos_id, $sym_bam);
 
+  # touch a success file in the output loc
+  open my $S, '>', $success; close $S;
+  return 1;
+}
+
+sub create_bas {
+  my ($repo, $gnos_id, $sym_bam) = @_;
+  my $bas_file = $sym_bam.'.bas';
+  unlink $bas_file if(-l $bas_file);
+  return if(-s $bas_file);
   # pull the bas file, done here to handle back fill of this data
   my $get_bas = sprintf '%s %s/xml_to_bas.pl -d %scghub/metadata/analysisFull/%s -o %s -b %s',
                         $^X,
                         $Bin,
                         $repo,
                         $gnos_id,
-                        $sym_bam.'.bas',
+                        $bas_file,
                         $sym_bam;
   warn "Executing: $get_bas\n";
   my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
-
   die "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n" if($exit_c);
-
-  # touch a success file in the output loc
-  open my $S, '>', $success; close $S;
   return 1;
 }
 
@@ -296,7 +326,12 @@ sub pull_calls {
                                           $outbase;
     my $f_base = $outbase.'/'.$gnos_id;
     my $success = $f_base.'/.success.t';
-    next if(-e $success);
+    if(-e $success) {
+      make_path($donor_base) unless(-e $donor_base);
+      check_or_create_symlink($f_base, "$donor_base/$caller");
+      next;
+    }
+    next if($options->{'symlinks'});
 
     my $err_file = "$f_base.err.log";
     my $out_fh = IO::File->new("$f_base.out.log", "w+");
@@ -315,7 +350,7 @@ sub pull_calls {
 
     # now build symlinks
     make_path($donor_base) unless(-e $donor_base);
-    symlink($f_base, "$donor_base/$caller") unless(-e "$donor_base/$caller");
+    check_or_create_symlink($f_base, "$donor_base/$caller");
 
     # touch a success file in the output loc
     open my $S, '>', $success; close $S;
@@ -356,7 +391,9 @@ sub load_data {
   my @to_process;
   my %project_dist;
   my @filter_keys = keys %{$options->{'FILTERS'}};
-  my $z = IO::Uncompress::Gunzip->new($gz_manifest, MultiStream => 1) or die "IO::Uncompress::Gunzip failed: $GunzipError\n";
+  my $command = sprintf 'gunzip -c %s', $gz_manifest;
+  my ($pid, $z);
+  $pid = open $z, q{-|}, $command or croak 'Could not fork: '.$!;
   DONOR: while(my $jsonl = <$z>) {
     my $donor = decode_json($jsonl);
 
@@ -489,7 +526,7 @@ sub manifest {
   make_path($options->{'outdir'}) unless(-e $options->{'outdir'});
   $ff = File::Fetch->new(uri => $to_get);
   $where = $ff->fetch( to => $options->{'outdir'});
-  my $dest = $options->{'outdir'}.'/donor_p.jsonl.gz';
+  my $dest = $options->{'outdir'}.'/'.$options->{'analysis'}.'_donor_p.jsonl.gz';
   move($where, $dest);
   return $dest;
 }
@@ -503,6 +540,7 @@ sub option_builder {
 		'h|help' => \$opts{'h'},
 		'm|man' => \$opts{'m'},
 		'i|info' => \$opts{'info'},
+		's|symlinks' => \$opts{'symlinks'},
 		'u|url=s' => \$opts{'url'},
 		't|threads=i' => \$opts{'threads'},
 		'a|analysis=s' => \$opts{'analysis'},
@@ -550,6 +588,8 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
     --config    (-c)  Mapping of GNOS repos to permissions keys
 
   Other options:
+
+    --symlinks  (-s)  Rebuild symlinks only
 
     --threads   (-t)  Number of parallel GNOS retrievals.
 
