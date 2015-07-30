@@ -41,6 +41,8 @@ const my $BWA_MEM => q{ mem%s -T 0 -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
 const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
 
+const my $FALSE_RG => q{@RG\tID:%s\tSM:%s\tLB:default\tPL:ILLUMINA};
+
 const my $READPAIR_SPLITSIZE => 10,
 const my $PAIRED_FQ_LINE_MULT => 4;
 const my $INTERLEAVED_FQ_LINE_MULT => 8;
@@ -200,8 +202,11 @@ sub bwa_mem {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
     else {
-    my ($rg) = $split =~ m|/split/[[:digit:]]+/(.+)_i.fq_[[:digit:]]+.gz$|;
+      my ($rg) = $split =~ m|/split/[[:digit:]]+/(.+)_i.fq_[[:digit:]]+.gz$|;
       ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'}, undef, $rg);
+      unless($rg_line) {
+        $rg_line = sprintf $FALSE_RG, $split_element, $options->{'sample'};
+      }
       $rg_line = q{'}.$rg_line.q{'};
     }
 
