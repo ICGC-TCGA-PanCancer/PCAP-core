@@ -36,7 +36,7 @@ use File::Copy qw(copy move);
 use PCAP::Bwa::Meta;
 
 const my $BWA_ALN => q{ aln%s -t %s -f %s_%s.sai %s %s.%s};
-const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY T=%s S=%s O=%s O2=%s gz=1 level=1 F=%s F2=%s filename=%s split=%s};
+const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY tryoq=1 gz=1 level=1 outputperreadgroup=1 outputperreadgroupsuffixF=_i.fq outputperreadgroupsuffixF2=_i.fq T=%s outputdir=%s filename=%s split=%s};
 const my $BWA_MEM => q{ mem%s -T 0 -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
 const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
@@ -158,11 +158,7 @@ sub split_in {
     else {
       my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.s"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.o1"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.o2"),
-                                    File::Spec->catfile($split_folder, 'i'),
-                                    File::Spec->catfile($split_folder, 'i'),
+                                    $split_folder,
                                     $input->in,
                                     $fragment_size * $MILLION * $BAM_MULT;
       # treat as interleaved fastq
@@ -204,7 +200,8 @@ sub bwa_mem {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
     else {
-      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'});
+    my ($rg) = $split =~ m|/split/[[:digit:]]+/(.+)_i.fq_[[:digit:]]+.gz$|;
+      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'}, undef, $rg);
       $rg_line = q{'}.$rg_line.q{'};
     }
 

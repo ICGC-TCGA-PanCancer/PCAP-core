@@ -54,13 +54,15 @@ sub new {
 }
 
 sub rg_line_for_output {
-  my ($bam, $sample, $uniq_id) = @_;
+  my ($bam, $sample, $uniq_id, $existing_rgid) = @_;
   my $sam = sam_ob($bam);
   my $header = $sam->header->text;
   my $rg_line;
   while($header =~ m/^(\@RG\t[^\n]+)/xmsg) {
     my $new_rg = $1;
-    die "BAM file appears to contain data for multiple readgroups, not supported: \n\n$header\n" if(defined $rg_line);
+    my ($this_id) = $new_rg =~ m/\tID:([^\t]+)/;
+    next if(defined $existing_rgid && $this_id ne $existing_rgid);
+    die "BAM file appears to contain data for multiple readgroups, not supported unless 'existing_rgid' is found: \n\n$header\n" if(defined $rg_line);
     $rg_line = $new_rg;
     if($uniq_id) {
       my $uuid = lc Data::UUID->new->create_str;

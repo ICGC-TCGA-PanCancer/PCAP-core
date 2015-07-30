@@ -35,7 +35,7 @@ use Config::IniFiles;
 use Const::Fast qw(const);
 use File::Copy qw(move);
 use File::Fetch;
-use File::Path qw(make_path);
+use File::Path qw(make_path remove_tree);
 use File::Spec;
 use File::Which qw(which);
 use IO::File;
@@ -252,6 +252,9 @@ sub pull_bam {
     return;
   }
   return if($options->{'symlinks'});
+
+  # if partial and relevant flag set remove download
+  remove_tree($f_base) if($options->{'purge'});
 
   my $out_file = "$f_base.out.log";
   my $err_file = "$f_base.err.log";
@@ -541,6 +544,7 @@ sub option_builder {
 		'm|man' => \$opts{'m'},
 		'i|info' => \$opts{'info'},
 		's|symlinks' => \$opts{'symlinks'},
+		'p|purge' => \$opts{'purge'},
 		'u|url=s' => \$opts{'url'},
 		't|threads=i' => \$opts{'threads'},
 		'a|analysis=s' => \$opts{'analysis'},
@@ -589,7 +593,9 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
 
   Other options:
 
-    --symlinks  (-s)  Rebuild symlinks only
+    --symlinks  (-s)  Rebuild symlinks only.
+
+    --purge     (-p)  Purge partial downloads and start from scratch.
 
     --threads   (-t)  Number of parallel GNOS retrievals.
 
