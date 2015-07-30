@@ -137,6 +137,7 @@ sub bam_stats {
   my $tmp = $options->{'tmp'};
   my $bam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).'.bam';;
   my $bas = "$bam.bas";
+  return $bas if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
   my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
   $command .= sprintf $BAM_STATS, $bam, $bas;
   if(exists $options->{'charts'} && defined $options->{'charts'}) {
@@ -145,6 +146,7 @@ sub bam_stats {
     $command .= ' -p '.$chart_dir;
   }
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
+  PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $bas;
 }
 
