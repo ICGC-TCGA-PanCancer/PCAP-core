@@ -35,7 +35,7 @@ use Config::IniFiles;
 use Const::Fast qw(const);
 use File::Copy qw(move);
 use File::Fetch;
-use File::Path qw(make_path);
+use File::Path qw(make_path remove_tree);
 use File::Spec;
 use File::Which qw(which);
 use IO::File;
@@ -287,15 +287,26 @@ sub create_bas {
   return if(-s $bas_file);
   # pull the bas file, done here to handle back fill of this data
   my $get_bas = sprintf '%s %s/xml_to_bas.pl -d %scghub/metadata/analysisFull/%s -o %s -b %s',
-                        $^X,
-                        $Bin,
-                        $repo,
-                        $gnos_id,
-                        $bas_file,
-                        $sym_bam;
-  warn "Executing: $get_bas\n";
-  my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
-  die "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n" if($exit_c);
+                      $^X,
+                      $Bin,
+                      $repo,
+                      $gnos_id,
+                      $bas_file,
+                      $sym_bam;
+  my $success = 0;
+  for(0..5) {
+    warn "Executing: $get_bas\n";
+    my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
+    if($exit_c) {
+      warn "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n...Retry\n";
+      sleep 30;
+    }
+    else {
+      $success++;
+      last;
+    }
+  }
+  die "Failed after multiple attempts, aborting bas generation using $get_bas" unless($success);
   return 1;
 }
 
@@ -589,7 +600,7 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
 
   Other options:
 
-    --symlinks  (-s)  Rebuild symlinks only
+    --symlinks  (-s)  Rebuild symlinks only.
 
     --threads   (-t)  Number of parallel GNOS retrievals.
 
