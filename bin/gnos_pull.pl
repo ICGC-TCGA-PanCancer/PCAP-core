@@ -253,9 +253,6 @@ sub pull_bam {
   }
   return if($options->{'symlinks'});
 
-  # if partial and relevant flag set remove download
-  remove_tree($f_base) if($options->{'purge'});
-
   my $out_file = "$f_base.out.log";
   my $err_file = "$f_base.err.log";
   $download .= " > $f_base.out.log";
@@ -290,15 +287,26 @@ sub create_bas {
   return if(-s $bas_file);
   # pull the bas file, done here to handle back fill of this data
   my $get_bas = sprintf '%s %s/xml_to_bas.pl -d %scghub/metadata/analysisFull/%s -o %s -b %s',
-                        $^X,
-                        $Bin,
-                        $repo,
-                        $gnos_id,
-                        $bas_file,
-                        $sym_bam;
-  warn "Executing: $get_bas\n";
-  my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
-  die "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n" if($exit_c);
+                      $^X,
+                      $Bin,
+                      $repo,
+                      $gnos_id,
+                      $bas_file,
+                      $sym_bam;
+  my $success = 0;
+  for(0..5) {
+    warn "Executing: $get_bas\n";
+    my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
+    if($exit_c) {
+      warn "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n...Retry\n";
+      sleep 30;
+    }
+    else {
+      $success++;
+      last;
+    }
+  }
+  die "Failed after multiple attempts, aborting bas generation using $get_bas" unless($success);
   return 1;
 }
 
@@ -544,7 +552,6 @@ sub option_builder {
 		'm|man' => \$opts{'m'},
 		'i|info' => \$opts{'info'},
 		's|symlinks' => \$opts{'symlinks'},
-		'p|purge' => \$opts{'purge'},
 		'u|url=s' => \$opts{'url'},
 		't|threads=i' => \$opts{'threads'},
 		'a|analysis=s' => \$opts{'analysis'},
@@ -594,8 +601,6 @@ gnos_pull.pl - retrieve/update analysis flow results on local systems.
   Other options:
 
     --symlinks  (-s)  Rebuild symlinks only.
-
-    --purge     (-p)  Purge partial downloads and start from scratch.
 
     --threads   (-t)  Number of parallel GNOS retrievals.
 
