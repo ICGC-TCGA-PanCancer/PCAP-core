@@ -74,8 +74,11 @@ subtest 'rg line checks' => sub {
   my ($rg_line, $bio_db_sam) = PCAP::Bam::rg_line_for_output($test_bam);
   is($rg_line, $EXPECTED_RGLINE, 'Retreived single RG line');
   like(exception{ PCAP::Bam::rg_line_for_output($multi_bam) }
-      , qr/BAM file appears to contain data for multiple readgroups, not supported:/m
+      , qr/BAM file appears to contain data for multiple readgroups, not supported unless 'existing_rgid' is found:/m
       , 'Fail when multiple readgroups in BAM');
+
+  is((PCAP::Bam::rg_line_for_output($multi_bam, undef, undef, 1))[0], $EXPECTED_RGLINE, 'Correct RG from multiple RG header');
+
   my $obj = new_ok($MODULE => [$test_bam]);
   is($obj->single_rg_value('PL'), $EXPECTED_RG_PL, 'Tag successfully retrieved');
   $obj = new_ok($MODULE => [$multi_bam]);

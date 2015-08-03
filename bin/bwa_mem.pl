@@ -24,6 +24,7 @@ use warnings FATAL => 'all';
 use autodie qw(:all);
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
+use Cwd qw(abs_path);
 
 use File::Path qw(remove_tree make_path);
 use Getopt::Long;
@@ -51,7 +52,7 @@ const my %INDEX_FACTOR => ( 'setup' => 1,
   my $options = setup();
 
  	my $threads = PCAP::Threaded->new($options->{'threads'});
-	&PCAP::Threaded::disable_out_err if(exists $options->{'index'});
+	&PCAP::Threaded::disable_out_err if(!exists $options->{'index'} && $options->{'threads'} == 1);
 
   # register processes
 	$threads->add_function('split', \&PCAP::Bwa::split_in);
@@ -130,7 +131,9 @@ sub setup {
   make_path($logs) unless(-d $logs);
 
   $opts{'tmp'} = $tmpdir;
-  $opts{'raw_files'} = \@ARGV;
+  for(@ARGV) {
+    push @{$opts{'raw_files'}}, abs_path($_);
+  }
 
   my $max_split = PCAP::Bwa::mem_prepare(\%opts);
 

@@ -54,13 +54,15 @@ sub new {
 }
 
 sub rg_line_for_output {
-  my ($bam, $sample, $uniq_id) = @_;
+  my ($bam, $sample, $uniq_id, $existing_rgid) = @_;
   my $sam = sam_ob($bam);
   my $header = $sam->header->text;
   my $rg_line;
   while($header =~ m/^(\@RG\t[^\n]+)/xmsg) {
     my $new_rg = $1;
-    die "BAM file appears to contain data for multiple readgroups, not supported: \n\n$header\n" if(defined $rg_line);
+    my ($this_id) = $new_rg =~ m/\tID:([^\t]+)/;
+    next if(defined $existing_rgid && $this_id ne $existing_rgid);
+    die "BAM file appears to contain data for multiple readgroups, not supported unless 'existing_rgid' is found: \n\n$header\n" if(defined $rg_line);
     $rg_line = $new_rg;
     if($uniq_id) {
       my $uuid = lc Data::UUID->new->create_str;
@@ -135,6 +137,7 @@ sub bam_stats {
   my $tmp = $options->{'tmp'};
   my $bam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).'.bam';;
   my $bas = "$bam.bas";
+  return $bas if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
   my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
   $command .= sprintf $BAM_STATS, $bam, $bas;
   if(exists $options->{'charts'} && defined $options->{'charts'}) {
@@ -143,6 +146,7 @@ sub bam_stats {
     $command .= ' -p '.$chart_dir;
   }
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
+  PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $bas;
 }
 

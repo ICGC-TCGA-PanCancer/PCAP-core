@@ -36,10 +36,12 @@ use File::Copy qw(copy move);
 use PCAP::Bwa::Meta;
 
 const my $BWA_ALN => q{ aln%s -t %s -f %s_%s.sai %s %s.%s};
-const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY T=%s S=%s O=%s O2=%s gz=1 level=1 F=%s F2=%s filename=%s split=%s};
+const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY tryoq=1 gz=1 level=1 outputperreadgroup=1 outputperreadgroupsuffixF=_i.fq outputperreadgroupsuffixF2=_i.fq T=%s outputdir=%s filename=%s split=%s};
 const my $BWA_MEM => q{ mem%s -T 0 -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
 const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
+
+const my $FALSE_RG => q{@RG\tID:%s\tSM:%s\tLB:default\tPL:ILLUMINA};
 
 const my $READPAIR_SPLITSIZE => 10,
 const my $PAIRED_FQ_LINE_MULT => 4;
@@ -99,7 +101,7 @@ sub mem_mapmax {
     opendir(my $dh, $folder);
     while(my $file = readdir $dh) {
       next if($file =~ m/^\./);
-      next if($file =~ m/^2\.[[:digit]]+/); # captured by 1.*
+      next if($file =~ m/^pairedfq2\.[[:digit:]]+/); # captured by 1.*
       push @files, File::Spec->catfile($folder, $file);
     }
     closedir($dh);
@@ -137,32 +139,42 @@ sub split_in {
     if($input->fastq) {
       # paired fq input
       if($input->paired_fq) {
-        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
-                                , $input->in.'_1.'.$input->fastq
-                                , File::Spec->catfile($split_folder, '1');
-        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
-                                , $input->in.'_2.'.$input->fastq
-                                , File::Spec->catfile($split_folder, '2');
+        my $fq1 = $input->in.'_1.'.$input->fastq;
+        my $fq2 = $input->in.'_2.'.$input->fastq;
+        if($input->fastq =~ m/[.]gz$/) {
+          symlink $fq1, File::Spec->catfile($split_folder, 'pairedfq1.0.'.$input->fastq);
+          symlink $fq2, File::Spec->catfile($split_folder, 'pairedfq2.0.'.$input->fastq);
+        }
+        else {
+          push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                  , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
+                                  , $fq1
+                                  , File::Spec->catfile($split_folder, 'pairedfq1');
+          push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                  , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
+                                  , $fq2
+                                  , File::Spec->catfile($split_folder, 'pairedfq2');
+        }
       }
       # interleaved FQ
       else {
-        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $MILLION * $INTERLEAVED_FQ_LINE_MULT
-                                , $input->in.'.'.$input->fastq
-                                , File::Spec->catfile($split_folder, 'i');
+        my $fq_i = $input->in.'.'.$input->fastq;
+        if($input->fastq =~ m/[.]gz$/) {
+          symlink $fq_i, File::Spec->catfile($split_folder, 'i.'.$input->fastq);
+        }
+        else {
+          push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                  , $fragment_size * $MILLION * $INTERLEAVED_FQ_LINE_MULT
+                                  , $fq_i
+                                  , File::Spec->catfile($split_folder, 'i');
+        }
       }
     }
     # if bam input
     else {
       my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.s"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.o1"),
-                                    File::Spec->catfile($tmp, "bamtofastq.$index.o2"),
-                                    File::Spec->catfile($split_folder, 'i'),
-                                    File::Spec->catfile($split_folder, 'i'),
+                                    $split_folder,
                                     $input->in,
                                     $fragment_size * $MILLION * $BAM_MULT;
       # treat as interleaved fastq
@@ -204,7 +216,11 @@ sub bwa_mem {
       $rg_line = q{'}.$input->rg_header(q{\t}).q{'};
     }
     else {
-      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'});
+      my ($rg) = $split =~ m|/split/[[:digit:]]+/(.+)_i.fq_[[:digit:]]+.gz$|;
+      ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'}, undef, $rg);
+      unless($rg_line) {
+        $rg_line = sprintf $FALSE_RG, $split_element, $options->{'sample'};
+      }
       $rg_line = q{'}.$rg_line.q{'};
     }
 
@@ -225,7 +241,7 @@ sub bwa_mem {
     # uncoverable branch false
     if($input->paired_fq) {
       my $split2 = $split;
-      $split2 =~ s/1(\.[[:digit:]]+)$/2$1/;
+      $split2 =~ s/pairedfq1(\.[[:digit:]]+)/pairedfq2$1/;
       $bwa .= ' '.$split;
       $bwa .= ' '.$split2;
     }

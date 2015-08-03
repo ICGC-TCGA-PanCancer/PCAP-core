@@ -1,3 +1,7 @@
+### 1.9.0
+* Fix bugs #52 and #53
+* Modified bwa_mem.pl to accept multi-readgroup BAM as input
+
 ### 1.7.1
 * Turns out BWA mem still requires fixmates to get proper isize distributions
 * bumped biobambam to [0.0.191](https://github.com/gt1/biobambam/releases/tag/0.0.191-release-20150401083643)
