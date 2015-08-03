@@ -101,7 +101,7 @@ sub mem_mapmax {
     opendir(my $dh, $folder);
     while(my $file = readdir $dh) {
       next if($file =~ m/^\./);
-      next if($file =~ m/^2\.[[:digit]]+/); # captured by 1.*
+      next if($file =~ m/^pairedfq2\.[[:digit:]]+/); # captured by 1.*
       push @files, File::Spec->catfile($folder, $file);
     }
     closedir($dh);
@@ -139,21 +139,35 @@ sub split_in {
     if($input->fastq) {
       # paired fq input
       if($input->paired_fq) {
-        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
-                                , $input->in.'_1.'.$input->fastq
-                                , File::Spec->catfile($split_folder, '1');
-        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
-                                , $input->in.'_2.'.$input->fastq
-                                , File::Spec->catfile($split_folder, '2');
+        my $fq1 = $input->in.'_1.'.$input->fastq;
+        my $fq2 = $input->in.'_2.'.$input->fastq;
+        if($input->fastq =~ m/[.]gz$/) {
+          symlink $fq1, File::Spec->catfile($split_folder, 'pairedfq1.0.'.$input->fastq);
+          symlink $fq2, File::Spec->catfile($split_folder, 'pairedfq2.0.'.$input->fastq);
+        }
+        else {
+          push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                  , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
+                                  , $fq1
+                                  , File::Spec->catfile($split_folder, 'pairedfq1');
+          push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                  , $fragment_size * $MILLION * $PAIRED_FQ_LINE_MULT
+                                  , $fq2
+                                  , File::Spec->catfile($split_folder, 'pairedfq2');
+        }
       }
       # interleaved FQ
       else {
-        push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
-                                , $fragment_size * $MILLION * $INTERLEAVED_FQ_LINE_MULT
-                                , $input->in.'.'.$input->fastq
-                                , File::Spec->catfile($split_folder, 'i');
+        my $fq_i = $input->in.'.'.$input->fastq;
+        if($input->fastq =~ m/[.]gz$/) {
+          symlink $fq_i, File::Spec->catfile($split_folder, 'i.'.$input->fastq);
+        }
+        else {
+          push @commands,  sprintf 'split -a 3 -d -l %s %s %s.'
+                                  , $fragment_size * $MILLION * $INTERLEAVED_FQ_LINE_MULT
+                                  , $fq_i
+                                  , File::Spec->catfile($split_folder, 'i');
+        }
       }
     }
     # if bam input
@@ -227,7 +241,7 @@ sub bwa_mem {
     # uncoverable branch false
     if($input->paired_fq) {
       my $split2 = $split;
-      $split2 =~ s/1(\.[[:digit:]]+)$/2$1/;
+      $split2 =~ s/pairedfq1(\.[[:digit:]]+)/pairedfq2$1/;
       $bwa .= ' '.$split;
       $bwa .= ' '.$split2;
     }
