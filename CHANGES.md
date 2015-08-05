@@ -1,3 +1,6 @@
+### 1.9.1
+* Changed final log folder to include sample name and analysis type, prevents clash when lots of data to same output loc.
+
 ### 1.9.0
 * Fix bugs #52 and #53
 * Modified bwa_mem.pl to accept multi-readgroup BAM as input

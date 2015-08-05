@@ -73,7 +73,7 @@ const my %INDEX_FACTOR => ( 'bam2fq' => 1,
 sub cleanup {
   my $options = shift;
   my $tmpdir = $options->{'tmp'};
-  move(File::Spec->catdir($tmpdir, 'logs'), File::Spec->catdir($options->{'outdir'}, 'logs')) || die $!;
+  move(File::Spec->catdir($tmpdir, 'logs'), File::Spec->catdir($options->{'outdir'}, 'logs_bwaaln_'.$options->{'sample'})) || die $!;
   remove_tree $tmpdir if(-e $tmpdir);
 	return 0;
 }
