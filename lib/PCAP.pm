@@ -2,7 +2,7 @@ package PCAP;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014,2015 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ use strict;
 use Const::Fast qw(const);
 use base 'Exporter';
 
-our $VERSION = '1.9.3';
+our $VERSION = '1.9.4';
 our @EXPORT = qw($VERSION);
 
 const my $LICENSE =>
@@ -70,8 +70,7 @@ const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,bwa,samtools',
                             '1.8.2'  => '',
                             '1.9.0'  => '',
                             '1.9.1'  => '',
-                            '1.9.2'  => '',
-                            '1.9.3'  => '',
+                            '1.9.4'  => '',
                           );
 
 sub license {
