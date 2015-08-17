@@ -102,12 +102,16 @@ sub mem_mapmax {
     while(my $file = readdir $dh) {
       next if($file =~ m/^\./);
       next if($file =~ m/^pairedfq2\.[[:digit:]]+/); # captured by 1.*
+      next if($file =~ m/s[.]fq[.]gz_[[:digit:]]+[.]gz$/);
       push @files, File::Spec->catfile($folder, $file);
     }
     closedir($dh);
   }
   @files = sort @files;
   $options->{'to_map'} = \@files;
+  if(scalar @files == 0) {
+    die "\n\nERROR: It appears that all input data is single ended, aborting.\n";
+  }
   return (scalar @files);
 }
 
