@@ -24,7 +24,7 @@ use warnings FATAL => 'all';
 use autodie qw(:all);
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
-use Cwd qw(abs_path);
+use Cwd qw(cwd abs_path);
 
 use File::Path qw(remove_tree make_path);
 use Getopt::Long;
@@ -131,8 +131,11 @@ sub setup {
   make_path($logs) unless(-d $logs);
 
   $opts{'tmp'} = $tmpdir;
+
+  my $cwd = cwd();
   for(@ARGV) {
-    push @{$opts{'raw_files'}}, abs_path($_);
+    $_ = "$cwd/$_" unless($_ =~ m|^/|);
+    push @{$opts{'raw_files'}}, $_;
   }
 
   my $max_split = PCAP::Bwa::mem_prepare(\%opts);
