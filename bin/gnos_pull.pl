@@ -47,7 +47,7 @@ use PCAP;
 use PCAP::Cli;
 
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
-const my @AVAILABLE_COMPOSITE_FILTERS => (qw(max_dataset_GB multi_tumour sanger_version jamboree_approved manual_donor_blacklist));
+const my @AVAILABLE_COMPOSITE_FILTERS => (qw(caller max_dataset_GB multi_tumour sanger_version broad_version dkfz_embl_version jamboree_approved manual_donor_blacklist));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
 const my $GTDL_COMMAND => '%s%s --max-children 3 --rate-limit 200 -v -c %s -d %scghub/data/analysis/download/%s -p %s';
 
@@ -85,7 +85,7 @@ sub load_config {
     $options->{'FILTERS'}->{$param} = \@vals;
   }
 
-  $options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} = 1;
+  $options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} = 0;
   for my $comp_fil($cfg->Parameters('COMPOSITE_FILTERS')) {
     my $val = $cfg->val('COMPOSITE_FILTERS', $comp_fil);
     next unless($val);
@@ -158,20 +158,20 @@ sub pull_data {
         my $donor_base = "$symbase/$donor_uniq";
         my $orig_base = "$outbase/$donor_uniq";
         make_path($orig_base) unless(-e $orig_base);
-
+        warn "Submitted: $donor->{donor_unique_id}\n";
         threads->create($code_ref, $options, $donor, $orig_base, $donor_base);
 
         # don't sleep if not full yet
         next if(threads->list(threads::all) < $thread_count);
       }
-      sleep 10 while(threads->list(threads::joinable) == 0);
+      sleep 1 while(threads->list(threads::joinable) == 0);
       for my $thr(threads->list(threads::joinable)) {
         $thr->join;
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
     }
     # last gasp for any remaining threads
-    sleep 10 while(threads->list(threads::running) > 0);
+    sleep 1 while(threads->list(threads::running) > 0);
     for my $thr(threads->list(threads::joinable)) {
       $thr->join;
       if(my $err = $thr->error) { die "Thread error: $err\n"; }
@@ -273,10 +273,12 @@ sub pull_bam {
 
   check_or_create_symlink($orig_bam, $sym_bam);
   check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-  create_bas($repo, $gnos_id, $sym_bam);
+  my $bas_valid = create_bas($repo, $gnos_id, $sym_bam);
 
-  # touch a success file in the output loc
-  open my $S, '>', $success; close $S;
+  if($bas_valid == 1) {
+    # touch a success file in the output loc
+    open my $S, '>', $success; close $S;
+  }
   return 1;
 }
 
@@ -294,11 +296,17 @@ sub create_bas {
                       $bas_file,
                       $sym_bam;
   my $success = 0;
+  my $bas_valid = 1;
   for(0..5) {
     warn "Executing: $get_bas\n";
     my ($stdout, $stderr, $exit_c) = capture { system($get_bas); };
     if($exit_c) {
-      warn "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:$stderr\n...Retry\n";
+      if($stderr =~ m/Unable to recover read_group_id clash using PU field/ms) {
+        warn "Aborting due to bad data: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:\n$stderr\n";
+        $bas_valid = 0;
+        last;
+      }
+      warn "A problem occured while executing: $get_bas\n\nSTDOUT:\n$stdout\n\nSTDERR:\n$stderr\n...Retry\n";
       sleep 30;
     }
     else {
@@ -306,8 +314,10 @@ sub create_bas {
       last;
     }
   }
-  die "Failed after multiple attempts, aborting bas generation using $get_bas" unless($success);
-  return 1;
+  if($bas_valid) {
+    die "Failed after multiple attempts, aborting bas generation using $get_bas" unless($success);
+  }
+  return $bas_valid;
 }
 
 sub pull_calls {
@@ -316,8 +326,12 @@ sub pull_calls {
   # this should loop over the data found in 'is_sanger_vcf_in_jamboree' once modified to be array
   for my $caller(@callers) {
 
+    next if(exists  $options->{'COMPOSITE_FILTERS'}->{'caller'} && index(','.$options->{'COMPOSITE_FILTERS'}->{'caller'}.',', ','.$caller.',') == -1);
     next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'});
+
     next if($options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} == 1 && !$donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
+
+    next if(exists $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} && $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} ne $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'workflow_details'}->{'variant_workflow_version'});
 
     # if we can get access to transfer metrics we want to select the fastest, or use list in config file
     my $repo = select_repo($options, $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_repo'});
@@ -327,6 +341,7 @@ sub pull_calls {
     }
 
 
+    next unless(exists $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_id'});
     my $gnos_id = $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_id'};
 
     my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
@@ -344,14 +359,14 @@ sub pull_calls {
     }
     next if($options->{'symlinks'});
 
+    my $out_file = "$f_base.out.log";
     my $err_file = "$f_base.err.log";
-    my $out_fh = IO::File->new("$f_base.out.log", "w+");
-    my $err_fh = IO::File->new($err_file, "w+");
+    $download .= " > $f_base.out.log";
+    $download = "($download) >& $err_file";
     warn "Executing: $download\n";
-    my $exit;
-    capture { $exit = system($download); } stdout => $out_fh, stderr => $err_fh;
-    $out_fh->close;
-    $err_fh->close;
+
+    my $exit = system($download);
+
     return 0 if($exit && download_abandoned($err_file));
 
     die "A problem occured while executing: $download\n\tPlease check $f_base.err.log and proxy settings\n" if($exit);
@@ -373,8 +388,15 @@ sub download_abandoned {
   my $err_file = shift;
   my ($g_stdout, $g_stderr, $g_exit) = capture { system( sprintf q{grep -cF 'Inactivity timeout triggered after' %s}, $err_file); };
   chomp $g_stdout;
-  if($g_exit == 0 && $g_stdout == 1) {
+  if($g_exit == 0 && $g_stdout > 0) {
     warn "Abandoned download due to inactivity, skipping\n";
+    return 1;
+  }
+  # a slightly different error
+  ($g_stdout, $g_stderr, $g_exit) = capture { system( sprintf q{grep -cF 'Timeout was reached' %s}, $err_file); };
+  chomp $g_stdout;
+  if($g_exit == 0 && $g_stdout > 0) {
+    warn "Abandoned download due gto timeout - could be problem with GNOS, skipping\n";
     return 1;
   }
   return 0;
@@ -455,7 +477,10 @@ sub load_data {
       my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
       my $keep = 0;
       for my $caller(@callers) {
+        next if(exists  $options->{'COMPOSITE_FILTERS'}->{'caller'} && index(','.$options->{'COMPOSITE_FILTERS'}->{'caller'}.',', ','.$caller.',') == -1);
         next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'});
+        next unless(exists $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_id'});
+        my $size = data_size_calls_gb($options, $donor, $caller);
         $keep = 1;
         last;
       }
@@ -467,7 +492,17 @@ sub load_data {
       $keep = 0;
       for my $caller(@callers) {
         next if($options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} == 1 && !$donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
-        $keep = 1;
+        if(exists $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'}) {
+          my $result_version = $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'workflow_details'}->{'variant_workflow_version'};
+          unless($result_version eq $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'}) {
+            warn sprintf "\tDonor: %s calls not from %s version %s\n", $donor->{'donor_unique_id'}, $caller, $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} if($options->{'debug'});
+            next;
+          }
+          $keep++;
+        }
+        else {
+          $keep++;
+        }
         last;
       }
       unless($keep) {
@@ -475,15 +510,6 @@ sub load_data {
         next;
       }
 
-
-      #@TODO make this work for all workflow versions
-      if(exists $options->{'COMPOSITE_FILTERS'}->{'sanger_version'}) {
-        my $sanger_version = $donor->{'variant_calling_results'}->{'sanger_variant_calling'}->{'workflow_details'}->{'variant_workflow_version'};
-        unless($sanger_version eq $options->{'COMPOSITE_FILTERS'}->{'sanger_version'}) {
-          warn sprintf "Donor: %s calls not from sanger version %s GB\n", $donor->{'donor_unique_id'}, $options->{'COMPOSITE_FILTERS'}->{'sanger_version'} if($options->{'debug'});
-          next;
-        }
-      }
     }
     else {
       my $size = data_size_alignments_gb($options, $donor);
@@ -516,14 +542,19 @@ sub data_size_alignments_gb {
     $total_size += $tumour->{'aligned_bam'}->{'bam_file_size'};
   }
   $donor->{'_total_size'} = $total_size/1024/1024/1024;
-  return $total_size/1024/1024/1024;
+  return $donor->{'_total_size'};
 }
 
 sub data_size_calls_gb {
-  my ($options, $donor) = @_;
+  my ($options, $donor, $caller) = @_;
   my $total_size = 0;
-  # not possible yet
-  return $total_size/1024/1024/1024;
+  if(exists $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'files'}) {
+    for my $file(@{$donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'files'}}) {
+      $total_size += $file->{'file_size'};
+    }
+  }
+  $donor->{'_total_size'} += $total_size/1024/1024/1024;
+  return $donor->{'_total_size'};
 }
 
 sub manifest {
