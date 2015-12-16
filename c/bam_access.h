@@ -54,7 +54,7 @@ typedef struct{
 
 rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_stats);
 
-int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats);
+int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats, int rna);
 
 uint64_t get_mapped_base_count_from_cigar(bam1_t *b);
 
