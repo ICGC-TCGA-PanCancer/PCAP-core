@@ -30,7 +30,7 @@ use Carp qw( croak );
 use Config; # so we can see if threads are enabled
 use File::Spec;
 use File::Path qw(make_path);
-use Try::Tiny qw(try catch);
+use Try::Tiny qw(try catch finally);
 use Capture::Tiny qw(capture);
 use IO::File;
 
@@ -208,6 +208,18 @@ sub external_process_handler {
       }
     } catch {
       die $_ if($_);
+    }
+    finally {
+      if($out_fh) {
+        $out_fh->flush;
+        $out_fh->close;
+        undef $out_fh;
+      }
+      if($err_fh) {
+        $err_fh->flush;
+        $err_fh->close;
+        undef $err_fh;
+      }
     };
   }
 
