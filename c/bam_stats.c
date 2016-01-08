@@ -31,7 +31,7 @@
 
 #include "khash.h"
 
-static char *input_file;
+static char *input_file = NULL;
 static char *output_file;
 static char *ref_file;
 static int rna = 0;
@@ -129,9 +129,17 @@ void options(int argc, char *argv[]){
    }//End of iteration through options
 
    //Do some checking to ensure required arguments were passed and are accessible files
-   if(check_exist(input_file) != 1){
-   	printf("Input file (-i) %s does not exist.\n",input_file);
-   	print_usage(1);
+   if (input_file==NULL || strcmp(input_file,"/dev/stdin")==0) {
+    input_file = "-";   // htslib recognises this as a special case
+   }
+   if (strcmp(input_file,"-") != 0) {
+     if(check_exist(input_file) != 1){
+   	  printf("Input file (-i) %s does not exist.\n",input_file);
+   	  print_usage(1);
+     }
+   }
+   if (output_file==NULL || strcmp(output_file,"/dev/stdout")==0) {
+    output_file = "-";   // we recognise this as a special case
    }
    if(ref_file){
      if(check_exist(ref_file) != 1){
@@ -205,7 +213,12 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
 }
 
 int print_results(rg_info_t **grps){
-  FILE *out = fopen(output_file,"w");
+  FILE *out;
+  if (strcmp(output_file,"-")==0) {
+    out = stdout;
+  } else {
+    out = fopen(output_file,"w");
+  }
   check(out != NULL,"Error trying to open output file %s for writing.",output_file);
 
   int chk = fprintf(out,"%s",bas_header);
@@ -299,11 +312,11 @@ int print_results(rg_info_t **grps){
       fflush(out);
   }
 
-  fclose(out);
+  if (out != stdout) fclose(out);
   return 0;
 
 error:
-  if(out) fclose(out);
+  if(out && out != stdout) fclose(out);
   return -1;
 
 }
