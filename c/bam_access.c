@@ -188,7 +188,7 @@ error:
   return NULL;
 }
 
-int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats){
+int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats, int rna){
   assert(input != NULL);
   assert(head != NULL);
   assert(grps != NULL);
@@ -198,7 +198,7 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
   b = bam_init1();
   int ret;
   while((ret = sam_read1(input, head, b)) >= 0){
-    if (b->core.flag & BAM_FSECONDARY) continue; //skip secondary hits so no double counts
+    if (b->core.flag & BAM_FSECONDARY && rna == 0) continue; //skip secondary hits so no double counts
     if (b->core.flag & BAM_FQCFAIL) continue; // skip vendor fail as generally aren't considered
     if (b->core.flag & BAM_FSUPPLEMENTARY) continue; // skip supplimentary
 
