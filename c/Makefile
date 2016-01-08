@@ -99,9 +99,10 @@ valgrind:
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
 
-clean:
+clean: 
 	@echo clean
-	$(RM) ./*.o *~ $(BAM_STATS_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
+	$(RM) ./*.o *~ $(BAM_STATS_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno 
+	-rm -rf $(HTSTMP)
 
 
 depend: $(SRCS)
