@@ -12,7 +12,7 @@ use Capture::Tiny qw(capture);
 use Data::Dumper;
 use version 0.77;
 
-const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates bamsort bwa);
+const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates2 bamsort bwa);
 const my $BIOBAMBAM2_VERSION => '2.0.25';
 const my $BWA_VERSION => '0.7.12';
 
@@ -20,15 +20,15 @@ const my $BWA_VERSION => '0.7.12';
 my %EXPECTED_VERSION = (
                         'bamcollate2'       => {
                               'get'   => q{ -h},
-                              'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
+                              'match' => qr/This is biobambam2 version ([[:digit:]\.]+)\./,
                               'version'       => version->parse($BIOBAMBAM2_VERSION)},
-                        'bammarkduplicates' => {
+                        'bammarkduplicates2' => {
                               'get'   => q{ -h},
-                              'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
+                              'match' => qr/This is biobambam2 version ([[:digit:]\.]+)\./,
                               'version'       => version->parse($BIOBAMBAM2_VERSION)},
                         'bamsort'           => {
                               'get'   => q{ -h},
-                              'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
+                              'match' => qr/This is biobambam2 version ([[:digit:]\.]+)\./,
                               'version'       => version->parse($BIOBAMBAM2_VERSION)},
                         'bwa'           => {
                               'get'   => q{},
