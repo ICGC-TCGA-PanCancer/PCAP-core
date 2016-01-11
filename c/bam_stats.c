@@ -31,9 +31,10 @@
 
 #include "khash.h"
 
-static char *input_file;
+static char *input_file = NULL;
 static char *output_file;
 static char *ref_file;
+static int rna = 0;
 int grps_size = 0;
 stats_rd_t*** grp_stats;
 static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\n";
@@ -62,7 +63,8 @@ void print_usage (int exit_code){
 	printf ("Optional:\n");
 	printf ("-r --ref-file  File path to reference index (.fai) file.\n");
 	printf ("               NB. If cram format is supplied via -b and the reference listed in the cram header can't be found bam_stats may fail to work correctly.\n");
-	printf ("-p --plots     Folder to contain quality score plots.\n\n");
+	printf ("-a --rna       Uses the RNA method of calculating insert size (ignores anything outside ± ('sd'*standard_dev) of the mean in calculating a new mean)\n");
+	
 	printf ("Other:\n");
 	printf ("-h --help      Display this usage information.\n");
 	printf ("-v --version   Prints the version number.\n\n");
@@ -80,7 +82,7 @@ void options(int argc, char *argv[]){
               {"input",required_argument,0,'i'},
               {"ref-file",required_argument,0,'r'},
               {"output",required_argument,0,'o'},
-              {"plots",required_argument,0,'p'},
+              {"rna",no_argument,0, 'a'},
               { NULL, 0, NULL, 0}
 
    }; //End of declaring opts
@@ -89,7 +91,7 @@ void options(int argc, char *argv[]){
    int iarg = 0;
 
    //Iterate through options
-   while((iarg = getopt_long(argc, argv, "i:o:r:pvh", long_opts, &index)) != -1){
+   while((iarg = getopt_long(argc, argv, "i:o:r:vha", long_opts, &index)) != -1){
    	switch(iarg){
    		case 'i':
         input_file = optarg;
@@ -102,12 +104,11 @@ void options(int argc, char *argv[]){
    		case 'r':
    		  ref_file = optarg;
    		  break;
-
-   		case 'p':
-   		  print_usage(1);
-   			//plots = optarg;
-   			break;
-
+   			
+   		case 'a':
+        rna = 1;
+        break;
+        
    		case 'h':
         print_usage(0);
         break;
@@ -128,9 +129,17 @@ void options(int argc, char *argv[]){
    }//End of iteration through options
 
    //Do some checking to ensure required arguments were passed and are accessible files
-   if(check_exist(input_file) != 1){
-   	printf("Input file (-i) %s does not exist.\n",input_file);
-   	print_usage(1);
+   if (input_file==NULL || strcmp(input_file,"/dev/stdin")==0) {
+    input_file = "-";   // htslib recognises this as a special case
+   }
+   if (strcmp(input_file,"-") != 0) {
+     if(check_exist(input_file) != 1){
+   	  printf("Input file (-i) %s does not exist.\n",input_file);
+   	  print_usage(1);
+     }
+   }
+   if (output_file==NULL || strcmp(output_file,"/dev/stdout")==0) {
+    output_file = "-";   // we recognise this as a special case
    }
    if(ref_file){
      if(check_exist(ref_file) != 1){
@@ -154,16 +163,6 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
           tt_mean += val;
         });
 
-    /*
-    int i = 0;
-    for(i=0;i<200000;i++){
-      if(inserts[i]>0){
-        pp_mean += (i+1) * inserts[i];
-        tt_mean += inserts[i];
-      }
-    }
-    */
-
     if(tt_mean){//Calculate mean , median, sd
       *mean = (double) ((double)pp_mean/(double)tt_mean);
 
@@ -179,18 +178,6 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
               if(running_total >= midpoint) break;
               prev_insert = key;
             });
-
-      /*
-      int j=0;
-
-      for(j=0;j<200000;j++){
-        if(inserts[j]>0){
-          insert = j+1;
-          running_total += inserts[j];
-          if(running_total >= midpoint) break ;
-          prev_insert = j+1;
-        }
-      }*/
 
       if(tt_mean %2 == 0 && ( running_total - midpoint2 >= insert )){
         //warn "Thinks is even AND split between bins ";
@@ -210,16 +197,7 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
               tt_sd += val;
             });
 
-      /*
-      int k=0;
-      for(k=0;k<200000;k++){
-        if(inserts[k]>0){
-          double diff = (double)(k+1) - (*mean);
-          pp_sd += (diff * diff) * inserts[k];
-          tt_sd += inserts[k];
-        }
-      }*/
-      kh_destroy(ins, inserts);
+      
 
       if(tt_sd){
         double variance = fabs((double)((double)pp_sd / (double)tt_sd));
@@ -227,13 +205,20 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
       }else{
         *sd = 0;
       }
+      
+      kh_destroy(ins, inserts);
 
     } //End of if we have data to calculate from.
   return 0;
 }
 
 int print_results(rg_info_t **grps){
-  FILE *out = fopen(output_file,"w");
+  FILE *out;
+  if (strcmp(output_file,"-")==0) {
+    out = stdout;
+  } else {
+    out = fopen(output_file,"w");
+  }
   check(out != NULL,"Error trying to open output file %s for writing.",output_file);
 
   int chk = fprintf(out,"%s",bas_header);
@@ -327,11 +312,11 @@ int print_results(rg_info_t **grps){
       fflush(out);
   }
 
-  fclose(out);
+  if (out != stdout) fclose(out);
   return 0;
 
 error:
-  if(out) fclose(out);
+  if(out && out != stdout) fclose(out);
   return -1;
 
 }
@@ -356,7 +341,7 @@ int main(int argc, char *argv[]){
   check(grps != NULL, "Error fetching read groups from header.");
 
   //Process every read in bam file.
-  int check = process_reads(input,head,grps, grps_size, &grp_stats);
+  int check = process_reads(input,head,grps, grps_size, &grp_stats, rna);
   check(check==0,"Error processing reads in bam file.");
 
   int res = print_results(grps);

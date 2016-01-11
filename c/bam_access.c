@@ -37,7 +37,7 @@ void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
   while(tag != NULL){
     int chk = sscanf(tag,"ID:%[^\t\n]",id);
     if(chk == 1){
-      groups[idx]->id = malloc(sizeof(char) * 1000);
+      groups[idx]->id = (char *) malloc(sizeof(char) * 1000);
       strcpy(groups[idx]->id,id);
       tag = strtok(NULL,"\t");
       continue;
@@ -111,22 +111,41 @@ rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_sta
         check_mem(groups[idx]);
         char *id = malloc(sizeof(char) * 1000);
         check_mem(id);
-        char *sm =malloc(sizeof(char) * 1000);
+        id[0] = '\0';
+        char *sm = malloc(sizeof(char) * 1000);
         check_mem(sm);
+        sm[0] = '\0';
         char *pl = malloc(sizeof(char) * 1000);
         check_mem(pl);
+        pl[0] = '\0';
         char *pu = malloc(sizeof(char) * 1000);
         check_mem(pu);
+        pu[0] = '\0';
         char *lib = malloc(sizeof(char) * 1000);
         check_mem(lib);
+        lib[0] = '\0';
         char * tmp = malloc(sizeof(char) * (strlen(line)+1));
         strcpy(tmp,line);
         parse_rg_line(tmp,idx,groups,id,sm,pl,pu,lib);
-        check(id != NULL,"Error recognising ID from RG line.");
-        check(sm != NULL,"Error recognising SM from RG line.");
+        check((id != NULL),"Error recognising ID from RG line. NULL found.");
+        check((strcmp(id,"")!=0),"Error recognising ID from RG line. Empty string.");
+        check((id[0]!='\0'),"Error recognising ID from RG line. Empty string.");
+        check((sm != NULL),"Error recognising SM from RG line.");
+        if((sm[0]=='\0')){
+          groups[idx]->sample = ".";
+        }
         check(pl != NULL,"Error recognising PL from RG line.");
+        if((pl[0]=='\0')){
+          groups[idx]->platform = ".";
+        }
         check(lib != NULL,"Error recognising LB from RG line.");
+        if((lib[0]=='\0')){
+          groups[idx]->lib = ".";
+        }
         check(pu != NULL,"Error recognising PU from RG line.");
+        if((pu[0]=='\0')){
+          groups[idx]->platform_unit = ".";
+        }
         free (tmp);
         idx++;
       }//End of iteration through header lines.
@@ -188,7 +207,7 @@ error:
   return NULL;
 }
 
-int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats){
+int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats, int rna){
   assert(input != NULL);
   assert(head != NULL);
   assert(grps != NULL);
@@ -198,7 +217,7 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
   b = bam_init1();
   int ret;
   while((ret = sam_read1(input, head, b)) >= 0){
-    if (b->core.flag & BAM_FSECONDARY) continue; //skip secondary hits so no double counts
+    if (b->core.flag & BAM_FSECONDARY && rna == 0) continue; //skip secondary hits so no double counts
     if (b->core.flag & BAM_FQCFAIL) continue; // skip vendor fail as generally aren't considered
     if (b->core.flag & BAM_FSUPPLEMENTARY) continue; // skip supplimentary
 

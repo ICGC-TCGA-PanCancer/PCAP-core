@@ -49,7 +49,7 @@ use PCAP::Cli;
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
 const my @AVAILABLE_COMPOSITE_FILTERS => (qw(caller max_dataset_GB multi_tumour sanger_version broad_version dkfz_embl_version jamboree_approved manual_donor_blacklist));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
-const my $GTDL_COMMAND => '%s%s --max-children 3 --rate-limit 200 -v -c %s -d %scghub/data/analysis/download/%s -p %s';
+const my $GTDL_COMMAND => '%s%s --max-children 3 --rate-limit 200 -vv -c %s -d %scghub/data/analysis/download/%s -p %s';
 
 {
   my $options = option_builder();
@@ -139,28 +139,35 @@ sub pull_data {
   make_path($symbase) unless(-e $symbase);
 
   my $code_ref;
+  my $check_ref;
   if($options->{'analysis'} eq 'CALLS') {
     $code_ref = \&pull_calls;
   }
   elsif($options->{'analysis'} eq 'ALIGNMENTS') {
+    $check_ref = \&check_alignments;
     $code_ref = \&pull_alignments;
   }
 
   my $thread_count = $options->{'threads'};
 
-  if($thread_count > 1) {
-    while(@{$to_process} > 0) {
-      if(threads->list(threads::all) < $thread_count) {
-        my $donor = shift @{$to_process};
-        my $donor_uniq = $donor->{'donor_unique_id'};
-        # is PROJECT::donor, so convert to folder
-        $donor_uniq =~ s|[:]{2}|/|;
-        my $donor_base = "$symbase/$donor_uniq";
-        my $orig_base = "$outbase/$donor_uniq";
-        make_path($orig_base) unless(-e $orig_base);
-        warn "Submitted: $donor->{donor_unique_id}\n";
-        threads->create($code_ref, $options, $donor, $orig_base, $donor_base);
 
+  while(@{$to_process} > 0) {
+    my $donor = shift @{$to_process};
+    my $donor_uniq = $donor->{'donor_unique_id'};
+    # is PROJECT::donor, so convert to folder
+    $donor_uniq =~ s|[:]{2}|/|;
+    my $donor_base = "$symbase/$donor_uniq";
+    my $orig_base = "$outbase/$donor_uniq";
+    make_path($orig_base) unless(-e $orig_base);
+
+    if(defined $check_ref) {
+      next if($check_ref->($options, $donor, $orig_base, $donor_base) == 0);
+    }
+
+    warn "Submitting: $donor->{donor_unique_id}\n";
+    if($thread_count > 1) {
+      if(threads->list(threads::all) < $thread_count) {
+        threads->create($code_ref, $options, $donor, $orig_base, $donor_base);
         # don't sleep if not full yet
         next if(threads->list(threads::all) < $thread_count);
       }
@@ -170,22 +177,16 @@ sub pull_data {
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
     }
+    else {
+      $code_ref->($options, $donor, $orig_base, $donor_base);
+    }
+  }
+  if($thread_count > 1) {
     # last gasp for any remaining threads
     sleep 1 while(threads->list(threads::running) > 0);
     for my $thr(threads->list(threads::joinable)) {
       $thr->join;
       if(my $err = $thr->error) { die "Thread error: $err\n"; }
-    }
-  }
-  else {
-    for my $donor(@{$to_process}) {
-      my $donor_uniq = $donor->{'donor_unique_id'};
-      # is PROJECT::donor, so convert to folder
-      $donor_uniq =~ s|[:]{2}|/|;
-      my $donor_base = "$symbase/$donor_uniq";
-      my $orig_base = "$outbase/$donor_uniq";
-      make_path($orig_base) unless(-e $orig_base);
-      $code_ref->($options, $donor, $orig_base, $donor_base);
     }
   }
 }
@@ -208,6 +209,51 @@ sub check_or_create_symlink {
   return 1;
 }
 
+sub check_alignments {
+  my ($options, $donor, $outbase, $donor_base) = @_;
+  warn "Checking $donor->{donor_unique_id}\n";
+  my $to_do = 0;
+  # for normal:
+  $to_do += check_bam($options, $donor->{'donor_unique_id'}, $donor->{'normal_alignment_status'}, $outbase, $donor_base, 'normal');
+
+  # for tumour
+  for my $tumour_data(@{$donor->{'tumor_alignment_status'}}) {
+    $to_do += check_bam($options, $donor->{'donor_unique_id'}, $tumour_data, $outbase, $donor_base, 'tumour');
+  }
+  return $to_do;
+}
+
+sub check_bam {
+  my ($options, $donor_id, $bam_data, $outbase, $donor_base, $type) = @_;
+  my $repo = select_repo($options, $bam_data->{'aligned_bam'}->{'gnos_repo'});
+  unless(exists $options->{'keys'}->{$repo}) {
+    warn sprintf "Skipping %s BAM for Donor %s - No permission key for repo %s", $type, $donor_id, $repo;
+    return 0;
+  }
+
+  my $gnos_id = $bam_data->{'aligned_bam'}->{'gnos_id'};
+
+  my $f_base = $outbase.'/'.$gnos_id;
+  my $success = $f_base.'/.success.t';
+
+  my $sample_base = "$donor_base/$type";
+
+  make_path($sample_base) unless(-e $sample_base);
+  my $aliq_id = $bam_data->{'aliquot_id'};
+  my $orig_bam = $f_base.'/'.$bam_data->{'aligned_bam'}->{'bam_file_name'};
+  my $sym_bam = $sample_base.'/'.$bam_data->{'aliquot_id'}.'.bam';
+
+  if(-e $success) {
+    check_or_create_symlink($orig_bam, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
+    create_bas($repo, $gnos_id, $sym_bam);
+    return 0;
+  }
+
+  return 0 if($options->{'symlinks'});
+  return 1;
+}
+
 sub pull_alignments {
   my ($options, $donor, $outbase, $donor_base) = @_;
 
@@ -222,7 +268,6 @@ sub pull_alignments {
 
 sub pull_bam {
   my ($options, $donor_id, $bam_data, $outbase, $donor_base, $type) = @_;
-  my $sample_base = "$donor_base/$type";
 
   my $repo = select_repo($options, $bam_data->{'aligned_bam'}->{'gnos_repo'});
   unless(exists $options->{'keys'}->{$repo}) {
@@ -231,14 +276,10 @@ sub pull_bam {
   }
   my $gnos_id = $bam_data->{'aligned_bam'}->{'gnos_id'};
 
-  my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
-                                          $options->{'gt_timeout'},
-                                          $options->{'keys'}->{$repo},
-                                          $repo,
-                                          $gnos_id,
-                                          $outbase;
   my $f_base = $outbase.'/'.$gnos_id;
   my $success = $f_base.'/.success.t';
+
+  my $sample_base = "$donor_base/$type";
 
   make_path($sample_base) unless(-e $sample_base);
   my $aliq_id = $bam_data->{'aliquot_id'};
@@ -252,6 +293,13 @@ sub pull_bam {
     return;
   }
   return if($options->{'symlinks'});
+
+  my $download = sprintf $GTDL_COMMAND, $options->{'gtdownload'},
+                                        $options->{'gt_timeout'},
+                                        $options->{'keys'}->{$repo},
+                                        $repo,
+                                        $gnos_id,
+                                        $outbase;
 
   my $out_file = "$f_base.out.log";
   my $err_file = "$f_base.err.log";
@@ -286,7 +334,7 @@ sub create_bas {
   my ($repo, $gnos_id, $sym_bam) = @_;
   my $bas_file = $sym_bam.'.bas';
   unlink $bas_file if(-l $bas_file);
-  return if(-s $bas_file);
+  return 1 if(-s $bas_file);
   # pull the bas file, done here to handle back fill of this data
   my $get_bas = sprintf '%s %s/xml_to_bas.pl -d %scghub/metadata/analysisFull/%s -o %s -b %s',
                       $^X,
@@ -325,6 +373,7 @@ sub pull_calls {
   my @callers = @{$donor->{'flags'}->{'variant_calling_performed'}};
   # this should loop over the data found in 'is_sanger_vcf_in_jamboree' once modified to be array
   for my $caller(@callers) {
+    next if($caller eq 'embl' || $caller eq 'dkfz');
 
     next if(exists  $options->{'COMPOSITE_FILTERS'}->{'caller'} && index(','.$options->{'COMPOSITE_FILTERS'}->{'caller'}.',', ','.$caller.',') == -1);
     next unless($donor->{'flags'}->{'is_'.$caller.'_variant_calling_performed'});

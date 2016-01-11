@@ -222,7 +222,10 @@ sub bwa_mem {
     else {
       my ($rg) = $split =~ m|/split/[[:digit:]]+/(.+)_i.fq_[[:digit:]]+.gz$|;
       ($rg_line, undef) = PCAP::Bam::rg_line_for_output($input->in, $options->{'sample'}, undef, $rg);
-      unless($rg_line) {
+      if($rg_line) {
+        $rg_line =~ s/('+)/'"$1"'/g;
+      }
+      else {
         $rg_line = sprintf $FALSE_RG, $split_element, $options->{'sample'};
       }
       $rg_line = q{'}.$rg_line.q{'};
@@ -244,12 +247,14 @@ sub bwa_mem {
     # uncoverable branch true
     # uncoverable branch false
     if($input->paired_fq) {
+      $split =~ s/'/\\'/g;
       my $split2 = $split;
       $split2 =~ s/pairedfq1(\.[[:digit:]]+)/pairedfq2$1/;
       $bwa .= ' '.$split;
       $bwa .= ' '.$split2;
     }
     else {
+      $split =~ s/'/\\'/g;
       $bwa .= ' '.$split;
     }
     $command .= $bwa;
@@ -261,6 +266,7 @@ sub bwa_mem {
 
     my $sorted_bam_stub = $split;
     $sorted_bam_stub =~ s|/split/([[:digit:]]+)/(.+)$|/sorted/$1_$2|;
+    $sorted_bam_stub =~ s/\\'/-/g;
 
     my $ref = exists $options->{'decomp_ref'} ? $options->{'decomp_ref'} : $options->{'reference'};
     my $sort = which('bamsort') || die "Unable to find 'bamsort' in path\n";
