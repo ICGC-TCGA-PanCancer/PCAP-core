@@ -11,3 +11,4 @@
 bin/bam_stats
 c/*.o
 examples/cgp_gnos_pull.ini
+/MYMETA.*
