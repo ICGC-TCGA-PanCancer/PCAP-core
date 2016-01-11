@@ -10,29 +10,30 @@ use List::Util qw(first);
 use Const::Fast qw(const);
 use Capture::Tiny qw(capture);
 use Data::Dumper;
+use version 0.77;
 
-const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates bamsort bwa);
-const my $BIOBAMBAM_VERSION => ['0.0.191'];
-const my $BWA_VERSIONS => ['0.7.12'];
+const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates2 bamsort bwa);
+const my $BIOBAMBAM2_VERSION => '2.0.25';
+const my $BWA_VERSION => '0.7.12';
 
 # can't put regex in const
 my %EXPECTED_VERSION = (
                         'bamcollate2'       => {
                               'get'   => q{ -h},
-                              'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
-                              'version'       => $BIOBAMBAM_VERSION},
-                        'bammarkduplicates' => {
+                              'match' => qr/This is biobambam2 version ([[:digit:]\.]+)\./,
+                              'version'       => version->parse($BIOBAMBAM2_VERSION)},
+                        'bammarkduplicates2' => {
                               'get'   => q{ -h},
-                              'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
-                              'version'       => $BIOBAMBAM_VERSION},
+                              'match' => qr/This is biobambam2 version ([[:digit:]\.]+)\./,
+                              'version'       => version->parse($BIOBAMBAM2_VERSION)},
                         'bamsort'           => {
                               'get'   => q{ -h},
-                              'match' => qr/This is biobambam version ([[:digit:]\.]+)\./,
-                              'version'       => $BIOBAMBAM_VERSION},
+                              'match' => qr/This is biobambam2 version ([[:digit:]\.]+)\./,
+                              'version'       => version->parse($BIOBAMBAM2_VERSION)},
                         'bwa'           => {
                               'get'   => q{},
                               'match' => qr/Version: ([[:digit:]\.]+[[:alpha:]]?)/, # we don't care about the revision number
-                              'version'       => $BWA_VERSIONS},
+                              'version'       => version->parse($BWA_VERSION)},
                         );
 
 subtest 'External programs exist on PATH' => sub {
@@ -50,8 +51,9 @@ subtest 'External programs have expected version' => sub {
     my ($stdout, $stderr, $exit) = capture{ system($command); };
     my $reg = $details->{'match'};
     my ($version) = $stderr =~ /$reg/m;
-    my $found = first {$version eq $_} @{$details->{'version'}};
-    ok($found, sprintf 'Expect version %s for %s', (join q{|}, @{$details->{'version'}}), $prog);
+    version->parse($version);
+
+    ok(version->parse($version) >= $details->{'version'}, sprintf 'Expect minimum version of %s for %s', $details->{'version'}, $prog);
   }
 };
 

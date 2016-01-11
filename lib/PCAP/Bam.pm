@@ -107,7 +107,7 @@ sub merge_and_mark_dup {
   $helper_threads = 1 if($helper_threads < 1);
   # uncoverable branch true
   # uncoverable branch false
-  my $command = which('bammarkduplicates') || die "Unable to find 'bammarkduplicates' in path";
+  my $command = which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
   $command .= sprintf $BAMBAM_DUP,  $marked,
                                     $met,
                                     File::Spec->catfile($tmp, 'biormdup'),
