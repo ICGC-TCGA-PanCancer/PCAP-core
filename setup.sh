@@ -210,10 +210,9 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       cd $SETUP_DIR
       mkdir -p biobambam
       get_distro "biobambam" $SOURCE_BBB_BIN_DIST
-      mkdir -p $INST_PATH/bin $INST_PATH/include $INST_PATH/lib $INST_PATH/share
-      rm -f biobambam/bin/curl* # breaks OS installs
+      mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
       cp -r biobambam/bin/* $INST_PATH/bin/.
-      cp -r biobambam/include/* $INST_PATH/include/.
+      cp -r biobambam/etc/* $INST_PATH/etc/.
       cp -r biobambam/lib/* $INST_PATH/lib/.
       cp -r biobambam/share/* $INST_PATH/share/.
       touch $SETUP_DIR/biobambam.success
