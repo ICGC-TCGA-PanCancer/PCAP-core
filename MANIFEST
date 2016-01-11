@@ -1,3 +1,4 @@
+bin/bam_stats
 bin/bam_stats.pl
 bin/bam_to_sra_sub.pl
 bin/bamToBw.pl
@@ -9,7 +10,9 @@ bin/monitor.pl
 bin/xml_to_bas.pl
 c/bam_access.c
 c/bam_access.h
+c/bam_access.o
 c/bam_stats.c
+c/bam_stats.o
 c/dbg.h
 c/khash.h
 CHANGES.md
