@@ -1,3 +1,10 @@
+### 1.11.0
+* bam_stats - new rna switch to give more appropriate insert size stats
+* bam_stats - more robust handling of optional RG header entries
+* bam_stats - allows streaming IO (thanks to @jenniferliddle)
+* bwa_mem.pl - Handle `'` in RG header line/IDs
+* Generally improved version handling and updated versions of some tools.
+
 ### 1.9.1
 * Changed final log folder to include sample name and analysis type, prevents clash when lots of data to same output loc.
 
