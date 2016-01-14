@@ -32,13 +32,13 @@
 #include "khash.h"
 
 static char *input_file = NULL;
-static char *output_file;
-static char *ref_file;
+static char *output_file = NULL;
+static char *ref_file = NULL;
 static int rna = 0;
 int grps_size = 0;
 stats_rd_t*** grp_stats;
 static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\n";
-static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%ld\t%ld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%.3f\t%.3f\t%.3f\t%lld\n";
+static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.3f\t%.3f\t%.3f\t%d\n";
 
 
 int check_exist(char *fname){
