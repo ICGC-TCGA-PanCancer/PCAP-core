@@ -47,7 +47,7 @@ use PCAP;
 use PCAP::Cli;
 
 const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
-const my @AVAILABLE_COMPOSITE_FILTERS => (qw(caller max_dataset_GB multi_tumour sanger_version broad_version dkfz_embl_version jamboree_approved manual_donor_blacklist));
+const my @AVAILABLE_COMPOSITE_FILTERS => (qw(not_sanger_workflow caller max_dataset_GB multi_tumour sanger_version broad_version dkfz_embl_version jamboree_approved manual_donor_blacklist));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
 const my $GTDL_COMMAND => '%s%s --max-children 3 --rate-limit 200 -vv -c %s -d %scghub/data/analysis/download/%s -p %s';
 
@@ -381,6 +381,11 @@ sub pull_calls {
     next if($options->{'COMPOSITE_FILTERS'}->{'jamboree_approved'} == 1 && !$donor->{'flags'}->{'is_'.$caller.'_vcf_in_jamboree'});
 
     next if(exists $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} && $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} ne $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'workflow_details'}->{'variant_workflow_version'});
+
+    if(exists $options->{'COMPOSITE_FILTERS'}->{not_sanger_workflow} && $options->{'COMPOSITE_FILTERS'}->{not_sanger_workflow} eq $donor->{'variant_calling_results'}->{'sanger_variant_calling'}->{'workflow_details'}->{'variant_workflow_name'}) {
+      warn "Skipping version $donor->{donor_unique_id} as version == $options->{COMPOSITE_FILTERS}->{not_sanger_workflow}\n" if($options->{debug});
+      next;
+    }
 
     # if we can get access to transfer metrics we want to select the fastest, or use list in config file
     my $repo = select_repo($options, $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'gnos_repo'});
