@@ -62,6 +62,8 @@ WriteMakefile(
                      'Sub::Exporter::Progressive' => 0.001011,
                      'XML::Simple' => 2.20,
                      'version' => 0.9912,
+                     'JSON' => 2.90,
+                     'JSON::XS' => 3.01,
                    }
 );
 
