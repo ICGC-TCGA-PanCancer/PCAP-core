@@ -52,7 +52,7 @@ int check_exist(char *fname){
 
 void print_version (int exit_code){
   printf ("%s\n",VERSION);
-	return;
+	exit(exit_code);
 }
 
 void print_usage (int exit_code){
@@ -64,7 +64,7 @@ void print_usage (int exit_code){
 	printf ("-r --ref-file  File path to reference index (.fai) file.\n");
 	printf ("               NB. If cram format is supplied via -b and the reference listed in the cram header can't be found bam_stats may fail to work correctly.\n");
 	printf ("-a --rna       Uses the RNA method of calculating insert size (ignores anything outside ± ('sd'*standard_dev) of the mean in calculating a new mean)\n");
-	
+
 	printf ("Other:\n");
 	printf ("-h --help      Display this usage information.\n");
 	printf ("-v --version   Prints the version number.\n\n");
@@ -104,11 +104,11 @@ void options(int argc, char *argv[]){
    		case 'r':
    		  ref_file = optarg;
    		  break;
-   			
+
    		case 'a':
         rna = 1;
         break;
-        
+
    		case 'h':
         print_usage(0);
         break;
@@ -197,7 +197,7 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
               tt_sd += val;
             });
 
-      
+
 
       if(tt_sd){
         double variance = fabs((double)((double)pp_sd / (double)tt_sd));
@@ -205,7 +205,7 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
       }else{
         *sd = 0;
       }
-      
+
       kh_destroy(ins, inserts);
 
     } //End of if we have data to calculate from.
