@@ -1,6 +1,7 @@
 use strict;
 use Test::More;
 use Test::Fatal;
+use Test::Warn;
 use File::Spec;
 use Try::Tiny qw(try catch finally);
 use Const::Fast qw(const);
@@ -123,6 +124,11 @@ subtest 'header_info checks' => sub {
       , qr/ERROR: This BAM has no readgroups:/m
       , 'Fail when no read groups found in header');
 
+  warning_like {($sample, $bio_db_sam) = PCAP::Bam::sample_name($no_rg_bam);} qr/WARN: Failed to find samplename in RG headers of /, "Warn when no sample found";
+
+  like(exception{ PCAP::Bam::sample_name($no_rg_bam, 1) }
+      , qr/ERROR: Failed to find samplename in RG headers of /m
+      , 'Die when no sample found (and die flag set)');
 };
 
 done_testing();

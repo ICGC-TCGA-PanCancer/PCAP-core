@@ -159,7 +159,7 @@ sub _which {
 }
 
 sub sample_name {
-  my $bam = shift;
+  my ($bam, $die_no_sample) = @_;
   my $sam = sam_ob($bam);
   my $header = $sam->header->text;
   my $sample;
@@ -167,6 +167,12 @@ sub sample_name {
     my $new_sample = $1;
     die "BAM file appears to contain data for multiple samples, not supported: \n\n$header\n" if(defined $sample && $sample ne $new_sample);
     $sample = $new_sample;
+  }
+  unless(defined $sample) {
+    if(defined $die_no_sample && $die_no_sample != 0) {
+      die "ERROR: Failed to find samplename in RG headers of $bam";
+    }
+    warn "WARN: Failed to find samplename in RG headers of $bam\n";
   }
   return ($sample, $sam); # also return the SAM object
 }
