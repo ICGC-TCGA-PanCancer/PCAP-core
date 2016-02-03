@@ -1,4 +1,5 @@
-VERSION=1.10.0
+#VERSION=1.10.0
+VERSION=$(shell perl -I../lib -MPCAP -e 'print PCAP->VERSION;')
 
 #Compiler
 CC = gcc -O3 -DVERSION='"$(VERSION)"' -g
@@ -99,9 +100,9 @@ valgrind:
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
 
-clean: 
+clean:
 	@echo clean
-	$(RM) ./*.o *~ $(BAM_STATS_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno 
+	$(RM) ./*.o *~ $(BAM_STATS_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
 	-rm -rf $(HTSTMP)
 
 
