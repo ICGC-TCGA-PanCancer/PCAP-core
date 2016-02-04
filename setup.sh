@@ -210,6 +210,7 @@ if [[ ",$COMPILE," == *,biobambam,* ]] ; then
       mkdir -p biobambam
       get_distro "biobambam" $SOURCE_BBB_BIN_DIST
       mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
+      rm -f biobambam/bin/curl # don't let this file in SSL doesn't work
       cp -r biobambam/bin/* $INST_PATH/bin/.
       cp -r biobambam/etc/* $INST_PATH/etc/.
       cp -r biobambam/lib/* $INST_PATH/lib/.
