@@ -30,50 +30,26 @@ int get_rg_index_from_rg_store(rg_info_t **grps, char *rg, int grps_size){
   return -1;
 }
 
-void parse_rg_line(char *tmp_line, const int idx, rg_info_t **groups,
-                              char *id, char *sm, char *pl, char *pu, char *lib){
+void parse_rg_line(char *tmp_line, rg_info_t *group) {
 //Now tokenise tmp_line on \t and read in
   char *tag = strtok(tmp_line,"\t");
+  assert(strcmp(tag,"@RG")==0);
+  group->id = strdup("\0");
+  group->sample = strdup("\0"); 
+  group->platform = strdup("\0"); 
+  group->platform_unit = strdup("\0"); 
+  group->lib = strdup("\0");
+  tag = strtok(NULL,"\t");
   while(tag != NULL){
-    int chk = sscanf(tag,"ID:%[^\t\n]",id);
-    if(chk == 1){
-      groups[idx]->id = (char *) malloc(sizeof(char) * 1000);
-      strcpy(groups[idx]->id,id);
-      tag = strtok(NULL,"\t");
-      continue;
-    }
-    chk=0;
-    chk = sscanf(tag,"SM:%[^\t\n]",sm);
-    if(chk == 1){
-      groups[idx]->sample = (char *) malloc(sizeof(char) * 1000);
-      strcpy(groups[idx]->sample,sm);
-      tag = strtok(NULL,"\t");
-      continue;
-    }
-    chk = 0;
-    chk = sscanf(tag,"PL:%[^\t\n]",pl);
-    if(chk == 1){
-      groups[idx]->platform =  (char *) malloc(sizeof(char) * 1000);
-      strcpy(groups[idx]->platform,pl);
-      tag = strtok(NULL,"\t");
-      continue;
-    }
-    chk = 0;
-    chk = sscanf(tag,"PU:%[^\t\n]",pu);
-    if(chk == 1){
-      groups[idx]->platform_unit = (char *) malloc(sizeof(char) * 1000);
-      strcpy(groups[idx]->platform_unit,pu);
-      tag = strtok(NULL,"\t");
-      continue;
-    }
-    chk = 0;
-    chk = sscanf(tag,"LB:%[^\t\n]",lib);
-    if(chk == 1){
-      groups[idx]->lib = (char *) malloc(sizeof(char) * 1000);
-      strcpy(groups[idx]->lib,lib);
-      tag = strtok(NULL,"\t");
-      continue;
-    }
+    assert(tag[2]==':');
+    tag[2]=0;
+    char *val = tag+3;
+    if (strcmp("ID",tag)==0) group->id = strdup(val);
+    if (strlen(val)==0) val = ".";
+    if (strcmp("SM",tag)==0) group->sample = strdup(val);
+    if (strcmp("PL",tag)==0) group->platform = strdup(val);
+    if (strcmp("PU",tag)==0) group->platform_unit = strdup(val);
+    if (strcmp("LB",tag)==0) group->lib = strdup(val);
     tag = strtok(NULL,"\t");
   }//End of iterating through tags in this RG tmp_line
   return;
@@ -85,8 +61,7 @@ rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_sta
   rg_info_t **groups;
   int size = 0;
   char *head_txt = head->text;
-  char *head_bac = malloc(sizeof(char) * (strlen(head_txt)+1));
-  strncpy(head_bac,head_txt,strlen(head_txt)+1);
+  char *head_bac = strdup(head_txt);
   //First pass counts read groups
   line = strtok(head_txt,"\n");
   while(line != NULL){
@@ -100,73 +75,41 @@ rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_sta
     //We now have the number of read groups, assign the RG id to each.
     groups = (rg_info_t**) malloc(sizeof(rg_info_t *) * size);
     check_mem(groups);
-    char ** ptr = malloc(sizeof(char **));
-    check_mem(ptr);
-    line = strtok_r(head_bac,"\n",ptr);
+    char *ptr = NULL;
+    line = strtok_r(head_bac,"\n",&ptr);
     int idx = 0;
     while(line != NULL){
       //Check for a read group line
       if(strncmp(line,"@RG",3)==0){
         groups[idx] = (rg_info_t *) malloc(sizeof(rg_info_t));
         check_mem(groups[idx]);
-        char *id = malloc(sizeof(char) * 1000);
-        check_mem(id);
-        id[0] = '\0';
-        char *sm = malloc(sizeof(char) * 1000);
-        check_mem(sm);
-        sm[0] = '\0';
-        char *pl = malloc(sizeof(char) * 1000);
-        check_mem(pl);
-        pl[0] = '\0';
-        char *pu = malloc(sizeof(char) * 1000);
-        check_mem(pu);
-        pu[0] = '\0';
-        char *lib = malloc(sizeof(char) * 1000);
-        check_mem(lib);
-        lib[0] = '\0';
-        char * tmp = malloc(sizeof(char) * (strlen(line)+1));
-        strcpy(tmp,line);
-        parse_rg_line(tmp,idx,groups,id,sm,pl,pu,lib);
-        check((id != NULL),"Error recognising ID from RG line. NULL found.");
-        check((strcmp(id,"")!=0),"Error recognising ID from RG line. Empty string.");
-        check((id[0]!='\0'),"Error recognising ID from RG line. Empty string.");
-        check((sm != NULL),"Error recognising SM from RG line.");
-        if((sm[0]=='\0')){
-          groups[idx]->sample = ".";
-        }
-        check(pl != NULL,"Error recognising PL from RG line.");
-        if((pl[0]=='\0')){
-          groups[idx]->platform = ".";
-        }
-        check(lib != NULL,"Error recognising LB from RG line.");
-        if((lib[0]=='\0')){
-          groups[idx]->lib = ".";
-        }
-        check(pu != NULL,"Error recognising PU from RG line.");
-        if((pu[0]=='\0')){
-          groups[idx]->platform_unit = ".";
-        }
+        char * tmp = strdup(line);
+        parse_rg_line(tmp,groups[idx]);
         free (tmp);
+
+        check((groups[idx]->id != NULL),"Error recognising ID from RG line. NULL found.");
+        check((groups[idx]->id[0]!='\0'),"Error recognising ID from RG line. Empty string.");
+        check((groups[idx]->sample != NULL),"Error recognising SM from RG line.");
+        if(groups[idx]->sample[0] == '\0') groups[idx]->sample = strdup(".");
+        check(groups[idx]->platform != NULL,"Error recognising PL from RG line.");
+        if(groups[idx]->platform[0] == '\0') groups[idx]->platform = strdup(".");
+        check(groups[idx]->lib != NULL,"Error recognising LB from RG line.");
+        if(groups[idx]->lib[0] == '\0') groups[idx]->lib = strdup(".");
+        check(groups[idx]->platform_unit != NULL,"Error recognising PU from RG line.");
+        if(groups[idx]->platform_unit[0] == '\0') groups[idx]->platform_unit = strdup(".");
         idx++;
       }//End of iteration through header lines.
-      line = strtok_r(NULL,"\n",ptr);
+      line = strtok_r(NULL,"\n",&ptr);
     }
-    free(ptr);
     if(line) free(line);
 	}else{ //Deal with a possible lack of @RG lines.
     groups = malloc(sizeof(rg_info_t*) * 1);
     check_mem(groups);
-    groups[0]->id = malloc(sizeof(char*) * 100);
-    groups[0]->sample = malloc(sizeof(char) * 100);
-    groups[0]->platform = malloc(sizeof(char) * 100);
-    groups[0]->platform_unit = malloc(sizeof(char) * 100);
-    groups[0]->lib = malloc(sizeof(char) * 100);
-
-    groups[0]->id = ".";
-    groups[0]->sample = ".";
-    groups[0]->platform = ".";
-    groups[0]->platform_unit = ".";
-    groups[0]->lib = ".";
+    groups[0]->id = strdup(".");
+    groups[0]->sample = strdup(".");
+    groups[0]->platform = strdup(".");
+    groups[0]->platform_unit = strdup(".");
+    groups[0]->lib = strdup(".");
     size = 1;
 	}
 	*grp_stats = (stats_rd_t***) malloc(sizeof(stats_rd_t**) * (size));

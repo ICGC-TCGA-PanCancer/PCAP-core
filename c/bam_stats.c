@@ -32,13 +32,13 @@
 #include "khash.h"
 
 static char *input_file = NULL;
-static char *output_file;
-static char *ref_file;
+static char *output_file = NULL;
+static char *ref_file = NULL;
 static int rna = 0;
 int grps_size = 0;
 stats_rd_t*** grp_stats;
 static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\n";
-static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%ld\t%ld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%lld\t%.3f\t%.3f\t%.3f\t%lld\n";
+static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.3f\t%.3f\t%.3f\t%d\n";
 
 
 int check_exist(char *fname){
@@ -52,7 +52,7 @@ int check_exist(char *fname){
 
 void print_version (int exit_code){
   printf ("%s\n",VERSION);
-	return;
+	exit(exit_code);
 }
 
 void print_usage (int exit_code){
@@ -64,7 +64,7 @@ void print_usage (int exit_code){
 	printf ("-r --ref-file  File path to reference index (.fai) file.\n");
 	printf ("               NB. If cram format is supplied via -b and the reference listed in the cram header can't be found bam_stats may fail to work correctly.\n");
 	printf ("-a --rna       Uses the RNA method of calculating insert size (ignores anything outside ± ('sd'*standard_dev) of the mean in calculating a new mean)\n");
-	
+
 	printf ("Other:\n");
 	printf ("-h --help      Display this usage information.\n");
 	printf ("-v --version   Prints the version number.\n\n");
@@ -104,11 +104,11 @@ void options(int argc, char *argv[]){
    		case 'r':
    		  ref_file = optarg;
    		  break;
-   			
+
    		case 'a':
         rna = 1;
         break;
-        
+
    		case 'h':
         print_usage(0);
         break;
@@ -197,7 +197,7 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
               tt_sd += val;
             });
 
-      
+
 
       if(tt_sd){
         double variance = fabs((double)((double)pp_sd / (double)tt_sd));
@@ -205,7 +205,7 @@ int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, dou
       }else{
         *sd = 0;
       }
-      
+
       kh_destroy(ins, inserts);
 
     } //End of if we have data to calculate from.

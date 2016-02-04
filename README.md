@@ -43,11 +43,10 @@ Please see the [wiki](https://github.com/ICGC-TCGA-PanCancer/PCAP-core/wiki) for
 
 ####Cutting the release
 1. Update `lib/PCAP.pm` to the correct version.
-2. Update `c/Makefile` to the correct version.
-3. Ensure upgrade path for new version number is added to `lib/PCAP.pm`.
-4. Update `CHANGES.md` to show major items.
-5. Run `./prerelease.sh`
-6. Check all tests and coverage reports are acceptable.
-7. Commit the updated docs tree and updated module/version.
-8. Push commits.
-9. Use the GitHub tools to draft a release.
+2. Ensure upgrade path for new version number is added to `lib/PCAP.pm`.
+3. Update `CHANGES.md` to show major items.
+4. Run `./prerelease.sh`
+5. Check all tests and coverage reports are acceptable.
+6. Commit the updated docs tree and updated module/version.
+7. Push commits.
+8. Use the GitHub tools to draft a release.
