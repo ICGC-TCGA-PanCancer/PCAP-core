@@ -34,7 +34,11 @@ void parse_rg_line(char *tmp_line, rg_info_t *group) {
 //Now tokenise tmp_line on \t and read in
   char *tag = strtok(tmp_line,"\t");
   assert(strcmp(tag,"@RG")==0);
-
+  group->id = strdup("\0");
+  group->sample = strdup("\0"); 
+  group->platform = strdup("\0"); 
+  group->platform_unit = strdup("\0"); 
+  group->lib = strdup("\0");
   tag = strtok(NULL,"\t");
   while(tag != NULL){
     assert(tag[2]==':');
@@ -86,10 +90,13 @@ rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_sta
         check((groups[idx]->id != NULL),"Error recognising ID from RG line. NULL found.");
         check((groups[idx]->id[0]!='\0'),"Error recognising ID from RG line. Empty string.");
         check((groups[idx]->sample != NULL),"Error recognising SM from RG line.");
+        if(groups[idx]->sample[0] == '\0') groups[idx]->sample = strdup(".");
         check(groups[idx]->platform != NULL,"Error recognising PL from RG line.");
+        if(groups[idx]->platform[0] == '\0') groups[idx]->platform = strdup(".");
         check(groups[idx]->lib != NULL,"Error recognising LB from RG line.");
+        if(groups[idx]->lib[0] == '\0') groups[idx]->lib = strdup(".");
         check(groups[idx]->platform_unit != NULL,"Error recognising PU from RG line.");
-
+        if(groups[idx]->platform_unit[0] == '\0') groups[idx]->platform_unit = strdup(".");
         idx++;
       }//End of iteration through header lines.
       line = strtok_r(NULL,"\n",&ptr);
