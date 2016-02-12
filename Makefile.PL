@@ -64,6 +64,7 @@ WriteMakefile(
                      'version' => 0.9912,
                      'JSON' => 2.90,
                      'JSON::XS' => 3.01,
+                     'Test::Warn' => 0.30,
                    }
 );
 
