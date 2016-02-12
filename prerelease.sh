@@ -26,10 +26,10 @@ export HARNESS_PERL_SWITCHES=-MDevel::Cover=-db,reports,-ignore,'t/.*\.t'
 rm -rf docs
 mkdir -p docs/reports_text
 prove --nocolor -w -I ./lib | sed 's/^/  /' # indent output of prove
-
+echo
 echo '### Generating test/pod coverage reports ###'
 # removed 'condition' from coverage as '||' 'or' doesn't work properly
-cover -coverage branch,subroutine,pod -report_c0 50 -report_c1 85 -report_c2 100 -report html_basic reports -silent > /dev/null
+cover -coverage branch,subroutine,pod -report_c0 50 -report_c1 85 -report_c2 100 -report html_basic reports -silent
 cover -coverage branch,subroutine,pod -report text reports -silent > docs/reports_text/coverage.txt
 rm -rf reports/structure reports/digests reports/cover.13 reports/runs
 cp reports/coverage.html reports/index.html
