@@ -25,7 +25,7 @@ echo '### Running perl tests ###'
 export HARNESS_PERL_SWITCHES=-MDevel::Cover=-db,reports,-ignore,'t/.*\.t'
 rm -rf docs
 mkdir -p docs/reports_text
-prove --nocolor -I ./lib | sed 's/^/  /' # indent output of prove
+prove --nocolor -w -I ./lib | sed 's/^/  /' # indent output of prove
 
 echo '### Generating test/pod coverage reports ###'
 # removed 'condition' from coverage as '||' 'or' doesn't work properly
