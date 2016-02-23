@@ -1,3 +1,7 @@
+### 1.13.0
+* bam_stats - Unit tests for C code
+* bam_stats - Fix to median insert size calculation
+
 ### 1.11.0
 * bam_stats - new rna switch to give more appropriate insert size stats
 * bam_stats - more robust handling of optional RG header entries
