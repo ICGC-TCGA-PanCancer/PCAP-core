@@ -30,9 +30,9 @@ LFLAGS?= -L$(HTSTMP)
 LIBS =-lhts -lpthread -lz -lm
 
 # define the C source files
-SRCS = ./bam_access.c ./bam_stats.c
+SRCS = ./bam_access.c ./bam_stats_output.c ./bam_stats_calcs.c
 #Define test sources
-TEST_SRC=$(wildcard ./tests/*_tests.c)
+TEST_SRC=$(wildcard ./c_tests/*_tests.c)
 TESTS=$(patsubst %.c,%,$(TEST_SRC))
 
 # define the C object files
@@ -60,17 +60,17 @@ BAM_STATS_TARGET=../bin/bam_stats
 
 .NOTPARALLEL: test
 
-all: clean make_htslib_tmp $(BAM_STATS_TARGET) remove_htslib_tmp
+all: clean make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp
 	@echo  bam_stats compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
 
 #Unit Tests
 test: $(BAM_STATS_TARGET)
 test: CFLAGS += $(INCLUDES) $(OBJS) $(LFLAGS) $(LIBS)
 test: $(TESTS)
-	sh ./tests/runtests.sh
+	sh ./c_tests/runtests.sh
 
 #Unit tests with coverage
 coverage: CFLAGS += --coverage
