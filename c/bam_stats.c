@@ -1,6 +1,6 @@
-/*       LICENCE
+/*########LICENCE#########
 * PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-* Copyright (C) 2014 ICGC PanCancer Project
+* Copyright (C) 2014-2016 ICGC PanCancer Project
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program; if not see:
 *   http://www.gnu.org/licenses/gpl-2.0.html
-*/
+*#########LICENCE#########*/
 
 
 #include <stdio.h>
@@ -24,12 +24,9 @@
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>
-#include <libgen.h>
-#include <math.h>
 #include "dbg.h"
-#include <bam_access.h>
-#include <inttypes.h>
-
+#include "bam_access.h"
+#include "bam_stats_output.h"
 
 #include "khash.h"
 
@@ -39,8 +36,6 @@ static char *ref_file = NULL;
 static int rna = 0;
 int grps_size = 0;
 stats_rd_t*** grp_stats;
-static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\n";
-static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%"PRIu32"\t%"PRIu32"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%.3f\t%.3f\t%.3f\t%"PRIu64"\n";
 
 int check_exist(char *fname){
 	FILE *fp;
@@ -152,183 +147,15 @@ void options(int argc, char *argv[]){
    return;
 }
 
-int calculate_mean_sd_median_insert_size(khash_t(ins) *inserts,double *mean, double *sd, double *median){
-
-    uint64_t pp_mean = 0;
-    uint64_t tt_mean = 0;
-    uint32_t key;
-    uint64_t val;
-
-    kh_foreach(inserts,key,val,
-        { pp_mean += key * val;
-          tt_mean += val;
-        });
-
-    if(tt_mean){//Calculate mean , median, sd
-      *mean = (double) ((double)pp_mean/(double)tt_mean);
-
-      float midpoint = (float)((float)tt_mean / (float)2);
-      float midpoint2 = (float)((float)tt_mean / (float)2 + (float)1);
-      uint32_t insert = 0;
-      uint32_t prev_insert = 0;
-      uint64_t running_total = 0;
-
-      kh_foreach(inserts,key,val,
-            { insert = key;
-              running_total += val;
-              if(running_total >= midpoint) break;
-              prev_insert = key;
-            });
-
-      if(tt_mean %2 == 0 && ( running_total - midpoint2 >= insert )){
-        //warn "Thinks is even AND split between bins ";
-        *median = (((double)insert + (double)prev_insert) / (double)2);
-      }else{
-        //warn "Thinks is odd or NOT split between bins";
-        *median = (double)(insert);
-      }
-
-      //We have mean and median so calculate the SD
-      uint64_t pp_sd = 0;
-      uint64_t tt_sd = 0;
-
-      kh_foreach(inserts,key,val,
-            { double diff = (double)(key) - (*mean);
-              pp_sd += (diff * diff) * (double)val;
-              tt_sd += val;
-            });
-
-
-
-      if(tt_sd){
-        double variance = fabs((double)((double)pp_sd / (double)tt_sd));
-        *sd = sqrt(variance);
-      }else{
-        *sd = 0;
-      }
-
-      kh_destroy(ins, inserts);
-
-    } //End of if we have data to calculate from.
-  return 0;
-}
-
-int print_results(rg_info_t **grps){
-  FILE *out;
-  if (strcmp(output_file,"-")==0) {
-    out = stdout;
-  } else {
-    out = fopen(output_file,"w");
-  }
-  check(out != NULL,"Error trying to open output file %s for writing.",output_file);
-
-  int chk = fprintf(out,"%s",bas_header);
-  check(chk==strlen(bas_header),"Error writing bas_header to output file.");
-
-  //Iterate through each RG
-  int i=0;
-  for(i=0;i<grps_size;i++){
-    if(grp_stats[i][0]->count==0 && grp_stats[i][1]->count==0) continue; // Skip empty read groups stats
-    uint64_t unmapped_r1 = grp_stats[i][0]->umap;
-    uint64_t unmapped_r2 = grp_stats[i][1]->umap;
-    uint64_t unmapped =  grp_stats[i][0]->umap + grp_stats[i][1]->umap;
-
-    uint64_t total_reads_r1 = grp_stats[i][0]->count;
-    uint64_t total_reads_r2 = grp_stats[i][1]->count;
-    uint64_t total_reads = grp_stats[i][0]->count + grp_stats[i][1]->count;
-
-    uint64_t mapped_reads = total_reads - unmapped;
-
-    uint64_t gc_r1 = grp_stats[i][0]->gc;
-    uint64_t gc_r2 = grp_stats[i][1]->gc;
-
-    uint64_t mapped_reads_r1 = 0;
-    uint64_t mapped_reads_r2 = 0;
-    uint64_t proper_pairs = 0;
-    uint64_t mapped_bases = 0;
-    uint64_t mapped_bases_r1 = 0;
-    uint64_t mapped_bases_r2 = 0;
-    uint64_t divergent_bases = 0;
-    uint64_t divergent_bases_r1 = 0;
-    uint64_t divergent_bases_r2 = 0;
-    uint64_t dup_reads = 0;
-
-    double mean_insert_size = 0;
-    double insert_size_sd = 0;
-    double median_insert_size = 0;
-
-    if(mapped_reads>0){
-      //Only need group one as they are pairs
-      proper_pairs = grp_stats[i][0]->proper;
-      mapped_reads_r1 = total_reads_r1 - unmapped_r1;
-      mapped_reads_r2 = total_reads_r2 - unmapped_r2;
-
-      mapped_bases_r1 =  grp_stats[i][0]->mapped_bases;
-      mapped_bases_r2 =  grp_stats[i][1]->mapped_bases;
-      mapped_bases =  grp_stats[i][0]->mapped_bases +  grp_stats[i][1]->mapped_bases;
-
-      divergent_bases_r1 = grp_stats[i][0]->divergent;
-      divergent_bases_r2 = grp_stats[i][1]->divergent;
-      divergent_bases = grp_stats[i][0]->divergent + grp_stats[i][1]->divergent;
-
-      calculate_mean_sd_median_insert_size(grp_stats[i][0]->inserts,&mean_insert_size,&insert_size_sd,&median_insert_size);
-      dup_reads = grp_stats[i][0]->dups + grp_stats[i][1]->dups;
-    }
-
-    uint32_t read_length_r1 = grp_stats[i][0]->length;
-    uint32_t read_length_r2 = grp_stats[i][1]->length;
-
-    char *file = basename(input_file);
-
-    chk = fprintf(out,rg_line_pattern,
-                      file,
-                      grps[i]->sample,
-                      grps[i]->platform,
-                      grps[i]->platform_unit,
-                      grps[i]->lib,
-                      grps[i]->id,
-                      read_length_r1,
-                      read_length_r2,
-                      mapped_bases,
-                      mapped_bases_r1,
-                      mapped_bases_r2,
-                      divergent_bases,
-                      divergent_bases_r1,
-                      divergent_bases_r2,
-                      total_reads,
-                      total_reads_r1,
-                      total_reads_r2,
-                      mapped_reads,
-                      mapped_reads_r1,
-                      mapped_reads_r2,
-                      proper_pairs,
-                      gc_r1,
-                      gc_r2,
-                      mean_insert_size,
-                      insert_size_sd,
-                      median_insert_size,
-                      dup_reads);
-
-      check(chk>0,"Error writing bas line to output file.");
-      fflush(out);
-  }
-
-  if (out != stdout) fclose(out);
-  return 0;
-
-error:
-  if(out && out != stdout) fclose(out);
-  return -1;
-
-}
-
 int main(int argc, char *argv[]){
 	options(argc, argv);
-	htsFile *input;
-	bam_hdr_t *head;
-
+	htsFile *input = NULL;
+	bam_hdr_t *head = NULL;
+  rg_info_t **grps = NULL;
   //Open bam file as object
   input = hts_open(input_file,"r");
+  check(input != NULL, "Error opening hts file for reading '%s'.",input_file);
+
   //Set reference index file
   if(ref_file){
     hts_set_fai_filename(input, ref_file);
@@ -338,14 +165,17 @@ int main(int argc, char *argv[]){
 
   //Read header from bam file
   head = sam_hdr_read(input);
-  rg_info_t **grps = parse_header(head, &grps_size, &grp_stats);
+  check(head != NULL, "Error reading header from opened hts file '%s'.",input_file);
+
+
+  grps = bam_access_parse_header(head, &grps_size, &grp_stats);
   check(grps != NULL, "Error fetching read groups from header.");
 
   //Process every read in bam file.
-  int check = process_reads(input,head,grps, grps_size, &grp_stats, rna);
+  int check = bam_access_process_reads(input,head,grps, grps_size, &grp_stats, rna);
   check(check==0,"Error processing reads in bam file.");
 
-  int res = print_results(grps);
+  int res = bam_stats_output_print_results(grps,grps_size,grp_stats,input_file,output_file);
   check(res==0,"Error writing bam_stats output to file.");
 
   bam_hdr_destroy(head);

@@ -1,6 +1,6 @@
 /*       LICENCE
 * PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-* Copyright (C) 2014 ICGC PanCancer Project
+* Copyright (C) 2014-2016 ICGC PanCancer Project
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "bam_access.h"
+#include "bam_stats_calcs.h"
 
 int get_rg_index_from_rg_store(rg_info_t **grps, char *rg, int grps_size){
   int i=0;
@@ -35,9 +36,9 @@ void parse_rg_line(char *tmp_line, rg_info_t *group) {
   char *tag = strtok(tmp_line,"\t");
   assert(strcmp(tag,"@RG")==0);
   group->id = strdup("\0");
-  group->sample = strdup("\0"); 
-  group->platform = strdup("\0"); 
-  group->platform_unit = strdup("\0"); 
+  group->sample = strdup("\0");
+  group->platform = strdup("\0");
+  group->platform_unit = strdup("\0");
   group->lib = strdup("\0");
   tag = strtok(NULL,"\t");
   while(tag != NULL){
@@ -55,7 +56,7 @@ void parse_rg_line(char *tmp_line, rg_info_t *group) {
   return;
 }
 
-rg_info_t **parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_stats){
+rg_info_t **bam_access_parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t ****grp_stats){
   assert(head != NULL);
   char *line = NULL;
   rg_info_t **groups;
@@ -150,7 +151,7 @@ error:
   return NULL;
 }
 
-int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats, int rna){
+int bam_access_process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_size, stats_rd_t ****grp_stats, int rna){
   assert(input != NULL);
   assert(head != NULL);
   assert(grps != NULL);
@@ -206,12 +207,12 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
       uint32_t nm_val = bam_aux2i(nm);
       if(nm_val>0){
         (*grp_stats)[rg_index][read]->divergent += nm_val;
-        (*grp_stats)[rg_index][read]->mapped_bases += get_mapped_base_count_from_cigar(b);
+        (*grp_stats)[rg_index][read]->mapped_bases += bam_access_get_mapped_base_count_from_cigar(b);
       }else{
         (*grp_stats)[rg_index][read]->mapped_bases += (bam_endpos(b) - b->core.pos) + 1;
       }
     }else{
-      (*grp_stats)[rg_index][read]->mapped_bases += get_mapped_base_count_from_cigar(b);
+      (*grp_stats)[rg_index][read]->mapped_bases += bam_access_get_mapped_base_count_from_cigar(b);
     }
 
     // Insert size can only be calculated based on reads that are on same chr
@@ -238,7 +239,7 @@ int process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, int grps_si
     return -1;
 }
 
-uint64_t get_mapped_base_count_from_cigar(bam1_t *b){
+uint64_t bam_access_get_mapped_base_count_from_cigar(bam1_t *b){
 #define _cop(c) ((c)&BAM_CIGAR_MASK)
 #define _cln(c) ((c)>>BAM_CIGAR_SHIFT)
   assert(b != NULL);
