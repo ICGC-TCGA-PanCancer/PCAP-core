@@ -10,6 +10,15 @@ bin/xml_to_bas.pl
 c/bam_access.c
 c/bam_access.h
 c/bam_stats.c
+c/bam_stats_calcs.c
+c/bam_stats_calcs.h
+c/bam_stats_output.c
+c/bam_stats_output.h
+c/c_tests/bam_access_tests.c
+c/c_tests/bam_stats_calcs_tests.c
+c/c_tests/bam_stats_output_tests.c
+c/c_tests/minunit.h
+c/c_tests/runtests.sh
 c/dbg.h
 c/khash.h
 CHANGES.md
@@ -68,6 +77,7 @@ t/data/paired.bam
 t/data/reconcile_bas.bam
 t/data/Stats.bam
 t/data/Stats.bam.bas
+t/data/Stats.c.bam.bas
 t/data/test.bam.bas
 t/data/unpaired.bam
 t/pcap.t
