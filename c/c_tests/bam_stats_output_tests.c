@@ -60,7 +60,7 @@ char *bam_stats_output_print_results_test_file(){
     sprintf(err,"Should have encountered an error for bad output file.");
     return err;
   }
-  output_file = "/cantwritehere/realltcant";
+  output_file = "/cantwritehere/reallycant";
   res = bam_stats_output_print_results(grps, grps_size,grp_stats,input_file,output_file);
   if(res != -1){
     sprintf(err,"Should have encountered an error for bad output file.");
@@ -122,7 +122,7 @@ char *bam_stats_output_print_results_test_stdout(){
     sprintf(err,"Should have encountered an error for bad output file.");
     return err;
   }
-  output_file = "/cantwritehere/realltcant";
+  output_file = "/cantwritehere/reallycant";
   res = bam_stats_output_print_results(grps, grps_size,grp_stats,input_file,output_file);
   if(res != -1){
     sprintf(err,"Should have encountered an error for bad output file.");
