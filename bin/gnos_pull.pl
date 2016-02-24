@@ -42,6 +42,7 @@ use IO::File;
 use JSON qw(decode_json);
 use List::Util qw(first any);
 use Proc::PID::File;
+use Data::Dumper;
 
 use PCAP;
 use PCAP::Cli;
@@ -96,6 +97,10 @@ sub load_config {
   if(exists $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'}) {
     my %bl_donors = map { $_ => 1 } split /\n/, $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'};
     $options->{'COMPOSITE_FILTERS'}->{'manual_donor_blacklist'} = \%bl_donors;
+  }
+  if(exists $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'}) {
+    my %bl_workflows = map { $_ => 1 } split /[\n,]/, $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'};
+    $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'} = [keys \%bl_workflows];
   }
 
   croak sprintf q{'KEY_FILE' Ssection is absent from %s}, $options->{'config'} unless($cfg->SectionExists('KEY_FILES'));
@@ -382,7 +387,7 @@ sub pull_calls {
 
     next if(exists $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} && $options->{'COMPOSITE_FILTERS'}->{$caller.'_version'} ne $donor->{'variant_calling_results'}->{$caller.'_variant_calling'}->{'workflow_details'}->{'variant_workflow_version'});
 
-    if(exists $options->{'COMPOSITE_FILTERS'}->{not_sanger_workflow} && $options->{'COMPOSITE_FILTERS'}->{not_sanger_workflow} eq $donor->{'variant_calling_results'}->{'sanger_variant_calling'}->{'workflow_details'}->{'variant_workflow_name'}) {
+    if(exists $options->{'COMPOSITE_FILTERS'}->{not_sanger_workflow} && first { $donor->{'variant_calling_results'}->{'sanger_variant_calling'}->{'workflow_details'}->{'variant_workflow_name'} eq $_ } @{$options->{'COMPOSITE_FILTERS'}->{not_sanger_workflow}}) {
       warn "Skipping version $donor->{donor_unique_id} as version == $options->{COMPOSITE_FILTERS}->{not_sanger_workflow}\n" if($options->{debug});
       next;
     }
