@@ -45,6 +45,10 @@ char *bam_stats_calcs_calculate_mean_sd_median_insert_size_test(){
   double median;
 
   int check = bam_stats_calcs_calculate_mean_sd_median_insert_size(inserts, &mean, &sd, &median);
+  if(check != 0) {
+    sprintf(err,"Calculation failed to complete\n");
+    return err;
+  }
 
   if(mean != exp_mean){
     sprintf(err,"Mean from calculation %f is not as expected %f\n",mean,exp_mean);
