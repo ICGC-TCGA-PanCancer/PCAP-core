@@ -19,6 +19,7 @@ c/c_tests/bam_stats_calcs_tests.c
 c/c_tests/bam_stats_output_tests.c
 c/c_tests/minunit.h
 c/c_tests/runtests.sh
+c/c_tests/tests_log
 c/dbg.h
 c/khash.h
 CHANGES.md
