@@ -157,7 +157,7 @@ char *test_bam_access_get_mapped_base_count_from_cigar(){
   htsFile *input;
   bam_hdr_t *head;
   kstring_t str = {0,0,0};
-  char *sample_sam = "IL29_5178:2:54:17473:17010	579	1	9993	0	5S10M5S	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:1";
+  char *sample_sam = "IL29_5178:2:54:17473:17010	579	1	9993	0	5S10M5S	=	9993	100	CTCTTCCGATCTTTAGGGTT	;\?;\?\?>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:1";
 	kputs(sample_sam,&str);
   //Open bam file as object
   input = hts_open(test_bam,"r");
@@ -186,7 +186,7 @@ char *test_bam_access_get_mapped_base_count_from_cigar(){
   }
 
   kstring_t str_two = {0,0,0};
-  char *sample_sam_two = "IL29_5178:2:54:17473:17010	579	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:1";
+  char *sample_sam_two = "IL29_5178:2:54:17473:17010	579	1	9993	0	20M	=	9993	100	CTCTTCCGATCTTTAGGGTT	;\?;\?\?>>>>F<BBDEBEEFF	RG:Z:29976	NM:i:1";
   bam_destroy1(b);
   b = bam_init1();
   kputs(sample_sam_two,&str_two);
