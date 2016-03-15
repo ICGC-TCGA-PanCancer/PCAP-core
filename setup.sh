@@ -11,7 +11,7 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 # for biobambam
-SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.25-release-20151105154334/https://github.com/gt1/biobambam2/releases/download/2.0.31-release-20160307150858/biobambam2-2.0.31-release-20160307150858-x86_64-etch-linux-gnu.tar.gz"
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.31-release-20160307150858/biobambam2-2.0.31-release-20160307150858-x86_64-etch-linux-gnu.tar.gz"
 
 get_distro () {
   if hash curl 2>/dev/null; then

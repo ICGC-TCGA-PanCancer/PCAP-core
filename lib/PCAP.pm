@@ -24,7 +24,7 @@ use strict;
 use Const::Fast qw(const);
 use base 'Exporter';
 
-our $VERSION = '1.13.2';
+our $VERSION = '1.14.0';
 our @EXPORT = qw($VERSION);
 
 const my $LICENSE =>
@@ -35,20 +35,7 @@ const my $LICENSE =>
 #################";
 
 const my $DEFAULT_PATH => 'biobambam,samtools,bwa';
-const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,bwa,samtools',
-                            '0.1.1'  => 'biobambam,bwa,samtools',
-                            '0.1.2'  => 'biobambam,bwa,samtools',
-                            '0.2.0'  => 'biobambam,bwa,samtools',
-                            '0.2.99' => 'biobambam,bwa,samtools',
-                            '0.3.0'  => 'biobambam,bwa,samtools',
-                            '1.0.0'  => 'biobambam,bwa,samtools',
-                            '1.0.1'  => 'biobambam,bwa,samtools',
-                            '1.0.2'  => 'biobambam,bwa,samtools',
-                            '1.0.3'  => 'biobambam,bwa,samtools',
-                            '1.0.4'  => 'biobambam,bwa,samtools',
-                            '1.1.0'  => 'biobambam,bwa,samtools',
-                            '1.1.1'  => 'biobambam,bwa,samtools',
-                            '1.1.2'  => 'biobambam,bwa,samtools',
+const my %UPGRADE_PATH => ( # all earlier versions need full upgrade
                             '1.2.0'  => 'biobambam,bwa', # if later versions have new versions then all preceding need that tool listing
                             '1.2.1'  => 'biobambam,bwa',
                             '1.2.2'  => 'biobambam,bwa',
@@ -73,13 +60,15 @@ const my %UPGRADE_PATH => ( '0.1.0'  => 'biobambam,bwa,samtools',
                             '1.9.4'  => 'biobambam',
                             '1.10.0'  => 'biobambam',
                             '1.11.0'  => 'biobambam',
-                            '1.11.1'  => '',
-                            '1.12.0'  => '',
-                            '1.12.1'  => '',
-                            '1.12.2'  => '',
-                            '1.12.3'  => '',
-                            '1.13.0'  => '',
-                            '1.13.1'  => '',
+                            '1.11.1'  => 'biobambam',
+                            '1.12.0'  => 'biobambam',
+                            '1.12.1'  => 'biobambam',
+                            '1.12.2'  => 'biobambam',
+                            '1.12.3'  => 'biobambam',
+                            '1.13.0'  => 'biobambam',
+                            '1.13.1'  => 'biobambam',
+                            '1.13.2'  => 'biobambam',
+                            '1.14.0'  => 'biobambam',
                           );
 
 sub license {
