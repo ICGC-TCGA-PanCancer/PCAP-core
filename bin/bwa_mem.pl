@@ -92,7 +92,7 @@ sub setup {
               'r|reference=s' => \$opts{'reference'},
               'o|outdir=s' => \$opts{'outdir'},
               's|sample=s' => \$opts{'sample'},
-              'c|charts' => \$opts{'charts'},
+              'n|nomarkdup' => \$opts{'nomarkdup'},
               'f|fragment=s' => \$opts{'fragment'},
               'p|process=s' => \$opts{'process'},
               'i|index=i' => \$opts{'index'},
@@ -183,7 +183,7 @@ bwa_aln.pl [options] [file(s)...]
 
   Optional parameters:
     -fragment  -f   Split input into fragements of X million repairs
-    -charts    -c   Generate perl-base-quality plots (+30% runtime on stats step)
+    -nomarkdup -n   Don't mark duplicates
 
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index
