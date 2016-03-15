@@ -103,6 +103,10 @@ sub mem_mapmax {
       next if($file =~ m/^\./);
       next if($file =~ m/^pairedfq2\.[[:digit:]]+/); # captured by 1.*
       next if($file =~ m/s[.]fq[.]gz_[[:digit:]]+[.]gz$/);
+      if($file =~ m/o[12][.]fq[.]gz_[[:digit:]]+[.]gz$/) {
+        warn "Orphan reads found, your input BAM appears to have had duplicates 'removed' rather than 'marked': $folder/$file\n\tWARNING: This will give a sub-optimal result\n";
+        next;
+      }
       push @files, File::Spec->catfile($folder, $file);
     }
     closedir($dh);
