@@ -39,7 +39,8 @@ use File::Path qw(make_path);
 use PCAP::Threaded;
 
 const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
-const my $BAMBAM_DUP => q{ O=%s M=%s tmpfile=%s markthreads=%s rewritebam=1 rewritebamlevel=1 index=1 md5=1};
+const my $BAMBAM_DUP => q{ index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%s };
+const my $BAMBAM_MERGE => q{ tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
 const my $BAM_STATS => q{ -i %s -o %s};
 
 sub new {
@@ -98,7 +99,6 @@ sub merge_and_mark_dup {
   my ($options, $source) = @_;
   my $tmp = $options->{'tmp'};
   my $marked = File::Spec->catdir($options->{'outdir'}, $options->{'sample'});
-  my $met = "$marked.met";
   $marked .= '.bam';
   return $marked if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
   my $helper_threads = $options->{'threads'}-1;
@@ -107,11 +107,22 @@ sub merge_and_mark_dup {
   $helper_threads = 1 if($helper_threads < 1);
   # uncoverable branch true
   # uncoverable branch false
-  my $command = which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
-  $command .= sprintf $BAMBAM_DUP,  $marked,
-                                    $met,
-                                    File::Spec->catfile($tmp, 'biormdup'),
-                                    $helper_threads;
+  my $command;
+  if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
+    $command = which('bammerge') || die "Unable to find 'bammarkduplicates' in path";
+    $command .= sprintf $BAMBAM_MERGE,  File::Spec->catfile($tmp, 'biormdup'),
+                                        $marked,
+                                        $marked,
+                                        $marked;
+  }
+  else {
+    my $met = "$marked.met";
+    $command = which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
+    $command .= sprintf $BAMBAM_DUP,  File::Spec->catfile($tmp, 'biormdup'),
+                                      $marked,
+                                      $met,
+                                      $helper_threads;
+  }
 
   if(defined $source) {
     opendir(my $dh, $source);
@@ -140,11 +151,6 @@ sub bam_stats {
   return $bas if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
   my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
   $command .= sprintf $BAM_STATS, $bam, $bas;
-  if(exists $options->{'charts'} && defined $options->{'charts'}) {
-    my $chart_dir = File::Spec->catdir($options->{'outdir'}, 'charts');
-    make_path($chart_dir) unless(-d $chart_dir);
-    $command .= ' -p '.$chart_dir;
-  }
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
   PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $bas;
