@@ -178,13 +178,14 @@ sub split_in {
         }
       }
     }
-    # if bam input
+    # if bam|cram input
     else {
       my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
                                     $split_folder,
                                     $input->in,
                                     $fragment_size * $MILLION * $BAM_MULT;
+      $bam2fq .= ' inputformat=cram' if($input->bam_or_cram eq 'cram');
       # treat as interleaved fastq
       push @commands, $bam2fq;
     }

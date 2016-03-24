@@ -22,8 +22,8 @@
 #include "bam_stats_output.h"
 #include "bam_stats_calcs.h"
 
-static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\n";
-static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%"PRIu32"\t%"PRIu32"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%.3f\t%.3f\t%.3f\t%"PRIu64"\n";
+static char *bas_header = "bam_filename\tsample\tplatform\tplatform_unit\tlibrary\treadgroup\tread_length_r1\tread_length_r2\t#_mapped_bases\t#_mapped_bases_r1\t#_mapped_bases_r2\t#_divergent_bases\t#_divergent_bases_r1\t#_divergent_bases_r2\t#_total_reads\t#_total_reads_r1\t#_total_reads_r2\t#_mapped_reads\t#_mapped_reads_r1\t#_mapped_reads_r2\t#_mapped_reads_properly_paired\t#_gc_bases_r1\t#_gc_bases_r2\tmean_insert_size\tinsert_size_sd\tmedian_insert_size\t#_duplicate_reads\t#_mapped_pairs\t#_inter_chr_pairs\n";
+static char *rg_line_pattern = "%s\t%s\t%s\t%s\t%s\t%s\t%"PRIu32"\t%"PRIu32"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\t%.3f\t%.3f\t%.3f\t%"PRIu64"\t%"PRIu64"\t%"PRIu64"\n";
 
 
 int bam_stats_output_print_results(rg_info_t **grps,int grps_size,stats_rd_t*** grp_stats,char *input_file,char *output_file){
@@ -66,6 +66,8 @@ int bam_stats_output_print_results(rg_info_t **grps,int grps_size,stats_rd_t*** 
     uint64_t divergent_bases_r1 = 0;
     uint64_t divergent_bases_r2 = 0;
     uint64_t dup_reads = 0;
+    uint64_t mapped_pairs = 0;
+    uint64_t inter_chr_pairs = 0;
 
     double mean_insert_size = 0;
     double insert_size_sd = 0;
@@ -74,6 +76,8 @@ int bam_stats_output_print_results(rg_info_t **grps,int grps_size,stats_rd_t*** 
     if(mapped_reads>0){
       //Only need group one as they are pairs
       proper_pairs = grp_stats[i][0]->proper;
+      mapped_pairs = grp_stats[i][0]->mapped_pairs;
+      inter_chr_pairs = grp_stats[i][0]->inter_chr_pairs;
       mapped_reads_r1 = total_reads_r1 - unmapped_r1;
       mapped_reads_r2 = total_reads_r2 - unmapped_r2;
 
@@ -121,7 +125,9 @@ int bam_stats_output_print_results(rg_info_t **grps,int grps_size,stats_rd_t*** 
                       mean_insert_size,
                       insert_size_sd,
                       median_insert_size,
-                      dup_reads);
+                      dup_reads,
+                      mapped_pairs,
+                      inter_chr_pairs);
 
       check(chk>0,"Error writing bas line to output file.");
       fflush(out);

@@ -39,6 +39,8 @@ typedef struct {
   uint64_t divergent;
   uint64_t mapped_bases;
   uint64_t proper;
+  uint64_t mapped_pairs;
+  uint64_t inter_chr_pairs;
   //list of counts of possible insert sizes....
   khash_t(ins) *inserts; //from counts of insert size from 0-200000 bp. See how this works, might need amore dynamic means for some data.
   //FQP is not included as we're not covering quality plots yet.

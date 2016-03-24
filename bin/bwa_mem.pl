@@ -98,8 +98,8 @@ sub setup {
               'i|index=i' => \$opts{'index'},
   ) or pod2usage(2);
 
-  pod2usage(-message => PCAP::license, -verbose => 1) if(defined $opts{'h'});
-  pod2usage(-message => PCAP::license, -verbose => 2) if(defined $opts{'m'});
+  pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
+  pod2usage(-verbose => 2, -exitval => 0) if(defined $opts{'m'});
 
   if(defined $opts{'v'}) {
     print PCAP->VERSION,"\n";
@@ -173,7 +173,7 @@ bwa_mem.pl - Align a set of lanes to specified reference with single command.
 
 =head1 SYNOPSIS
 
-bwa_aln.pl [options] [file(s)...]
+bwa_mem.pl [options] [file(s)...]
 
   Required parameters:
     -outdir    -o   Folder to output result to.
@@ -199,14 +199,36 @@ bwa_aln.pl [options] [file(s)...]
     -help      -h   Brief help message.
     -man       -m   Full documentation.
 
-  File list can be full file names or wildcard, e.g.
-    bwa_mem.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*.bam
+File list can be full file names or wildcard, e.g.
 
-  Run with '-m' for possible input file types.
+=over 4
 
-=head1 OPTIONS
+=item mutiple BAM inputs
 
-=over 8
+ bwa_mem.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*.bam
+
+=item multiple paired fastq inputs
+
+ bwa_mem.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*_[12].fq[.gz]
+
+=item multiple interleaved paired fastq inputs
+
+ bwa_mem.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*.fq[.gz]
+
+=item mixture of BAM and CRAM
+
+ bwa_mem.pl -t 16 -r some/genome.fa.gz -o myout -s sample input/*.bam input/*.cram
+
+=back
+
+=head1 DESCRIPTION
+
+B<bwa_mem.pl> will attempt to run all mapping steps for BWA-mem, as well as subsequent merging
+and duplicate marking automatically.
+
+=head1 OPTION DETAILS
+
+=over 4
 
 =item B<-outdir>
 
@@ -230,19 +252,11 @@ Number of threads to be used in processing.
 If perl is not compiled with threading some steps will not run in parallel, however much of the
 script calls other tools that will still utilise this appropriately.
 
-=item B<-help>
-
-Print a brief help message and exits.
-
-=item B<-man>
-
-Prints the manual page and exits.
-
 =back
 
 =head2 TARGETED PROCESSING
 
-=over 8
+=over 4
 
 =item B<-process>
 
@@ -256,7 +270,7 @@ B<-index> as well.
 
 There are several types of file that the script is able to process.
 
-=over 8
+=over 4
 
 =item f[ast]q
 
@@ -271,14 +285,13 @@ As *.f[ast]q but compressed with gzip.
 
 =item bam
 
-A list of single lane BAM files, RG line is transfered to aligned files.
+Single lane BAM files, RG line is transfered to aligned files.  Also accepts multi lane BAM.
+
+=item cram
+
+Single lane BAM files, RG line is transfered to aligned files.  Also accepts multi lane CRAM.
 
 =back
-
-=head1 DESCRIPTION
-
-B<bwa_mem.pl> will attempt to run all mapping steps for BWA-mem, as well as subsequent merging
-and duplicate marking automatically.
 
 =cut
 

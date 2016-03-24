@@ -33,7 +33,7 @@ use File::Basename;
 
 use Math::Gradient;
 use List::Util qw(sum sum0 first);
-use Bio::DB::Sam;
+use Bio::DB::HTS;
 use GD::Image;
 use JSON;
 
@@ -77,8 +77,8 @@ sub init{
   my $sam;
   my $q_scoring = $args{-qscoring};
 
-  unless ($sam && ref $sam eq 'Bio::DB::Sam'){
-    $sam = Bio::DB::Sam->new(-bam => $path);
+  unless ($sam && ref $sam eq 'Bio::DB::HTS'){
+    $sam = Bio::DB::HTS->new(-bam => $path);
   }
 
   my $mod = $args{-mod};
@@ -148,11 +148,12 @@ sub _parse_header {
 sub _process_reads {
   my ($groups, $sam, $qualiy_scoring, $mod, $rem) = @_;
 
-  my $bam = $sam->bam;
+  my $bam = $sam->hts_file;
+  my $header = $bam->header_read;
   my $processed_x = 0;
   my $start = time;
   my $processed_x_mill = 0;
-  while (my $a = $bam->read1) {
+  while (my $a = $bam->read1($header)) {
     next if(($processed_x++ % $mod) != $rem);
     if($processed_x % 1_000_000 == 0) {
       $processed_x_mill++;
@@ -222,12 +223,24 @@ sub _process_reads {
     }
     # calculate mapped seq from cigar
 
-    # Insert size can only be calculated based on reads that are on same chr
-    # so it is more sensible to generate the distribution based on $PROPER-pairs.
-    # only assess read 1 as size is a factor of the pair
-    if(($flag & ($PROPER|$FIRST)) == ($PROPER|$FIRST)) {
-      $rg_ref->{'inserts'}->{abs $a->isize}++;
-      $rg_ref->{'proper'}++;
+    # stats that only assess read 1
+    if($flag & $FIRST) {
+      # Count all the pairs where both ends are not unmapped
+      # already tested if this read is mapped above
+      if(!($flag &  $M_UNMAP)) {
+        $rg_ref->{'mapped_pairs'}++;
+      }
+
+      # Insert size can only be calculated based on reads that are on same chr
+      # so it is more sensible to generate the distribution based on $PROPER-pairs.
+      # only assess read 1 as size is a factor of the pair
+      if($flag & $PROPER) {
+        $rg_ref->{'inserts'}->{abs $a->isize}++;
+        $rg_ref->{'proper'}++;
+      }
+      elsif($a->tid != $a->mtid) {
+        $rg_ref->{'inter_chr_pairs'}++;
+      }
     }
   }
 }
@@ -355,6 +368,34 @@ sub count_properly_paired{
   my $ret = 0;
   foreach my $rg(keys %{$self->{_groups}}){
     $ret += $self->count_properly_paired_rg($rg);
+  }
+  return $ret;
+}
+
+sub count_mapped_pairs_rg{
+  my ($self, $rg) = @_;
+  return $self->{_groups}->{$rg}->{'mapped_pairs'} || 0;
+}
+
+sub count_mapped_pairs{
+  my $self = shift;
+  my $ret = 0;
+  foreach my $rg(keys %{$self->{_groups}}){
+    $ret += $self->count_mapped_pairs_rg($rg);
+  }
+  return $ret;
+}
+
+sub count_inter_chr_pairs_rg{
+  my ($self, $rg) = @_;
+  return $self->{_groups}->{$rg}->{'inter_chr_pairs'} || 0;
+}
+
+sub count_inter_chr_pairs{
+  my $self = shift;
+  my $ret = 0;
+  foreach my $rg(keys %{$self->{_groups}}){
+    $ret += $self->count_inter_chr_pairs_rg($rg);
   }
   return $ret;
 }
@@ -765,8 +806,6 @@ sub bas{
   try{
     my $header = join("\t",
       'bam_filename',
-#      'md5',
-#      'study',
       'sample',
       'platform',
       'platform_unit',
@@ -774,7 +813,6 @@ sub bas{
       'readgroup',
       'read_length_r1',
       'read_length_r2',
-#      '#_total_bases',
       '#_mapped_bases',
       '#_mapped_bases_r1',
       '#_mapped_bases_r2',
@@ -790,14 +828,12 @@ sub bas{
       '#_mapped_reads_properly_paired',
       '#_gc_bases_r1',
       '#_gc_bases_r2',
-#      '%_of_mismatched_bases',
-#      'average_quality_of_mapped_bases',
       'mean_insert_size',
       'insert_size_sd',
       'median_insert_size',
-#      'insert_size_median_absolute_deviation',
       '#_duplicate_reads',
-#      '#_duplicate_bases'
+      '#_mapped_pairs',
+      '#_inter_chr_pairs',
     )."\n";
 
     print $output_fh $header or croak "Unable to write header line";
@@ -825,6 +861,8 @@ sub bas{
       $library ||= q{.};
 
       my $unmapped_reads = $self->count_unmapped_rg($rg);
+      my $mapped_pairs = $self->count_mapped_pairs_rg($rg);
+      my $inter_chr_pairs = $self->count_inter_chr_pairs_rg($rg);
       my $unmapped_reads_r1 = $self->count_unmapped_rg($rg,1);
       my $unmapped_reads_r2 = $self->count_unmapped_rg($rg,2);
 
@@ -869,8 +907,6 @@ sub bas{
 
       print $output_fh join("\t",
         $file_name,
-#      'md5',
-#      'study',
         $sample,
         $platform,
         $platform_unit,
@@ -878,7 +914,6 @@ sub bas{
         $rg,
         $read_length_1,
         $read_length_2,
-#      '#_total_bases',
         $mapped_bases,
         $mapped_bases_r1,
         $mapped_bases_r2,
@@ -894,14 +929,12 @@ sub bas{
         $proper_pairs,
         $gc_rg1,
         $gc_rg2,
-#      '%_of_mismatched_bases',
-#      'average_quality_of_mapped_bases',
         $mean_insert_size,
         $insert_size_sd,
         $median_insert_size,
-#      'insert_size_median_absolute_deviation',
         $dup_reads,
-#      '#_duplicate_bases'
+        $mapped_pairs,
+        $inter_chr_pairs
       )."\n";
     }
 

@@ -35,7 +35,7 @@ use Data::UUID;
 
 use PCAP::Bam;
 
-const my @INIT_KEYS => qw(in temp fastq paired_fq);
+const my @INIT_KEYS => qw(in temp fastq paired_fq cram bam);
 const my @REQUIRED_KEYS => qw(in temp);
 const my @REQUIRED_RG_ELEMENTS => qw(SM);
 
@@ -92,6 +92,17 @@ sub paired_fq {
   my $self = shift;
   croak "'paired_fq' can only be set via new()" if(scalar @_ > 0);
   return $self->{'paired_fq'}; # this will create a key but not worth adding overhead to prevent
+}
+
+sub bam_or_cram {
+  my $self = shift;
+  if(exists $self->{'bam'} && defined $self->{'bam'} && $self->{'bam'} == 1) {
+    return 'bam';
+  }
+  if(exists $self->{'cram'} && defined $self->{'cram'} && $self->{'cram'} == 1) {
+    return 'cram';
+  }
+  return q{};
 }
 
 sub rg {
@@ -162,7 +173,7 @@ sub files_to_meta {
   croak '\$files must be an array-ref' unless(ref $files eq 'ARRAY');
   croak "Some files must be provided" unless(scalar @{$files} > 0);
   my %seen_paired_stub;
-  my $are_bams = 0;
+  my $are_xxams = 0;
   my $are_paired_fq = 0;
   my $are_inter_fq = 0;
   my @meta_files;
@@ -197,15 +208,23 @@ sub files_to_meta {
     elsif($file =~ m/\.bam$/) {
       die "File does not exist: $file\n" unless(-e $file);
       die "File is empty: $file\n" unless(-s $file);
-      $are_bams = 1;
+      $are_xxams = 1;
       $meta->{'in'} = $file;
+      $meta->{'bam'} = 1;
+    }
+    elsif($file =~ m/\.cram$/) {
+      die "File does not exist: $file\n" unless(-e $file);
+      die "File is empty: $file\n" unless(-s $file);
+      $are_xxams = 1;
+      $meta->{'in'} = $file;
+      $meta->{'cram'} = 1;
     }
     else {
       die "$file is not an expected input file type.\n";
     }
 
-    if($are_bams + $are_paired_fq + $are_inter_fq > 1) {
-      die "ERROR: BAM, paired FASTQ and interleaved FASTQ file types cannot be mixed, please choose one type\n";
+    if($are_xxams + $are_paired_fq + $are_inter_fq > 1) {
+      die "ERROR: BAM|CRAM, paired FASTQ and interleaved FASTQ file types cannot be mixed, please choose one type\n";
     }
 
     my $meta_ob = PCAP::Bwa::Meta->new($meta);

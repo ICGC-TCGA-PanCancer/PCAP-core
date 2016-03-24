@@ -145,6 +145,9 @@ bam_stats.pl [options] [file...]
 
   Optional parameters:
     -plots    -p   Folder to contain quality score plots.
+                    - not available with '-t'
+    -threads  -t   Use multiple threads to process the input
+                    - warning the complete file is read for each thread.
 
   Other:
     -help     -h   Brief help message.
