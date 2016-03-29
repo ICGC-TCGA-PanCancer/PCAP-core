@@ -11,7 +11,7 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 # for biobambam
-SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.31-release-20160307150858/biobambam2-2.0.31-release-20160307150858-x86_64-etch-linux-gnu.tar.gz"
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.33-release-20160317091357/biobambam2-2.0.33-release-20160317091357-x86_64-etch-linux-gnu.tar.gz"
 
 BIODBHTS_INSTALL="https://raw.githubusercontent.com/Ensembl/Bio-HTS/master/INSTALL.pl"
 
@@ -76,10 +76,9 @@ export PATH="$INST_PATH/bin:$PATH"
 SETUP_DIR=$INIT_DIR/install_tmp
 mkdir -p $SETUP_DIR
 
-## grab cpanm and stick in final bin:
-rm -f $INST_PATH/bin/cpanm
-get_file $INST_PATH/bin/cpanm https://cpanmin.us/
-chmod +x $INST_PATH/bin/cpanm
+## grab cpanm and stick in workspace, then do a self upgrade into bin:
+get_file $SETUP_DIR/cpanm https://cpanmin.us/
+perl $SETUP_DIR/cpanm -l $INST_PATH App::cpanminus
 CPANM=`which cpanm`
 echo $CPANM
 
@@ -90,7 +89,7 @@ fi
 
 perlmods=( "File::ShareDir" "File::ShareDir::Install" "Const::Fast" )
 for i in "${perlmods[@]}" ; do
-  perl $CPANM --mirror http://cpan.metacpan.org -l $INST_PATH $i
+  $CPANM --mirror http://cpan.metacpan.org -l $INST_PATH $i
 done
 
 # figure out the upgrade path
@@ -197,8 +196,6 @@ fi
 
 cd $INIT_DIR
 
-#perl $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH BioPerl
-
 if [[ ",$COMPILE," == *,samtools,* ]] ; then
   echo -n "Building samtools ..."
   if [ -e $SETUP_DIR/samtools.success ]; then
@@ -210,8 +207,8 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
     tar --strip-components 1 -C samtools -xjf samtools.tar.bz2
     cd samtools
     ./configure --enable-plugins --enable-libcurl --prefix=$INST_PATH
-    make -j$CPU all all-htslib
-    make -j$CPU install install-htslib
+    make all all-htslib
+    make install install-htslib
     touch $SETUP_DIR/samtools.success
   fi
   echo
@@ -242,11 +239,11 @@ fi
 cd $INIT_DIR
 
 echo -n "Installing Perl prerequisites ..."
-perl $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+$CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
 echo
 
 echo -n "Installing PCAP ..."
-perl $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH .
+$CPANM --mirror http://cpan.metacpan.org -l $INST_PATH .
 echo
 
 # cleanup all junk
