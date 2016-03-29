@@ -11,7 +11,7 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 # for biobambam
-SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.31-release-20160307150858/biobambam2-2.0.31-release-20160307150858-x86_64-etch-linux-gnu.tar.gz"
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/archive/2.0.34-release-20160329102259.tar.gz"
 
 BIODBHTS_INSTALL="https://raw.githubusercontent.com/Ensembl/Bio-HTS/master/INSTALL.pl"
 
