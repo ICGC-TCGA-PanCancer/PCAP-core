@@ -152,14 +152,14 @@ __END__
 
 =head1 NAME
 
-bamToBw.pl - Generate BigWig file from BAM, parallel processing where possible.
+bamToBw.pl - Generate BigWig file from BAM/CRAM, parallel processing where possible.
 
 =head1 SYNOPSIS
 
 bamToBw.pl [options] [file(s)...]
 
   Required parameters:
-    -bam       -b   BAM file to be processed.
+    -bam       -b   BAM/CRAM file to be processed.
     -outdir    -o   Folder to output result to.
     -threads   -t   Number of threads to use. [1]
     -reference -r   Path to genome.fa.
