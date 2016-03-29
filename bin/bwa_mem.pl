@@ -96,6 +96,7 @@ sub setup {
               'f|fragment=s' => \$opts{'fragment'},
               'p|process=s' => \$opts{'process'},
               'i|index=i' => \$opts{'index'},
+              'b|bwa=s' => \$opts{'bwa'},
   ) or pod2usage(2);
 
   pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -119,6 +120,7 @@ sub setup {
 
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
+  delete $opts{'bwa'} unless(defined $opts{'bwa'});
 
   # now safe to apply defaults
   $opts{'threads'} = 1 unless(defined $opts{'threads'});
@@ -184,6 +186,8 @@ bwa_mem.pl [options] [file(s)...]
   Optional parameters:
     -fragment  -f   Split input into fragements of X million repairs
     -nomarkdup -n   Don't mark duplicates
+    -bwa       -b   Single quoted string of parameters to pass to BWA
+                     - overrides all defaults except '-t,-p,-R'
 
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index
