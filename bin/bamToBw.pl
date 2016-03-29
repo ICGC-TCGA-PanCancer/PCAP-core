@@ -105,6 +105,8 @@ sub setup {
   PCAP::Cli::file_for_reading('reference', $opts{'reference'});
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
 
+  pod2usage(-msg  => "\nERROR: 'bam' must be bam or cram file.\n", -verbose => 1,  -output => \*STDERR) unless($opts{'bam'} =~ m/\..{1,2}am$/);
+
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
 

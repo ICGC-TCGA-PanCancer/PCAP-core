@@ -28,20 +28,20 @@ use PCAP::Cli;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
-use Bio::DB::Sam;
-use Bio::DB::Bam::AlignWrapper;
+use Bio::DB::HTS;
+use Bio::DB::HTS::AlignWrapper;
 
 my ($file_a, $file_b, $skip_z, $count_flag_diff) = setup();
 
-my $sam_a = Bio::DB::Sam->new($file_a);
-my $bam_a = $sam_a->bam;
-my $bam_b = Bio::DB::Bam->open($file_b);
+my $sam_a = Bio::DB::HTS->new(-bam => $file_a);
+my $bam_a = $sam_a->hts_file;
+my $bam_b = Bio::DB::HTSfile->open($file_b);
 
-my $header_a       = $bam_a->header;
+my $header_a       = $bam_a->header_read;
 my $target_count_a = $header_a->n_targets;
 my $target_names_a = $header_a->target_name;
 
-my $header_b       = $bam_b->header;
+my $header_b       = $bam_b->header_read;
 my $target_count_b = $header_b->n_targets;
 my $target_names_b = $header_b->target_name;
 
@@ -62,13 +62,12 @@ my $last_coord = 0;
 my %dup_pileup;
 while(1) {
   $count++;
-  $align_a = $bam_a->read1;
-  $align_b = $bam_b->read1;
+  $align_a = $bam_a->read1($header_a);
+  $align_b = $bam_b->read1($header_b);
   if($skip_z) {
-    while($align_a->qual == 0) { $align_a = $bam_a->read1; last unless(defined $align_a); }
-    while($align_b->qual == 0) { $align_b = $bam_b->read1; last unless(defined $align_b); }
+    while($align_a->qual == 0) { $align_a = $bam_a->read1($header_a); last unless(defined $align_a); }
+    while($align_b->qual == 0) { $align_b = $bam_b->read1($header_b); last unless(defined $align_b); }
   }
-
 
   last if(!defined $align_a && !defined $align_b);
   die "Files have different number of records\n" if((!defined $align_a && defined $align_b) || (defined $align_a && !defined $align_b));
@@ -79,7 +78,7 @@ while(1) {
       $flag_diffs++;
       my $pos = $align_a->pos;
       if(($pos - $last_coord) >= 0) { # saves checking for different chr
-        my $aw = Bio::DB::Bam::AlignWrapper->new($align_a, $sam_a);
+        my $aw = Bio::DB::HTS::AlignWrapper->new($align_a, $sam_a);
         $dup_pileup{$aw->seq_id}{$pos} += 1;
       }
       $last_coord = $pos;
@@ -107,14 +106,13 @@ if($count_flag_diff) {
   }
 }
 
-#print "Files match\n";
-
 sub setup {
   my %opts;
   GetOptions( 'h|help' => \$opts{'h'},
               'm|man' => \$opts{'m'},
               'a|bam_a=s' => \$opts{'a'},
               'b|bam_b=s' => \$opts{'b'},
+              'r|ref=s' => \$opts{'r'},
               'c|count' => \$opts{'c'},
               's|skip' => \$opts{'s'},
   ) or pod2usage(2);
@@ -135,6 +133,10 @@ sub setup {
 
   PCAP::Cli::file_for_reading('bam_a', $opts{'a'});
   PCAP::Cli::file_for_reading('bam_a', $opts{'b'});
+  if($opts{'a'} =~ m/[.]cram/ || $opts{'b'} =~ m/[.]cram/) {
+    die pod2usage(-msg  => "\nERROR: Option '-r' must be defined if any CRAM files are provided\n", -verbose => 1,  -output => \*STDERR) unless(defined $opts{'r'});
+    PCAP::Cli::file_for_reading('ref', $opts{'r'});
+  }
 
   return ($opts{'a'}, $opts{'b'}, $opts{'s'}, $opts{'c'});
 }
@@ -143,7 +145,7 @@ __END__
 
 =head1 NAME
 
-diff_bams.pl - Compares two BAM files irrespective of irrelevant header file differences.
+diff_bams.pl - Compares two BAM/CRAM files irrespective of irrelevant header file differences.
 
 =head1 SYNOPSIS
 
@@ -158,11 +160,14 @@ comparing relevant information such as:
   1. Same number and order of @SQ headers.
   2. All reads are in same order.
 
+You are able to compare a BAM vs it's corresponding CRAM
+
   Required parameters:
-    -bam_a    -a    The first BAM file.
-    -bam_b    -b    The second BAM file.
+    -bam_a    -a    The first BAM|CRAM file.
+    -bam_b    -b    The second BAM|CRAM file.
 
   Other:
+    -ref      -r    Required for CRAM, genome.fa with co-located fai.
     -count    -c    Count flag differences
     -skipz    -s    Don't include reads with MAPQ=0 in comparison
     -help     -h    Brief help message.

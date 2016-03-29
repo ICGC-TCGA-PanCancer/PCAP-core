@@ -150,7 +150,7 @@ subtest 'Objects from file list' => sub {
                                                       , File::Spec->catfile($test_data, '1_2.fq')
                                                       , File::Spec->catfile($test_data, '1.fq')]
                                                       , 'sample') }
-      , qq{ERROR: BAM, paired FASTQ and interleaved FASTQ file types cannot be mixed, please choose one type\n}
+      , qq{ERROR: BAM|CRAM, paired FASTQ and interleaved FASTQ file types cannot be mixed, please choose one type\n}
       , 'Fail when inputs are mixed file types');
   like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [ File::Spec->catfile($test_data, 'wibble.wobble')]
                                                       , 'sample') }

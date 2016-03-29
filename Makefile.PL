@@ -45,8 +45,8 @@ WriteMakefile(
                      'Capture::Tiny' => 0.24,
                      'Config::IniFiles' => 2.83,
                      'Const::Fast' => 0.014,
-                     'Bio::DB::Sam' => 1.39,
-                     'Bio::Root::Version' => 1.006923, # this is the only way to get Bio::Perl to behave
+                     'Bio::DB::HTS' => 1.11,
+                     'Bio::Root::Version' => 1.006924, # this is the only way to get Bio::Perl to behave
                                                        # and return the version correctly
                      'Try::Tiny' => 0.19,
                      'File::Which' => 0.05,
