@@ -58,7 +58,7 @@ sub bamToBw {
     }
     else {
       $command .= _which('samtools');
-      $command .= q{ -T }.$options->{'reference'};
+      $command .= q{ view -T }.$options->{'reference'};
       $command .= q{ -ub }.$options->{'bam'}.q{ }.$seq;
       $command .= ' | '._which('bam2bedgraph').' - ';
     }
