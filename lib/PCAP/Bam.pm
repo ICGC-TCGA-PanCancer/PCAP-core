@@ -30,7 +30,7 @@ use Const::Fast qw(const);
 use File::Spec;
 use File::Which qw(which);
 use FindBin qw($Bin);
-use Bio::DB::Sam;
+use Bio::DB::HTS;
 use Carp qw(croak);
 use List::Util qw(first);
 use Data::UUID;
@@ -286,15 +286,15 @@ sub check_for_tags {
 sub sam_ob {
   my $bam = shift;
   my $sam;
-  if(ref $bam eq 'Bio::DB::Sam') {
+  if(ref $bam eq 'Bio::DB::HTS') {
     $sam = $bam;
   }
   elsif(-e $bam) {
-    $sam = Bio::DB::Sam->new(-bam => $bam);
+    $sam = Bio::DB::HTS->new(-bam => $bam);
   }
   else {
     my $caller = (caller(1))[3];
-    croak "$caller requires either a BAM file or Bio::DB::Sam object.\n";
+    croak "$caller requires either a BAM file or Bio::DB::HTS object.\n";
   }
   return $sam;
 }
@@ -302,10 +302,10 @@ sub sam_ob {
 sub check_paired {
   my $self = shift;
   my $sam = sam_ob($self->{'bam'});
-  my $bam = $sam->bam;
-  $bam->header;
-  my $read = $bam->read1;
-  die "ERROR: Input BAMs should be for paired end sequencing: $self->{bam}\n" unless(1 & $read->flag);
+  my $bam = $sam->hts_file;
+  my $header = $bam->header_read;
+  my $read = $bam->read1($header);
+  die "ERROR: Input BAM|CRAMs should be for paired end sequencing: $self->{bam}\n" unless(1 & $read->flag);
   return 1;
 }
 
@@ -426,13 +426,13 @@ Resulting data is of the form:
 
 =item sample_name
 
-Takes BAM or Bio::DB::Sam object as input and returns the sample name found in the header.
+Takes BAM or Bio::DB::HTS object as input and returns the sample name found in the header.
 
 The SAM object is also returned should it be useful for other calls
 
 =item rg_line_for_output
 
-Takes BAM or Bio::DB::Sam object as input and returns the string representation for the RG line.
+Takes BAM or Bio::DB::HTS object as input and returns the string representation for the RG line.
 Intended for use when adding RG to BWA MEM output and is only useful in single RG BAMs
 
 Optional second boolean arg causes ID to be replaced with a UUID.
@@ -443,6 +443,6 @@ The SAM object is also returned should it be useful for other calls
 
   my $sam_ob = sam_ob('file.bam');
 
-Generate a Bio::DB::Sam object from the provided BAM file.
+Generate a Bio::DB::HTS object from the provided BAM|CRAM file.
 
 =back

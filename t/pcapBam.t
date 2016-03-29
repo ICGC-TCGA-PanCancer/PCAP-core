@@ -94,7 +94,7 @@ subtest 'paired seq checks' => sub {
   ok($obj->check_paired, 'Paired bam ok');
   $obj = new_ok($MODULE => [$unpaired_bam]);
   like(exception{ $obj->check_paired }
-      , qr/ERROR: Input BAMs should be for paired end sequencing:/m
+      , qr/ERROR: Input BAM|CRAMs should be for paired end sequencing:/m
       , 'Fail when unpaired sequencing in BAM');
 };
 

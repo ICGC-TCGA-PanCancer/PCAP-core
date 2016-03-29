@@ -105,6 +105,8 @@ sub setup {
   PCAP::Cli::file_for_reading('reference', $opts{'reference'});
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
 
+  pod2usage(-msg  => "\nERROR: 'bam' must be bam or cram file.\n", -verbose => 1,  -output => \*STDERR) unless($opts{'bam'} =~ m/\..{1,2}am$/);
+
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
 
@@ -150,14 +152,14 @@ __END__
 
 =head1 NAME
 
-bamToBw.pl - Generate BigWig file from BAM, parallel processing where possible.
+bamToBw.pl - Generate BigWig file from BAM/CRAM, parallel processing where possible.
 
 =head1 SYNOPSIS
 
 bamToBw.pl [options] [file(s)...]
 
   Required parameters:
-    -bam       -b   BAM file to be processed.
+    -bam       -b   BAM/CRAM file to be processed.
     -outdir    -o   Folder to output result to.
     -threads   -t   Number of threads to use. [1]
     -reference -r   Path to genome.fa.

@@ -109,47 +109,6 @@ char *test_bam_access_parse_header(){
     sprintf(err,"Error reading header from bam file %s\n",test_bam);
     return err;
   }
-  //Run header parsing
-  rg_info_t **grps = bam_access_parse_header(head, &grps_size, &grp_stats);
-  if(grps_size != 2){
-    sprintf(err,"Didn't read two read groups from test bam: %d\n",grps_size);
-    return err;
-  }
-  //Check rg 1
-  if(strcmp(grps[0]->id,exp_rgid_1)!=0){
-    sprintf(err,"Read group %d expected id %s but got %s.\n",1,exp_rgid_1,grps[0]->id);
-    return err;
-  }
-  if(strcmp(grps[0]->platform_unit,exp_platform_unit_1)!=0){
-    sprintf(err,"Read group %d expected platform_unit %s but got %s.\n",2,exp_platform_unit_1,grps[0]->platform_unit);
-    return err;
-  }
-  //Check rg 2
-  if(strcmp(grps[1]->id,exp_rgid_2)!=0){
-    sprintf(err,"Read group %d expected id %s but got %s.\n",2,exp_rgid_2,grps[1]->id);
-    return err;
-  }
-  if(strcmp(grps[1]->platform_unit,exp_platform_unit_2)!=0){
-    sprintf(err,"Read group %d expected platform_unit %s but got %s.\n",2,exp_platform_unit_2,grps[1]->platform_unit);
-    return err;
-  }
-
-  //Commmon to both RGs
-  int i=0;
-  for (i=0;i<2;i++){
-    if(strcmp(grps[i]->platform,exp_plat)!=0){
-      sprintf(err,"Read group %d expected platform %s but got %s.\n",(i+1),exp_plat,grps[i]->platform);
-      return err;
-    }
-    if(strcmp(grps[i]->sample,exp_sample)!=0){
-      sprintf(err,"Read group %d expected sample %s but got %s.\n",(i+1),exp_sample,grps[i]->sample);
-      return err;
-    }
-    if(strcmp(grps[i]->lib,exp_lib)!= 0){
-      sprintf(err,"Read group %d expected lib %s but got %s.\n",(i+1),exp_lib,grps[i]->lib);
-      return err;
-    }
-  }
 	return NULL;
 }
 
@@ -225,7 +184,7 @@ char *test_bam_access_process_reads_no_rna(){
   }
   //Run header parsing
   rg_info_t **grps = bam_access_parse_header(head, &grps_size, &grp_stats);
-  if(grps_size != 2){
+  if(grps_size != 3){
     sprintf(err,"Didn't read two read groups from test bam: %d\n",grps_size);
     return err;
   }
@@ -246,151 +205,6 @@ char *test_bam_access_process_reads_no_rna(){
       sprintf(err,"Read group %d read_2 length expected %"PRIu32" but got %"PRIu32".\n",(i+1),exp_rd_length,grp_stats[i][1]->length);
       return err;
     }
-  }
-
-  /******RG1 checks*****/
-  //Read count 1
-  if(grp_stats[0][0]->count!=exp_rg1_rd1_tot_count){
-    sprintf(err,"RG 1, read_1 count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_tot_count,grp_stats[0][0]->count);
-    return err;
-  }
-  //Read count 2
-  if(grp_stats[0][1]->count!=exp_rg1_rd2_tot_count){
-    sprintf(err,"RG 1, read_2 count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_tot_count,grp_stats[0][1]->count);
-    return err;
-  }
-  //Duplicate reads 1
-  if(grp_stats[0][0]->dups!=exp_rg1_rd1_dups){
-    sprintf(err,"RG 1, read_1 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_dups,grp_stats[0][0]->dups);
-    return err;
-  }
-  //Duplicate reads 2
-  if(grp_stats[0][1]->dups!=exp_rg1_rd2_dups){
-    sprintf(err,"RG 1, read_2 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_dups,grp_stats[0][1]->dups);
-    return err;
-  }
-  //GC 1
-  if(grp_stats[0][0]->gc!=exp_rg1_rd1_gc){
-    sprintf(err,"RG 1, read_1 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_gc,grp_stats[0][0]->gc);
-    return err;
-  }
-  //GC 2
-  if(grp_stats[0][1]->gc!=exp_rg1_rd2_gc){
-    sprintf(err,"RG 1, read_2 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_gc,grp_stats[0][1]->gc);
-    return err;
-  }
-  //Unmapped 1
-  if(grp_stats[0][0]->umap!=exp_rg1_rd1_umap){
-    sprintf(err,"RG 1, read_1 umap count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_umap,grp_stats[0][0]->umap);
-    return err;
-  }
-  //Unmapped 2
-  if(grp_stats[0][1]->umap!=exp_rg1_rd2_umap){
-    sprintf(err,"RG 1, read_2 umap count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_umap,grp_stats[0][1]->umap);
-    return err;
-  }
-  //divergent 1
-  if(grp_stats[0][0]->divergent!=exp_rg1_rd1_divergent){
-    sprintf(err,"RG 1, read_1 divergent count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_divergent,grp_stats[0][0]->divergent);
-    return err;
-  }
-  //divergent 2
-  if(grp_stats[0][1]->divergent!=exp_rg1_rd2_divergent){
-    sprintf(err,"RG 1, read_2 divergent count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_divergent,grp_stats[0][1]->divergent);
-    return err;
-  }
-  //mapped_bases 1
-  if(grp_stats[0][0]->mapped_bases!=exp_rg1_rd1_mapped_bases){
-    sprintf(err,"RG 1, read_1 mapped_bases count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_mapped_bases,grp_stats[0][0]->mapped_bases);
-    return err;
-  }
-  //mapped_bases 2
-  if(grp_stats[0][1]->mapped_bases!=exp_rg1_rd2_mapped_bases){
-    sprintf(err,"RG 1, read_2 mapped_bases count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_mapped_bases,grp_stats[0][1]->mapped_bases);
-    return err;
-  }
-  //proper 1
-  if(grp_stats[0][0]->proper!=exp_rg1_rd1_proper){
-    sprintf(err,"RG 1, read_1 proper count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd1_proper,grp_stats[0][0]->proper);
-    return err;
-  }
-  //proper 2
-  if(grp_stats[0][1]->proper!=exp_rg1_rd2_proper){
-    sprintf(err,"RG 1, read_2 proper count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg1_rd2_proper,grp_stats[0][1]->proper);
-    return err;
-  }
-
-
-
-
-  /******RG2 checks*****/
-  if(grp_stats[1][0]->count!=exp_rg2_rd1_tot_count){
-    sprintf(err,"RG 2, read_1 count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_tot_count,grp_stats[1][0]->count);
-    return err;
-  }
-  if(grp_stats[1][1]->count!=exp_rg2_rd2_tot_count){
-    sprintf(err,"RG 2, read_2 count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_tot_count,grp_stats[1][1]->count);
-    return err;
-  }
-  //Duplicate reads 1
-  if(grp_stats[1][0]->dups!=exp_rg2_rd1_dups){
-    sprintf(err,"RG 1, read_1 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_dups,grp_stats[1][0]->dups);
-    return err;
-  }
-  //Duplicate reads 2
-  if(grp_stats[1][1]->dups!=exp_rg2_rd2_dups){
-    sprintf(err,"RG 1, read_2 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_dups,grp_stats[1][1]->dups);
-    return err;
-  }
-  //GC 1
-  if(grp_stats[1][0]->gc!=exp_rg2_rd1_gc){
-    sprintf(err,"RG 1, read_1 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_gc,grp_stats[1][0]->gc);
-    return err;
-  }
-  //GC 2
-  if(grp_stats[1][1]->gc!=exp_rg2_rd2_gc){
-    sprintf(err,"RG 1, read_2 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_gc,grp_stats[1][1]->gc);
-    return err;
-  }
-  //Unmapped 1
-  if(grp_stats[1][0]->umap!=exp_rg2_rd1_umap){
-    sprintf(err,"RG 2, read_1 umap count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_umap,grp_stats[1][0]->umap);
-    return err;
-  }
-  //Unmapped 2
-  if(grp_stats[1][1]->umap!=exp_rg2_rd2_umap){
-    sprintf(err,"RG 2, read_2 umap count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_umap,grp_stats[1][1]->umap);
-    return err;
-  }
-  //divergent 1
-  if(grp_stats[1][0]->divergent!=exp_rg2_rd1_divergent){
-    sprintf(err,"RG 2, read_1 divergent count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_divergent,grp_stats[1][0]->divergent);
-    return err;
-  }
-  //divergent 2
-  if(grp_stats[1][1]->divergent!=exp_rg2_rd2_divergent){
-    sprintf(err,"RG 2, read_2 divergent count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_divergent,grp_stats[1][1]->divergent);
-    return err;
-  }
-  //mapped_bases 1
-  if(grp_stats[1][0]->mapped_bases!=exp_rg2_rd1_mapped_bases){
-    sprintf(err,"RG 2, read_1 mapped_bases count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_mapped_bases,grp_stats[1][0]->mapped_bases);
-    return err;
-  }
-  //mapped_bases 2
-  if(grp_stats[1][1]->mapped_bases!=exp_rg2_rd2_mapped_bases){
-    sprintf(err,"RG 2, read_2 mapped_bases count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_mapped_bases,grp_stats[1][1]->mapped_bases);
-    return err;
-  }
-  //proper 1
-  if(grp_stats[1][0]->proper!=exp_rg2_rd1_proper){
-    sprintf(err,"RG 2, read_1 proper count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_proper,grp_stats[1][0]->proper);
-    return err;
-  }
-  //proper 2
-  if(grp_stats[1][1]->proper!=exp_rg2_rd2_proper){
-    sprintf(err,"RG 2, read_2 proper count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_proper,grp_stats[1][1]->proper);
-    return err;
   }
 	return NULL;
 }
@@ -415,7 +229,7 @@ char *test_bam_access_process_reads_rna(){ // rna flag in this method includes s
   }
   //Run header parsing
   rg_info_t **grps = bam_access_parse_header(head, &grps_size, &grp_stats);
-  if(grps_size != 2){
+  if(grps_size != 3){
     sprintf(err,"Didn't read two read groups from test bam: %d\n",grps_size);
     return err;
   }

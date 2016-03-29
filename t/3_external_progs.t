@@ -12,9 +12,10 @@ use Capture::Tiny qw(capture);
 use Data::Dumper;
 use version 0.77;
 
-const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates2 bamsort bwa);
-const my $BIOBAMBAM2_VERSION => '2.0.25';
+const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates2 bamsort bwa samtools);
+const my $BIOBAMBAM2_VERSION => '2.0.33';
 const my $BWA_VERSION => '0.7.12';
+const my $SAMTOOLS_VERSION => '1.3';
 
 # can't put regex in const
 my %EXPECTED_VERSION = (
@@ -34,6 +35,10 @@ my %EXPECTED_VERSION = (
                               'get'   => q{},
                               'match' => qr/Version: ([[:digit:]\.]+[[:alpha:]]?)/, # we don't care about the revision number
                               'version'       => version->parse($BWA_VERSION)},
+                        'samtools'           => {
+                              'get'   => q{},
+                              'match' => qr/Version: ([[:digit:]\.]+[[:alpha:]]?)/, # we don't care about the revision number
+                              'version'       => version->parse($SAMTOOLS_VERSION)},
                         );
 
 subtest 'External programs exist on PATH' => sub {

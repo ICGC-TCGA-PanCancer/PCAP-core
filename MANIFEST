@@ -14,9 +14,9 @@ c/bam_stats_calcs.c
 c/bam_stats_calcs.h
 c/bam_stats_output.c
 c/bam_stats_output.h
-c/c_tests/bam_access_tests.c
-c/c_tests/bam_stats_calcs_tests.c
-c/c_tests/bam_stats_output_tests.c
+c/c_tests/01_bam_stats_output_tests.c
+c/c_tests/02_bam_access_tests.c
+c/c_tests/03_bam_stats_calcs_tests.c
 c/c_tests/minunit.h
 c/c_tests/runtests.sh
 c/c_tests/tests_log

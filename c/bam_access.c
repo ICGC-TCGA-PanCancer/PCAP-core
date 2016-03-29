@@ -215,19 +215,32 @@ int bam_access_process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, 
       (*grp_stats)[rg_index][read]->mapped_bases += bam_access_get_mapped_base_count_from_cigar(b);
     }
 
-    // Insert size can only be calculated based on reads that are on same chr
-    // so it is more sensible to generate the distribution based on $PROPER-pairs.
-    // only assess read 1 as size is a factor of the pair
-    if((b->core.flag & (BAM_FPROPER_PAIR|BAM_FREAD1)) == (BAM_FPROPER_PAIR|BAM_FREAD1)){
-      (*grp_stats)[rg_index][read]->proper++;
-      uint32_t ins = b->core.isize;
-      int res;
-      khint_t k;
-      k = kh_put(ins,(*grp_stats)[rg_index][read]->inserts,abs(ins),&res);
-      if(res){
-        kh_value((*grp_stats)[rg_index][read]->inserts,k) = 1;
-      }else{
-        kh_value((*grp_stats)[rg_index][read]->inserts,k) = kh_value((*grp_stats)[rg_index][read]->inserts,k)+1;
+    // stats that only assess read 1
+    if(b->core.flag & BAM_FREAD1) {
+      // Count all the pairs where both ends are not unmapped
+      // already tested if this read is mapped above
+      if(!(b->core.flag & BAM_FMUNMAP)) {
+        (*grp_stats)[rg_index][read]->mapped_pairs++;
+
+        // Insert size can only be calculated based on reads that are on same chr
+        // so it is more sensible to generate the distribution based on $PROPER-pairs.
+        // only assess read 1 as size is a factor of the pair
+        if(b->core.flag & BAM_FPROPER_PAIR){
+          (*grp_stats)[rg_index][read]->proper++;
+          uint32_t ins = b->core.isize;
+          int res;
+          khint_t k;
+          k = kh_put(ins,(*grp_stats)[rg_index][read]->inserts,abs(ins),&res);
+          if(res){
+            kh_value((*grp_stats)[rg_index][read]->inserts,k) = 1;
+          }else{
+            kh_value((*grp_stats)[rg_index][read]->inserts,k) = kh_value((*grp_stats)[rg_index][read]->inserts,k)+1;
+          }
+        }
+        else if(b->core.tid != b->core.mtid) {
+          // here count the reads where the chr are different
+          (*grp_stats)[rg_index][read]->inter_chr_pairs++;
+        }
       }
     }
 

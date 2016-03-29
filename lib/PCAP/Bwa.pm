@@ -37,7 +37,7 @@ use PCAP::Bwa::Meta;
 
 const my $BWA_ALN => q{ aln%s -t %s -f %s_%s.sai %s %s.%s};
 const my $BAMFASTQ => q{ exclude=QCFAIL,SECONDARY,SUPPLEMENTARY tryoq=1 gz=1 level=1 outputperreadgroup=1 outputperreadgroupsuffixF=_i.fq outputperreadgroupsuffixF2=_i.fq T=%s outputdir=%s filename=%s split=%s};
-const my $BWA_MEM => q{ mem%s -T 0 -R %s -t %s %s};
+const my $BWA_MEM => q{ mem %s %s -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
 const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
 
@@ -178,13 +178,14 @@ sub split_in {
         }
       }
     }
-    # if bam input
+    # if bam|cram input
     else {
       my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
                                     $split_folder,
                                     $input->in,
                                     $fragment_size * $MILLION * $BAM_MULT;
+      $bam2fq .= ' inputformat=cram' if($input->bam_or_cram eq 'cram');
       # treat as interleaved fastq
       push @commands, $bam2fq;
     }
@@ -247,7 +248,12 @@ sub bwa_mem {
     # uncoverable branch true
     # uncoverable branch false
     $interleaved_fq = q{ -p}, unless($input->paired_fq);
-    $bwa .= sprintf $BWA_MEM, $interleaved_fq, $rg_line, $threads, $options->{'reference'};
+    if(exists $options->{'bwa'}) {
+      $bwa .= sprintf $BWA_MEM, $options->{'bwa'}, $interleaved_fq, $rg_line, $threads, $options->{'reference'};
+    }
+    else {
+      $bwa .= sprintf $BWA_MEM, '-T 0', $interleaved_fq, $rg_line, $threads, $options->{'reference'};
+    }
     # uncoverable branch true
     # uncoverable branch false
     if($input->paired_fq) {

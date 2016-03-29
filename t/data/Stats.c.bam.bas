@@ -1,3 +1,4 @@
-bam_filename	sample	platform	platform_unit	library	readgroup	read_length_r1	read_length_r2	#_mapped_bases	#_mapped_bases_r1	#_mapped_bases_r2	#_divergent_bases	#_divergent_bases_r1	#_divergent_bases_r2	#_total_reads	#_total_reads_r1	#_total_reads_r2	#_mapped_reads	#_mapped_reads_r1	#_mapped_reads_r2	#_mapped_reads_properly_paired	#_gc_bases_r1	#_gc_bases_r2	mean_insert_size	insert_size_sd	median_insert_size	#_duplicate_reads
-Stats.bam	PD1234a	GAII	5178_6	PD1234a 140546_1054	29976	20	20	152	115	37	48	30	18	10	7	3	8	6	2	6	63	27	195.833	119.387	125.000	4
-Stats.bam	PD1234a	GAII	5085_6	PD1234a 140546_1054	29978	20	20	40	20	20	23	11	12	6	3	3	2	1	1	1	27	27	100.000	0.000	100.000	0
+bam_filename	sample	platform	platform_unit	library	readgroup	read_length_r1	read_length_r2	#_mapped_bases	#_mapped_bases_r1	#_mapped_bases_r2	#_divergent_bases	#_divergent_bases_r1	#_divergent_bases_r2	#_total_reads	#_total_reads_r1	#_total_reads_r2	#_mapped_reads	#_mapped_reads_r1	#_mapped_reads_r2	#_mapped_reads_properly_paired	#_gc_bases_r1	#_gc_bases_r2	mean_insert_size	insert_size_sd	median_insert_size	#_duplicate_reads	#_mapped_pairs	#_inter_chr_pairs
+Stats.bam	PD1234a	GAII	5178_6	PD1234a 140546_1054	29976	20	20	152	115	37	48	30	18	10	7	3	8	6	2	6	63	27	195.833	119.387	125.000	4	6	0
+Stats.bam	PD1234a	GAII	5085_6	PD1234a 140546_1054	29978	20	20	40	20	20	23	11	12	6	3	3	2	1	1	1	27	27	100.000	0.000	100.000	0	1	0
+Stats.bam	PD1234a	GAII	5086_6	PD1234a 140546_1054	29979	20	20	120	60	60	0	0	0	6	3	3	6	3	3	1	27	27	100.000	0.000	100.000	0	3	1

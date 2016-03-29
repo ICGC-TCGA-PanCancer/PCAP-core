@@ -145,6 +145,9 @@ bam_stats.pl [options] [file...]
 
   Optional parameters:
     -plots    -p   Folder to contain quality score plots.
+                    - not available with '-t'
+    -threads  -t   Use multiple threads to process the input
+                    - warning the complete file is read for each thread.
 
   Other:
     -help     -h   Brief help message.
@@ -219,6 +222,8 @@ The output consists of the following columns:
       'insert_size_sd' = the insert size standard deviation.
       'median_insert_size' = the median insert size.
       '#_duplicate_reads' = the total number of duplicate reads.
+      '#_mapped_pairs' = the total number of pairs with both ends mapped.
+      '#_inter_chr_pairs' = the total number of pairs where each end maps to a different chromosome.
 
 Any reads not linked to a ReadGroup will be combined into the group '.'
 Please note that the accuracy of statistics in this group may be questionable.

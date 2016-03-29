@@ -8,7 +8,7 @@ use PCAP;
 use autodie qw(:all);
 use Getopt::Long;
 use Pod::Usage qw(pod2usage);
-use Bio::DB::Sam;
+use Bio::DB::HTS;
 use FindBin qw($Bin);
 use lib "$Bin/../lib";
 
@@ -98,7 +98,7 @@ sub validate_bas {
 
 sub correct_clash {
   my ($bas_data, $bamfile) = @_;
-  my $bam = Bio::DB::Sam->new(-bam => $options->{'bam'});
+  my $bam = Bio::DB::HTS->new(-bam => $options->{'bam'});
   my %rg_by_pu;
   foreach my $hl(split /\n/, $bam->header->text) {
     next unless($hl =~ m/^\@RG/);
@@ -201,7 +201,7 @@ xml_to_bas.pl [options]
     -output     -o    Name for output file. Defaults to STDOUT.
 
   Optional parameters:
-    -bam       -b  BAM file this data relates to
+    -bam       -b  BAM|CRAM file this data relates to
                    - checks retrieved data correlates with expected BAM
                    - additionally can correct read_group_id if other fields correlate when
                      clashes occur.
