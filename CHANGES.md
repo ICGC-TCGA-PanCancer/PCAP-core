@@ -1,3 +1,19 @@
+### 2.0.0
+* bwa_mem.pl
+    * allow user to specify BWA mapping parameters
+    * now accepts CRAM as input
+* bamToBw.pl - now accepts CRAM as input.
+* bam_stats - Adds 2 new stats:
+    * `#_mapped_pairs`
+    * `#_inter_chr_pairs`
+* Dependancy changes
+    * __WARNING__: ensure all related tools handle these updates
+    * [samtools](https://github.com/samtools/samtools/releases), now only uses htslib based versions (1.3+, handling deprecated use of sort)
+    * [Bio::DB::HTS](http://search.cpan.org/~rishidev/Bio-DB-HTS/lib/Bio/DB/HTS.pm) htslib bindings replacing Bio::DB::Sam
+
+### 1.14.0
+* bwa_mem.pl - Option to disable duplicate marking
+
 ### 1.13.0
 * bam_stats - Unit tests for C code
 * bam_stats - Fix to median insert size calculation
