@@ -210,8 +210,8 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
     tar --strip-components 1 -C samtools -xjf samtools.tar.bz2
     cd samtools
     ./configure --enable-plugins --enable-libcurl --prefix=$INST_PATH
-    make -j$CPU all all-htslib
-    make -j$CPU install install-htslib
+    make all all-htslib
+    make install install-htslib
     touch $SETUP_DIR/samtools.success
   fi
   echo
@@ -246,7 +246,7 @@ perl $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installde
 echo
 
 echo -n "Installing PCAP ..."
-perl $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH .
+perl $CPANM --mirror http://cpan.metacpan.org -l $INST_PATH .
 echo
 
 # cleanup all junk
