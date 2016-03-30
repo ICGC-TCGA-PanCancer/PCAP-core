@@ -6,6 +6,7 @@ bin/bwa_mem.pl
 bin/diff_bams.pl
 bin/gnos_pull.pl
 bin/monitor.pl
+bin/xam_coverage_bins.pl
 bin/xml_to_bas.pl
 c/bam_access.c
 c/bam_access.h
