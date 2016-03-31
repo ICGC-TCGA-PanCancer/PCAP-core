@@ -11,7 +11,7 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 # for biobambam
-SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.33-release-20160317091357/biobambam2-2.0.33-release-20160317091357-x86_64-etch-linux-gnu.tar.gz"
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.35-release-20160330111451/biobambam2-2.0.35-release-20160330111451-x86_64-etch-linux-gnu.tar.gz"
 
 BIODBHTS_INSTALL="https://raw.githubusercontent.com/Ensembl/Bio-HTS/master/INSTALL.pl"
 
@@ -97,6 +97,7 @@ COMPILE=`echo 'nothing' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'
 if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
   COMPILE=`perl -I $INST_PATH/lib/perl5 -MPCAP -e 'print PCAP->VERSION,"\n";' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
 fi
+COMPILE=",$COMPILE,"
 
 #Need to add CaVEMan stuff here... will depend on samtools too (for now).
 
@@ -224,7 +225,7 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
     echo -n " previously installed ...";
   else
     cd $SETUP_DIR
-    $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH Module::Build Bio::Perl
+    $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH Module::Build Bio::Root::Version
     # now Bio::DB::HTS
     get_file "INSTALL.pl" $BIODBHTS_INSTALL
     perl -I $PERL5LIB INSTALL.pl --prefix $INST_PATH --static
