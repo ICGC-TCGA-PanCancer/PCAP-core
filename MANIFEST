@@ -55,6 +55,10 @@ t/data/1_1.fq
 t/data/1_2.fq
 t/data/2_1.fq
 t/data/3_2.fq
+t/data/coverage.bam
+t/data/coverage.bam.bai
+t/data/coverage_exons.bed
+t/data/coverage_exons.gff3
 t/data/data.file
 t/data/empty.bam
 t/data/empty.bam.bas
@@ -89,5 +93,6 @@ t/pcapBamStats.t
 t/pcapBwa.t
 t/pcapBwaMeta.t
 t/pcapCli.t
+t/pcapCoverageScript.t
 t/pcapSra.t
 t/pcapThreaded.t

@@ -11,7 +11,7 @@ use Pod::Usage qw(pod2usage);
 
 use Bio::DB::HTS;
 
-const my $GFF_TYPE => 'gff3';
+const my $GFF_TYPE => 'gff';
 const my $BED_TYPE => 'bed';
 const my @PERMITTED_TYPES => ($GFF_TYPE,$BED_TYPE);
 const my @depth_ranges => (0,1,11,21,31,41,51,101,201,501,100000000);
@@ -146,13 +146,13 @@ sub parse_gff{
   my ($file) =@_;
   my $FH;
   my $content;
-  open($FH, '<', $file) or croak("Error trying to open file to read targets from bed: $!");
+  open($FH, '<', $file) or croak("Error trying to open file to read targets from gff: $!");
     while(<$FH>){
       next if($_ =~ m/^\s*#/); #Skip comment lines
-      my ($contig,$src,$type,$start,$end,undef,undef,undef,undef) = split(/\t/,$_);
+      my ($contig,$src,$type,$start,$end,undef) = split("\t",$_);
       $content .= "$contig\t".($start-1)."\t$end\n"; #Adjust start to be in bed format.
     }
-  close($FH)  or croak("Error trying to close after reading targets from bed: $!");
+  close($FH)  or croak("Error trying to close after reading targets from gff: $!");
   return $content;
 }
 
