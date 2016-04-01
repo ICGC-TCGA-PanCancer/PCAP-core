@@ -53,6 +53,7 @@ my %opts;
   GetOptions(
   				'h|help' => \$opts{'h'},
 					'm|man' => \$opts{'m'},
+					'v|version' => \$opts{'v'},
 					'f|xam_file=s' => \$opts{'xam'},
 					'r|target_file=s' => \$opts{'target'},
 					'o|output_file=s' => \$opts{'out'},
@@ -61,6 +62,10 @@ my %opts;
 
 	pod2usage(-verbose => 1) if(defined $opts{'h'});
   pod2usage(-verbose => 2) if(defined $opts{'m'});
+  if(defined $opts{'v'}) {
+    print PCAP::Bam::Coverage->VERSION,"\n";
+    exit 0;
+  }
 
   pod2usage(-message => "Option 'f|xam_file' bam|cram file required.", -verbose => 0) if(!defined $opts{'xam'} || ! -e $opts{'xam'});
   pod2usage(-message => "Option 'r|target_file' target gff3|bed file required.", -verbose => 0) if(!defined $opts{'target'} || ! -e $opts{'xam'});
@@ -86,6 +91,7 @@ xam_coverage_bins.pl [options]
     -type                  -t    Type of target file provided [bed|gff3]
 
   Other:
+    -version               -v   Print version and exit.
     -help                  -h   Brief help message.
     -man                   -m   Full documentation.
 

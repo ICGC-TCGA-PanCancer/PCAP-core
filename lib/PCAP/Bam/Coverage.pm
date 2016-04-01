@@ -1,5 +1,7 @@
 package PCAP::Bam::Coverage;
 
+use PCAP;
+
 use strict;
 use warnings FATAL=>'all';
 use autodie;
@@ -110,9 +112,6 @@ sub parse_targets_file{
   }elsif($opts->{'type'} eq $BED_TYPE){
     $baits = parse_bed($opts->{'target'});
   }
-
-#use Data::Dumper;
-#warn Dumper($baits);
 
   my @segments;
   for my $seg(@{$baits}) {
