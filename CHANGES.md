@@ -1,3 +1,6 @@
+### 2.1.0
+* Adds `xam_coverage_bins.pl` which calculates fraction of targets covered at various depths (BAM/CRAM), using BED/GFF3 as target bait file.
+
 ### 2.0.0
 * bwa_mem.pl
     * allow user to specify BWA mapping parameters

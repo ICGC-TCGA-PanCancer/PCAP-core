@@ -31,6 +31,7 @@ INSTALL
 lib/PCAP.pm
 lib/PCAP/Bam.pm
 lib/PCAP/Bam/Bas.pm
+lib/PCAP/Bam/Coverage.pm
 lib/PCAP/Bam/Stats.pm
 lib/PCAP/BigWig.pm
 lib/PCAP/Bwa.pm
@@ -93,6 +94,6 @@ t/pcapBamStats.t
 t/pcapBwa.t
 t/pcapBwaMeta.t
 t/pcapCli.t
-t/pcapCoverageScript.t
+t/pcapCoverage.t
 t/pcapSra.t
 t/pcapThreaded.t
