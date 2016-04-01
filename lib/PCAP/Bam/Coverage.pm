@@ -106,22 +106,14 @@ sub build_final_bins {
 
 sub parse_targets_file{
   my ($opts) = @_;
-  my $baits;
   if($opts->{'type'} eq $GFF_TYPE){
-    $baits = parse_gff($opts->{'target'});
+    return parse_gff($opts->{'target'});
   }elsif($opts->{'type'} eq $BED_TYPE){
-    $baits = parse_bed($opts->{'target'});
+    return parse_bed($opts->{'target'});
   }
-
-  my @segments;
-  for my $seg(@{$baits}) {
-    my ($chr, $z_start, $o_end) = @{$seg};
-    croak "Start and end positions are the same, not bed format: $chr, $z_start, $o_end" if($z_start == $o_end);
-    croak "Start greater than end position, not bed format: $chr, $z_start, $o_end" if($z_start > $o_end);
-    push @segments, ["$chr", $z_start+1, $o_end+0]; # force data types
+  else {
+    croak "Invalid 'type' detected";
   }
-
-  return \@segments;
 }
 
 sub parse_bed{
@@ -133,7 +125,9 @@ sub parse_bed{
       next if($_ =~ m/^\s*#/); #Skip comment lines
       chomp $_;
       croak "File doesn't appear to be BED formatted: $_" unless($_ =~ m/^([^\t]+)\t([[:digit:]]+)\t([[:digit:]]+)/);
-      push @content, [$1, $2, $3];
+      my ($chr, $start, $end) = ($1, $2, $3);
+      croak "Start and end positions are the same, not bed format: $chr, $start, $end" if($start == $end);
+      push @content, [$chr, $start + 1, $end]; # need 1-based coords
     }
   close($FH)  or croak("Error trying to close after reading targets from bed: $!");
   return \@content;
@@ -148,10 +142,58 @@ sub parse_gff{
       next if($_ =~ m/^\s*#/); #Skip comment lines
       chomp $_;
       croak "File doesn't appear to be GFF3 formatted: $_" unless($_ =~ m/^([^\t]+)\t.+\t.+\t([[:digit:]]+)\t([[:digit:]]+)/);
-      push @content, [$1, $2-1, $3];
+      my ($chr, $start, $end) = ($1, $2, $3);
+      croak "Start greater than end position, not valid gff3: $chr, $start, $end" if($start > $end);
+      push @content, [$chr, $start, $end]; # need 1-based coords
     }
   close($FH)  or croak("Error trying to close after reading targets from bed: $!");
   return \@content;
 }
 
 1;
+
+__END__
+
+=head1 PCAP::Bam::Coverage
+
+Class to generate read depth information for targeted regions of a genome.
+
+=head2 METHODS
+
+=over 2
+
+=item new
+
+Constructs the coverage object.  Expects a hash of the following form for instantiation:
+
+ {'xam' => $bam_cram_filename,
+  'target' => $bed_gff3_filename,
+  'type' => $type_as_string }
+
+Where 'type' can be 'bed' or 'gff3'
+
+=item target_types
+
+Returns a list of valid types.
+
+=item build_depth
+
+Calculates the depth over each of the targets
+
+=item build_final_bins
+
+Condenses the per target data into fraction of targets covered at various depths
+
+=item parse_targets_file
+
+Abstracts reading of specific target file formats
+
+=item parse_bed
+
+Parses BED target file and returns coordinates in appropriate coorinate type for Bio::DB::HTS->features.
+
+=item parse_gff
+
+Parses GFF3 target file and returns coordinates in appropriate coorinate type for Bio::DB::HTS->features.
+
+=back

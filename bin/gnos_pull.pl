@@ -37,7 +37,6 @@ use File::Copy qw(move);
 use File::Fetch;
 use File::Path qw(make_path remove_tree);
 use File::Spec;
-use File::Which qw(which);
 use IO::File;
 use JSON qw(decode_json);
 use List::Util qw(first any);
@@ -116,7 +115,7 @@ sub load_config {
     $options->{'gtdownload'} .= ' -R '.$gtshare;
   }
   else {
-    $options->{'gtdownload'} = which('gtdownload');
+    $options->{'gtdownload'} = _which('gtdownload');
   }
   if($cfg->exists('GENERAL', 'gt_timeout_min')) {
     $options->{'gt_timeout'} = ' -k '.$cfg->val('GENERAL', 'gt_timeout_min');

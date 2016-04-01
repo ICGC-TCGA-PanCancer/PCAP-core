@@ -2,7 +2,7 @@ package PCAP::BigWig;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2016 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,13 +26,7 @@ use strict;
 use autodie qw(:all);
 use English qw( -no_match_vars );
 use warnings FATAL => 'all';
-use Const::Fast qw(const);
 use File::Spec;
-use File::Which qw(which);
-use FindBin qw($Bin);
-use Carp qw(croak);
-use List::Util qw(first);
-use File::Path qw(make_path);
 
 use PCAP::Threaded;
 
@@ -114,13 +108,28 @@ sub generateBw {
   PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
 }
 
-sub _which {
-  my $prog = shift;
-  my $l_bin = $Bin;
-  my $path = File::Spec->catfile($l_bin, $prog);
-  $path = which($prog) unless(-e $path);
-  die "Failed to find $prog in path or local bin folder ($l_bin)\n\tPATH: $ENV{PATH}\n" unless(defined $path && -e $path);
-  return $path;
-}
-
 1;
+
+__END__
+
+=head1 PCAP::BigWig
+
+Support module to generate BigWig coverage files from a BAM or CRAM file.
+
+=head2 METHODS
+
+=over 2
+
+=item bamToBw
+
+Generates BigWig files on a pre-chromosome basis to allow parallel (or short-recovery) processing.
+
+=item mergeBw
+
+Merges the full set of BigWig files into an intermediate BedGraph file
+
+=item generateBw
+
+Converts merged BedGraph to a full BigWig file.
+
+=back
