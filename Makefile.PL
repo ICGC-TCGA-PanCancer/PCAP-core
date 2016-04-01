@@ -37,7 +37,8 @@ WriteMakefile(
                         bin/monitor.pl
                         bin/xml_to_bas.pl
                         bin/bamToBw.pl
-                        bin/gnos_pull.pl )],
+                        bin/gnos_pull.pl
+                        bin/xam_coverage_bins.pl )],
   PREREQ_PM     => {
                      'Proc::PID::File' => 1.27,
                      'Module::Build' => 0.42,
