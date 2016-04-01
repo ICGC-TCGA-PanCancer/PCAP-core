@@ -27,11 +27,10 @@ use autodie qw(:all);
 use English qw( -no_match_vars );
 use warnings FATAL => 'all';
 use Const::Fast qw(const);
-use File::Path qw(remove_tree make_path);
+use File::Path qw(make_path);
 use File::Spec;
-use File::Which qw(which);
 use Capture::Tiny qw(capture);
-use File::Copy qw(copy move);
+use File::Copy qw(copy);
 
 use PCAP::Bwa::Meta;
 
@@ -56,7 +55,7 @@ sub bwa_mem_max_cores {
 }
 
 sub bwa_version {
-  my $bwa = which('bwa');
+  my $bwa = _which('bwa');
   my $version;
   {
     no autodie qw(system);
@@ -180,7 +179,7 @@ sub split_in {
     }
     # if bam|cram input
     else {
-      my $bam2fq = which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
+      my $bam2fq = _which('bamtofastq') || die "Unable to find 'bamtofastq' in path";
       $bam2fq .= sprintf $BAMFASTQ, File::Spec->catfile($tmp, "bamtofastq.$index"),
                                     $split_folder,
                                     $input->in,
@@ -239,7 +238,7 @@ sub bwa_mem {
     my $threads = $BWA_MEM_MAX_CORES;
     $threads = $options->{'threads'} if($options->{'threads'} < $BWA_MEM_MAX_CORES);
 
-    my $bwa = which('bwa') || die "Unable to find 'bwa' in path";
+    my $bwa = _which('bwa') || die "Unable to find 'bwa' in path";
 
     $ENV{SHELL} = '/bin/bash'; # ensure bash to allow pipefail
     my $command = 'set -o pipefail; ';
@@ -279,7 +278,7 @@ sub bwa_mem {
     $sorted_bam_stub =~ s/\\'/-/g;
 
     my $ref = exists $options->{'decomp_ref'} ? $options->{'decomp_ref'} : $options->{'reference'};
-    my $sort = which('bamsort') || die "Unable to find 'bamsort' in path\n";
+    my $sort = _which('bamsort') || die "Unable to find 'bamsort' in path\n";
     $sort .= sprintf $BAMSORT, File::Spec->catfile($tmp, "bamsort.$index"), $sorted_bam_stub, $helpers, $helpers, $ref;
 
     $command .= " | $sort";
@@ -310,7 +309,7 @@ sub bwa_aln {
       next if(PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $input_counter, $end));
       my $this_stub = $input->tstub;
 
-      my $command = which('bwa') || die "Unable to find 'bwa' in path";
+      my $command = _which('bwa') || die "Unable to find 'bwa' in path";
 
       # uncoverable branch true
       # uncoverable branch false
@@ -345,8 +344,8 @@ sub sampe {
   my $fastq = $input_meta->[$index-1]->fastq;
 
 
-  my $command = which('bwa') || die "Unable to find 'bwa' in path";;
-  my $bamsort = which('bamsort') || die "Unable to find 'bwa' in bamsort";;
+  my $command = _which('bwa') || die "Unable to find 'bwa' in path";;
+  my $bamsort = _which('bamsort') || die "Unable to find 'bwa' in bamsort";;
 
   # uncoverable branch true
   # uncoverable branch false

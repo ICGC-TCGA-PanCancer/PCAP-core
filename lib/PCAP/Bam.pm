@@ -28,13 +28,10 @@ use English qw( -no_match_vars );
 use warnings FATAL => 'all';
 use Const::Fast qw(const);
 use File::Spec;
-use File::Which qw(which);
-use FindBin qw($Bin);
 use Bio::DB::HTS;
 use Carp qw(croak);
 use List::Util qw(first);
 use Data::UUID;
-use File::Path qw(make_path);
 
 use PCAP::Threaded;
 
@@ -88,7 +85,7 @@ sub bam_to_grouped_bam {
   # uncoverable branch false
   return if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
   my $inputs = $options->{'meta_set'};
-  my $bamcollate =  which('bamcollate2') || die "Unable to find 'bamcollate2' in path";
+  my $bamcollate =  _which('bamcollate2') || die "Unable to find 'bamcollate2' in path";
   my $command = sprintf $BAMCOLLATE, $bamcollate, File::Spec->catfile($tmp, "collate.$index"), $inputs->[$index-1]->in, $inputs->[$index-1]->tstub.'.bam';
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, $index);
   return PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), $index);
@@ -109,7 +106,7 @@ sub merge_and_mark_dup {
   # uncoverable branch false
   my $command;
   if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
-    $command = which('bammerge') || die "Unable to find 'bammarkduplicates' in path";
+    $command = _which('bammerge') || die "Unable to find 'bammarkduplicates' in path";
     $command .= sprintf $BAMBAM_MERGE,  File::Spec->catfile($tmp, 'biormdup'),
                                         $marked,
                                         $marked,
@@ -117,7 +114,7 @@ sub merge_and_mark_dup {
   }
   else {
     my $met = "$marked.met";
-    $command = which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
+    $command = _which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
     $command .= sprintf $BAMBAM_DUP,  File::Spec->catfile($tmp, 'biormdup'),
                                       $marked,
                                       $met,
@@ -154,14 +151,6 @@ sub bam_stats {
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
   PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $bas;
-}
-
-sub _which {
-  my $prog = shift;
-  my $l_bin = $Bin;
-  my $path = File::Spec->catfile($l_bin, $prog);
-  $path = which($prog) unless(-e $path);
-  return $path;
 }
 
 sub sample_name {

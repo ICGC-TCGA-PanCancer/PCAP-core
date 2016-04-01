@@ -23,9 +23,11 @@ package PCAP;
 use strict;
 use Const::Fast qw(const);
 use base 'Exporter';
+use FindBin qw($Bin);
+use File::Which qw(which);
 
-our $VERSION = '2.0.1';
-our @EXPORT = qw($VERSION);
+our $VERSION = '2.1.0';
+our @EXPORT = qw($VERSION _which);
 
 const my $LICENSE =>
 "#################
@@ -71,6 +73,7 @@ const my %UPGRADE_PATH => ( # all earlier versions need full upgrade
                             '1.14.0'  => 'biobambam,samtools',
                             '2.0.0'  => 'biobambam',
                             '2.0.1' => '',
+                            '2.1.0' => '',
                           );
 
 sub license {
@@ -83,6 +86,15 @@ sub upgrade_path {
   chomp $installed_version;
   return $DEFAULT_PATH if(!exists $UPGRADE_PATH{$installed_version});
   return $UPGRADE_PATH{$installed_version};
+}
+
+sub _which {
+  my $prog = shift;
+  my $l_bin = $Bin;
+  my $path = File::Spec->catfile($l_bin, $prog);
+  $path = which($prog) unless(-e $path);
+  die "Failed to find $prog in path or local bin folder ($l_bin)\n\tPATH: $ENV{PATH}\n" unless(defined $path && -e $path);
+  return $path;
 }
 
 1;
