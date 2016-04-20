@@ -12,17 +12,19 @@ CC = gcc -O3 -DVERSION='"$(VERSION)"' -g
 CFLAGS = -Wall
 
 HTSLOC?=$(HTSLIB)
-
 HTSTMP?=./htslib_tmp
+prefix=?/usr/local/
 
 #Define locations of header files
 OPTINC?= -I$(HTSLOC)/
 INCLUDES= -I./ $(OPTINC) -rdynamic
+CAT_INCLUDES?= -I$(prefix)/include
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 LFLAGS?= -L$(HTSTMP)
+CAT_LFLAGS?= -L$(prefix)/lib
 
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
@@ -49,6 +51,7 @@ MD := mkdir
 
 #Build target executable
 BAM_STATS_TARGET=../bin/bam_stats
+CAT_TARGET=../bin/PCAPBigWigCat
 
 #
 # The following part of the makefile is generic; it can be used to
@@ -60,11 +63,14 @@ BAM_STATS_TARGET=../bin/bam_stats
 
 .NOTPARALLEL: test
 
-all: clean make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp
-	@echo  bam_stats compiled.
+all: clean make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp $(CAT_TARGET)
+	@echo  bam_stats and PCAPBigWigCat compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
+
+$(CAT_TARGET):
+	$(CC) $(CAT_INCLUDES) $(CFLAGS) ./PCAPBigWigCat.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit -o $(CAT_TARGET)
 
 #Unit Tests
 test: $(BAM_STATS_TARGET)
@@ -75,6 +81,9 @@ test: $(TESTS)
 #Unit tests with coverage
 coverage: CFLAGS += --coverage
 coverage: test
+
+make_bigwigcat: $(CAT_TARGET)
+	@echo $(CAT_TARGET) done
 
 make_htslib_tmp:
 	$(MD) $(HTSTMP)
@@ -87,7 +96,7 @@ remove_htslib_tmp:
 
 copyscript:
 	rsync -uE ./scripts/* ./bin/
-	chmod a+x ../bin/bam_stats
+	chmod a+x $(BAM_STATS_TARGET) $(CAT_TARGET)
 
 valgrind:
 	VALGRIND="valgrind --log-file=/tmp/valgrind-%p.log" $(MAKE)

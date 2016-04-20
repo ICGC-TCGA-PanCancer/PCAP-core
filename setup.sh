@@ -9,6 +9,7 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
 
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
+SOURCE_LIB_BW="https://github.com/dpryan79/libBigWig/archive/0.1.6.tar.gz"
 
 # for biobambam
 SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.35-release-20160330111451/biobambam2-2.0.35-release-20160330111451-x86_64-etch-linux-gnu.tar.gz"
@@ -137,6 +138,20 @@ else
 fi
 echo
 
+echo -n "Building libBigWig ..."
+if [ -e $SETUP_DIR/libBigWig.success ]; then
+  echo -n " previously installed ...";
+else
+  cd $SETUP_DIR
+  get_distro "libBigWig" $SOURCE_LIB_BW
+  mkdir -p libBigWig
+  tar --strip-components 1 -C libBigWig -zxf libBigWig.tar.gz
+  make -C libBigWig -j$CPU install prefix=$INST_PATH
+  rm -f $INST_PATH/lib/libBigWig.so
+  touch $SETUP_DIR/libBigWig.success
+fi
+echo
+
 export HTSLIB="$SETUP_DIR/htslib"
 
 echo -n "Building bam_stats ..."
@@ -145,8 +160,9 @@ if [ -e $SETUP_DIR/bam_stats.success ]; then
 else
   cd $INIT_DIR
   make -C c clean
-  make -C c -j$CPU
+  make -C c -j$CPU prefix=$INST_PATH
   cp bin/bam_stats $INST_PATH/bin/.
+  cp bin/PCAPBigWigCat $INST_PATH/bin/.
   touch $SETUP_DIR/bam_stats.success
   # need to clean up as will clash with other version
   rm -rf $SAMTOOLS
