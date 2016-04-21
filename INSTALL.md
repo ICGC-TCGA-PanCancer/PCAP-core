@@ -1,8 +1,18 @@
-#To install run:
-
+#Install:
 `./setup.sh /install/to/here`
 
 `'/install/to/here'` is where you want the bin/lib folders to be created.
+
+setup.sh will install
+- biobambam
+- bwa
+- samtools
+
+**NOTE:**
+
+bwa_aln.pl will only function when 0.6.x installed
+(you will need to make this available on path manually)
+bwa_mem.pl will only function when 0.7.x installed
 
 #Perl:
   Minimum version: 5.10.1
@@ -47,14 +57,3 @@ sudo make install && \
 cd .. && \
 rm -rf nettle nettle.tar.gz 
 ```
-
-setup.sh will install
-- biobambam
-- bwa
-- samtools
-
-**NOTE:** 
-bwa_aln.pl will only function when 0.6.x installed
-(you will need to make this available on path manually)
-bwa_mem.pl will only function when 0.7.x installed
-
