@@ -21,7 +21,7 @@ apt-get
 build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev libgd-dev nettle-dev
 ```
 
-##For CentOS (tested with 6.4)
+##For Amazon Linux AMI 2016.03.0 x86_64
 
 ```
 yum install
