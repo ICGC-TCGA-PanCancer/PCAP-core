@@ -36,7 +36,7 @@ apt-get clean
 ##For Amazon Linux AMI (2016.03.0 x86_64)
 ```
 yum -q -y update && 
-yum -q -y install \
+yum -y install \
 make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel 
 ```
 
