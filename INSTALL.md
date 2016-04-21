@@ -50,7 +50,7 @@ mkdir -p nettle
 tar --strip-components 1 -C nettle -zxf nettle.tar.gz
 cd nettle
 ./.bootstrap
-./configure && \
+./configure --disable-pic --disable-shared && \
 sudo make && \
 sudo make check && \
 sudo make install && \
