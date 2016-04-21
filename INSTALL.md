@@ -16,9 +16,10 @@
 
 
 ##For Ubuntu (tested with 14.04)
+```
 apt-get
 build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev libgd-dev nettle-dev
-
+```
 
 ##For CentOS (tested with 6.4)
 
@@ -27,7 +28,8 @@ yum install
 make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel
 ```
 
-*Should nettle-devel not exist*
+**Should nettle-devel not exist**
+Use the following
 
 ```
 yum install autoconf
