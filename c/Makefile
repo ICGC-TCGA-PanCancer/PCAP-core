@@ -51,7 +51,7 @@ MD := mkdir
 
 #Build target executable
 BAM_STATS_TARGET=../bin/bam_stats
-CAT_TARGET=../bin/PCAPBigWigCat
+CAT_TARGET=../bin/bwcat
 
 #
 # The following part of the makefile is generic; it can be used to
@@ -70,7 +70,7 @@ $(BAM_STATS_TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
 
 $(CAT_TARGET):
-	$(CC) $(CAT_INCLUDES) $(CFLAGS) ./PCAPBigWigCat.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit -o $(CAT_TARGET)
+	$(CC) $(CAT_INCLUDES) $(CFLAGS) ./bwcat.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit -o $(CAT_TARGET)
 
 #Unit Tests
 test: $(BAM_STATS_TARGET)
