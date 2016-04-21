@@ -43,13 +43,15 @@ cd nettle
 ./configure && \
 sudo make && \
 sudo make check && \
-sudo make install
+sudo make install && \
+cd .. && \
+rm -rf nettle nettle.tar.gz 
 ```
 
 setup.sh will install
--biobambam
--bwa
--samtools
+- biobambam
+- bwa
+- samtools
 
 **NOTE:** 
 bwa_aln.pl will only function when 0.6.x installed
