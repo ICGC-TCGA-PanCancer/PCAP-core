@@ -25,8 +25,8 @@ apt-get clean
 
 ##For Amazon Linux AMI (2016.03.0 x86_64)
 ```
-yum update && 
-yum -y install \
+yum -q -y update && 
+yum -q -y install \
 make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel 
 ```
 
@@ -34,7 +34,7 @@ make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-
 Use the following
 
 ```
-yum -y install autoconf
+yum -q -y install autoconf
 wget https://git.lysator.liu.se/nettle/nettle/repository/archive.tar.gz?ref=nettle_3.2_release_20160128 -O nettle.tar.gz
 mkdir -p nettle
 tar --strip-components 1 -C nettle -zxf nettle.tar.gz
