@@ -2,7 +2,7 @@
 
 `./setup.sh /install/to/here`
 
-'/install/to/here' is where you want the bin/lib folders to be created.
+`'/install/to/here'` is where you want the bin/lib folders to be created.
 
 #Perl:
   Minimum version: 5.10.1
@@ -17,22 +17,24 @@
 
 ##For Ubuntu (tested with 14.04)
 ```
-apt-get
-build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev libgd-dev nettle-dev
+apt-get update &&
+apt-get -y install \
+build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev libgd-dev nettle-dev &&\
+apt-get clean
 ```
 
-##For Amazon Linux AMI 2016.03.0 x86_64
-
+##For Amazon Linux AMI (2016.03.0 x86_64)
 ```
-yum install
-make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel
+yum update && 
+yum -y install \
+make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel 
 ```
 
 **Should nettle-devel not exist**
 Use the following
 
 ```
-yum install autoconf
+yum -y install autoconf
 wget https://git.lysator.liu.se/nettle/nettle/repository/archive.tar.gz?ref=nettle_3.2_release_20160128 -O nettle.tar.gz
 mkdir -p nettle
 tar --strip-components 1 -C nettle -zxf nettle.tar.gz
