@@ -1,6 +1,6 @@
 #To install run:
 
-  ./setup.sh /install/to/here
+`./setup.sh /install/to/here`
 
 '/install/to/here' is where you want the bin/lib folders to be created.
 
