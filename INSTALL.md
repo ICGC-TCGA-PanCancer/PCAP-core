@@ -27,7 +27,7 @@ bwa_mem.pl will only function when 0.7.x installed
 
 ##For Ubuntu (tested with 14.04)
 ```
-apt-get update &&
+apt-get update && \
 apt-get -y install \
 build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev libgd-dev nettle-dev &&\
 apt-get clean
@@ -35,9 +35,9 @@ apt-get clean
 
 ##For Amazon Linux AMI (2016.03.0 x86_64)
 ```
-yum -q -y update && 
+yum -q -y update && \
 yum -y install \
-make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel 
+make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel
 ```
 
 **Should nettle-devel not exist**
@@ -55,5 +55,5 @@ sudo make && \
 sudo make check && \
 sudo make install && \
 cd .. && \
-rm -rf nettle nettle.tar.gz 
+rm -rf nettle nettle.tar.gz
 ```
