@@ -129,6 +129,8 @@ rg_info_t **bam_access_parse_header(bam_hdr_t *head, int *grps_size, stats_rd_t 
     (*grp_stats)[j][0]->divergent= 0;
     (*grp_stats)[j][0]->mapped_bases= 0;
     (*grp_stats)[j][0]->proper= 0;
+    (*grp_stats)[j][0]->mapped_pairs= 0;
+    (*grp_stats)[j][0]->inter_chr_pairs= 0;
     (*grp_stats)[j][0]->inserts = kh_init(ins);
     (*grp_stats)[j][1] = (stats_rd_t *)malloc(sizeof(stats_rd_t));//Setup read two stats store
     check_mem((*grp_stats)[j][1]);
@@ -207,13 +209,9 @@ int bam_access_process_reads(htsFile *input, bam_hdr_t *head, rg_info_t **grps, 
       uint32_t nm_val = bam_aux2i(nm);
       if(nm_val>0){
         (*grp_stats)[rg_index][read]->divergent += nm_val;
-        (*grp_stats)[rg_index][read]->mapped_bases += bam_access_get_mapped_base_count_from_cigar(b);
-      }else{
-        (*grp_stats)[rg_index][read]->mapped_bases += (bam_endpos(b) - b->core.pos) + 1;
       }
-    }else{
-      (*grp_stats)[rg_index][read]->mapped_bases += bam_access_get_mapped_base_count_from_cigar(b);
     }
+    (*grp_stats)[rg_index][read]->mapped_bases += bam_access_get_mapped_base_count_from_cigar(b);
 
     // stats that only assess read 1
     if(b->core.flag & BAM_FREAD1) {

@@ -210,17 +210,11 @@ sub _process_reads {
     if(defined $nm) {
       if($nm > 0) {
         $rg_ref->{'total_divergent_bases_'.$read} += $nm;
-        my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
-        $rg_ref->{'total_mapped_bases_'.$read} += sum0 @increments;
-      }
-      else {
-        $rg_ref->{'total_mapped_bases_'.$read} += ($a->calend - $a->pos) + 1;
       }
     }
-    else {
-      my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
-      $rg_ref->{'total_mapped_bases_'.$read} += sum0 @increments;
-    }
+    my @increments = $a->cigar_str =~ m/([[:digit:]]+)[IMX=]/g;
+    $rg_ref->{'total_mapped_bases_'.$read} += sum0 @increments;
+
     # calculate mapped seq from cigar
 
     # stats that only assess read 1
