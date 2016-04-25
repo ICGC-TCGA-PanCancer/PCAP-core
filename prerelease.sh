@@ -20,15 +20,26 @@ fi
 # change into the location of the script
 cd $MY_PATH
 
-echo '### Running perl tests ###'
+echo -e '\n### Compile/Test C ###\n'
+set +u
+if [ "x$HTSLIB" == "x" ]; then
+  echo -e '\n\t$HTSLIB not defined skipping C compile/test\n'
+else
+  make -C c clean
+  make -C c
+  make -C c clean
+fi
+set -u
+
+echo -e '\n\n### Running perl tests ###\n'
 
 export HARNESS_PERL_SWITCHES=-MDevel::Cover=-db,reports,-select='^lib/*\.pm$',-ignore,'^t/'
 rm -rf reports docs pm_to_blib blib
 cover -delete
 mkdir -p docs/reports_text
 prove -w -I ./lib
-echo
-echo '### Generating test/pod coverage reports ###'
+
+echo -e '\n\n### Generating test/pod coverage reports ###\n'
 # removed 'condition' from coverage as '||' 'or' doesn't work properly
 cover -coverage branch,subroutine,pod -report_c0 50 -report_c1 85 -report_c2 100 -report html_basic reports -silent
 cover -coverage branch,subroutine,pod -report text reports -silent > docs/reports_text/coverage.txt
