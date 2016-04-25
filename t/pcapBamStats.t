@@ -121,9 +121,9 @@ subtest 'Object funcions' => sub {
   subtest 'calc_frac_' => sub {
     my $test_obj = _create_test_object();
 
-    is(sprintf('%.4f',$test_obj->calc_frac_properly_paired()),'0.6154','calc_frac_properly_paired');
-    is(sprintf('%.4f',$test_obj->calc_frac_unmapped()),'0.2727','calc_frac_unmapped');
-    is(sprintf('%.4f',$test_obj->calc_frac_duplicate_reads()),'0.1818','calc_frac_duplicate_reads');
+    is(sprintf('%.4f',$test_obj->calc_frac_properly_paired()),'0.6429','calc_frac_properly_paired');
+    is(sprintf('%.4f',$test_obj->calc_frac_unmapped()),'0.2500','calc_frac_unmapped');
+    is(sprintf('%.4f',$test_obj->calc_frac_duplicate_reads()),'0.1667','calc_frac_duplicate_reads');
   };
 
   subtest 'med_insert_size' => sub {
@@ -135,21 +135,21 @@ subtest 'Object funcions' => sub {
   subtest 'mean_insert_size' => sub {
     my $test_obj = _create_test_object();
 
-    is(sprintf('%.4f',$test_obj->mean_insert_size()),'171.8750','mean_insert_size');
+    is(sprintf('%.4f',$test_obj->mean_insert_size()),'262.8889','mean_insert_size');
   };
 
   subtest 'properly_mapped_ratio' => sub {
     my $test_obj = _create_test_object();
-    is(sprintf('%.4f',$test_obj->properly_mapped_ratio()),'0.6154','properly_mapped_ratio');
+    is(sprintf('%.4f',$test_obj->properly_mapped_ratio()),'0.6429','properly_mapped_ratio');
   };
 
   subtest '_count_' => sub {
     my $test_obj = _create_test_object();
 
-    is($test_obj->count_total_reads(1),13,'count_total_reads read1');
-    is($test_obj->count_total_reads(2),9,'count_total_reads read2');
+    is($test_obj->count_total_reads(1),14,'count_total_reads read1');
+    is($test_obj->count_total_reads(2),10,'count_total_reads read2');
 
-    is($test_obj->count_properly_paired(),8,'count_properly_paired');
+    is($test_obj->count_properly_paired(),9,'count_properly_paired');
 
     is($test_obj->count_unmapped(1),3,'count_unmapped read1');
     is($test_obj->count_unmapped(2),3,'count_unmapped read2');
@@ -157,17 +157,17 @@ subtest 'Object funcions' => sub {
     is($test_obj->count_duplicate_reads(1),4,'count_duplicate_reads read1');
     is($test_obj->count_duplicate_reads(2),0,'count_duplicate_reads read2');
 
-    is($test_obj->count_total_mapped_bases(1),195,'count_total_mapped_bases read1');
-    is($test_obj->count_total_mapped_bases(2),117,'count_total_mapped_bases read2');
+    is($test_obj->count_total_mapped_bases(1),270,'count_total_mapped_bases read1');
+    is($test_obj->count_total_mapped_bases(2),192,'count_total_mapped_bases read2');
 
-    is($test_obj->count_total_divergent_bases(1),41,'count_total_divergent_bases read1');
+    is($test_obj->count_total_divergent_bases(1),42,'count_total_divergent_bases read1');
     is($test_obj->count_total_divergent_bases(2),30,'count_total_divergent_bases read2');
   };
 
   subtest 'cal_insert_size_sd' => sub {
      my $test_obj = _create_test_object();
 
-    is(sprintf('%.4f',$test_obj->cal_insert_size_sd()),'111.4096','cal_insert_size_sd');
+    is(sprintf('%.4f',$test_obj->cal_insert_size_sd()),'278.0310','cal_insert_size_sd');
   };
 
 };
@@ -285,3 +285,7 @@ IL29_5086:6:35:17751:10873	129	1	9993	0	20M	=	9993	-100	CTCTTCCGATCTTTAGGGTT	;?;
 # non-proper, inter-chr
 IL29_5086:6:35:17751:10874	65	1	9993	0	20M	X	9993	0	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29979
 IL29_5086:6:35:17751:10874	129	X	9993	0	20M	1	9993	0	CTCTTCCGATCTTTAGGGTT	;?;??>>>>F<BBDEBEEFF	RG:Z:29979
+
+## Checks that mapped bases don't get corrupt when padding values are introduced, normally RNA issue:
+HS20_13617:3:1315:4901:63745	163	1	12670	255	52M761N23M	=	13586	991	GACGACGGCCGACTTGGATCACACTCTTGTGAGTGTCCCCAGTGTTGCAGAGGCAGCTGCACCACTGCCTGGCGC	CCCFFFFFHHHHHJJJJJJJJJJJJJJJIGIHJDHGIJJJIJGHIIIJHHHHFFFFDEEEDDDDDDDDDDDDDDB	NH:i:1	HI:i:1	NM:i:0	MD:Z:75	AS:i:146	XS:A:+	RG:Z:29978
+HS20_13617:3:1315:4901:63745	83	1	13586	255	75M	=	12670	-991	ACCCAGGAGAGTGTGGAGTCCAGAGTGATGCCAGGACCCAGGCACAGGCATTAGTGCCCGTTGGAGAAAACAGGG	EFFFFFHHHHHJIJJJJIJIJJJJJJJIJJIJJJHHIJJJJIGGIJJJJJJJJJJJJJJJJJHHHHHFFFFFCCC	NH:i:1	HI:i:1	NM:i:1	MD:Z:27T47	AS:i:146	XS:A:+	RG:Z:29978

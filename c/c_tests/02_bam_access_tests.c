@@ -63,31 +63,31 @@ char *exp_platform_unit_2 = "5085_6";
 uint32_t exp_rd_length = 20;
 uint64_t exp_rg1_rd1_tot_count = 7;
 uint64_t exp_rg1_rd2_tot_count = 3;
-uint64_t exp_rg2_rd1_tot_count = 3;
-uint64_t exp_rg2_rd2_tot_count = 3;
+uint64_t exp_rg2_rd1_tot_count = 4;
+uint64_t exp_rg2_rd2_tot_count = 4;
 uint64_t exp_rg1_rd1_dups = 4;
 uint64_t exp_rg1_rd2_dups = 0;
 uint64_t exp_rg2_rd1_dups = 0;
 uint64_t exp_rg2_rd2_dups = 0;
 uint64_t exp_rg1_rd1_gc = 63;
 uint64_t exp_rg1_rd2_gc = 27;
-uint64_t exp_rg2_rd1_gc = 27;
-uint64_t exp_rg2_rd2_gc = 27;
+uint64_t exp_rg2_rd1_gc = 71;
+uint64_t exp_rg2_rd2_gc = 74;
 uint64_t exp_rg1_rd1_umap = 1;
 uint64_t exp_rg1_rd2_umap = 1;
 uint64_t exp_rg2_rd1_umap = 2;
 uint64_t exp_rg2_rd2_umap = 2;
 uint64_t exp_rg1_rd1_divergent = 30;
 uint64_t exp_rg1_rd2_divergent = 18;
-uint64_t exp_rg2_rd1_divergent = 11;
+uint64_t exp_rg2_rd1_divergent = 12;
 uint64_t exp_rg2_rd2_divergent = 12;
 uint64_t exp_rg1_rd1_mapped_bases = 115;
 uint64_t exp_rg1_rd2_mapped_bases = 37;
-uint64_t exp_rg2_rd1_mapped_bases = 20;
-uint64_t exp_rg2_rd2_mapped_bases = 20;
+uint64_t exp_rg2_rd1_mapped_bases = 95;
+uint64_t exp_rg2_rd2_mapped_bases = 95;
 uint64_t exp_rg1_rd1_proper = 6;
 uint64_t exp_rg1_rd2_proper = 0;
-uint64_t exp_rg2_rd1_proper = 1;
+uint64_t exp_rg2_rd1_proper = 2;
 uint64_t exp_rg2_rd2_proper = 0;
 
 char err[100];
@@ -338,22 +338,22 @@ char *test_bam_access_process_reads_rna(){ // rna flag in this method includes s
   }
   //Duplicate reads 1
   if(grp_stats[1][0]->dups!=exp_rg2_rd1_dups){
-    sprintf(err,"RG 1, read_1 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_dups,grp_stats[1][0]->dups);
+    sprintf(err,"RG 2, read_1 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_dups,grp_stats[1][0]->dups);
     return err;
   }
   //Duplicate reads 2
   if(grp_stats[1][1]->dups!=exp_rg2_rd2_dups){
-    sprintf(err,"RG 1, read_2 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_dups,grp_stats[1][1]->dups);
+    sprintf(err,"RG 2, read_2 duplicate count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_dups,grp_stats[1][1]->dups);
     return err;
   }
   //GC 1
   if(grp_stats[1][0]->gc!=exp_rg2_rd1_gc){
-    sprintf(err,"RG 1, read_1 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_gc,grp_stats[1][0]->gc);
+    sprintf(err,"RG 2, read_1 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd1_gc,grp_stats[1][0]->gc);
     return err;
   }
   //GC 2
   if(grp_stats[1][1]->gc!=exp_rg2_rd2_gc){
-    sprintf(err,"RG 1, read_2 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_gc,grp_stats[1][1]->gc);
+    sprintf(err,"RG 2, read_2 gc count incorrect. Expected %"PRIu64" but got %"PRIu64"\n",exp_rg2_rd2_gc,grp_stats[1][1]->gc);
     return err;
   }
   //Unmapped 1
