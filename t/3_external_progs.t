@@ -13,9 +13,9 @@ use Data::Dumper;
 use version 0.77;
 
 const my @REQUIRED_PROGRAMS => qw(bamcollate2 bammarkduplicates2 bamsort bwa samtools);
-const my $BIOBAMBAM2_VERSION => '2.0.33';
+const my $BIOBAMBAM2_VERSION => '2.0.40';
 const my $BWA_VERSION => '0.7.12';
-const my $SAMTOOLS_VERSION => '1.3';
+const my $SAMTOOLS_VERSION => '1.3.1';
 
 # can't put regex in const
 my %EXPECTED_VERSION = (
