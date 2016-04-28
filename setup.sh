@@ -2,16 +2,16 @@
 
 SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.12.tar.gz"
 
-SOURCE_SAMTOOLS="https://github.com/samtools/samtools/releases/download/1.3/samtools-1.3.tar.bz2"
+SOURCE_SAMTOOLS="https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2"
 
 # for bamstats
-SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.2.1.tar.gz"
+SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.3.1.tar.gz"
 
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 
 # for biobambam
-SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.35-release-20160330111451/biobambam2-2.0.35-release-20160330111451-x86_64-etch-linux-gnu.tar.gz"
+SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.40-release-20160425112514/biobambam2-2.0.40-release-20160425112514-x86_64-etch-linux-gnu.tar.gz"
 
 BIODBHTS_INSTALL="https://raw.githubusercontent.com/Ensembl/Bio-HTS/master/INSTALL.pl"
 
@@ -50,7 +50,14 @@ fi
 
 set -e
 
-CPU=`cat /proc/cpuinfo | egrep "^processor" | wc -l`
+CPU=`grep -c ^processor /proc/cpuinfo`
+if [ $? -eq 0 ]; then
+  if [ "$CPU" -gt "6" ]; then
+    CPU=6
+  fi
+else
+  CPU=1
+fi
 echo "Max compilation CPUs set to $CPU"
 
 INST_PATH=$1
@@ -175,22 +182,21 @@ fi
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
   echo -n "Building biobambam ..."
   if [ -e $SETUP_DIR/biobambam.success ]; then
-    echo -n " previously installed ..."
+    echo " previously installed ..."
   else
-      cd $SETUP_DIR
-      get_distro "biobambam" $SOURCE_BBB_BIN_DIST
-      mkdir -p biobambam
-      tar --strip-components 1 -C biobambam -zxf biobambam.tar.gz
-      mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
-      rm -f biobambam/bin/curl # don't let this file in SSL doesn't work
-      cp -r biobambam/bin/* $INST_PATH/bin/.
-      cp -r biobambam/etc/* $INST_PATH/etc/.
-      cp -r biobambam/lib/* $INST_PATH/lib/.
-      cp -r biobambam/share/* $INST_PATH/share/.
-      touch $SETUP_DIR/biobambam.success
+    cd $SETUP_DIR
+    get_distro "biobambam" $SOURCE_BBB_BIN_DIST
+    mkdir -p biobambam
+    tar --strip-components 1 -C biobambam -zxf biobambam.tar.gz
+    mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
+    rm -f biobambam/bin/curl # don't let this file in SSL doesn't work
+    cp -r biobambam/bin/* $INST_PATH/bin/.
+    cp -r biobambam/etc/* $INST_PATH/etc/.
+    cp -r biobambam/lib/* $INST_PATH/lib/.
+    cp -r biobambam/share/* $INST_PATH/share/.
+    touch $SETUP_DIR/biobambam.success
+    echo
   fi
-  export PERL5LIB="$PERLROOT"
-  echo
 else
   echo "biobambam - No change between PCAP versions"
 fi
