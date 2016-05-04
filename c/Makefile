@@ -95,7 +95,7 @@ remove_htslib_tmp:
 	-rm -rf $(HTSTMP)
 
 copyscript:
-	rsync -uE ./scripts/* ./bin/
+	cp ./scripts/* ./bin/
 	chmod a+x $(BAM_STATS_TARGET) $(CAT_TARGET)
 
 valgrind:
