@@ -64,7 +64,7 @@ CAT_TARGET=../bin/bwcat
 .NOTPARALLEL: test
 
 all: clean make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp $(CAT_TARGET)
-	@echo  bam_stats and PCAPBigWigCat compiled.
+	@echo  bam_stats and bwcat compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
