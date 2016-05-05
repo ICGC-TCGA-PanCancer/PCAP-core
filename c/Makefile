@@ -12,19 +12,22 @@ CC = gcc -O3 -DVERSION='"$(VERSION)"' -g
 CFLAGS = -Wall
 
 HTSLOC?=$(HTSLIB)
+LIBBIGWIGLOC?=$(LIBBIGWIG)
 HTSTMP?=./htslib_tmp
 prefix=?/usr/local/
 
 #Define locations of header files
 OPTINC?= -I$(HTSLOC)/
 INCLUDES= -I./ $(OPTINC) -rdynamic
-CAT_INCLUDES?= -I$(prefix)/include
+CAT_OPTINC?= -I$(LIBBIGWIGLOC)/include
+CAT_INCLUDES?= -I$(prefix)/include $(CAT_OPTINC)
+
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 LFLAGS?= -L$(HTSTMP)
-CAT_LFLAGS?= -L$(prefix)/lib
+CAT_LFLAGS?= -L$(prefix)/lib -L$(LIBBIGWIGLOC)/lib
 
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname

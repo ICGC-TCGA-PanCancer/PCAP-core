@@ -20,15 +20,15 @@ fi
 # change into the location of the script
 cd $MY_PATH
 
-#echo -e '\n### Compile/Test C ###\n'
-#set +u
-#if [ "x$HTSLIB" == "x" ]; then
-#  echo -e '\n\t$HTSLIB not defined skipping C compile/test\n'
-#else
-#  make -C c clean
-#  make -C c
-#  make -C c clean
-#fi
+echo -e '\n### Compile/Test C ###\n'
+set +u
+if [ "x$HTSLIB" == "x" ] || [ "x$LIBBIGWIG" == "x" ]; then
+  echo -e '\n\t$HTSLIB or $LIBBIGWIG not defined skipping C compile/test\n'
+else
+  make -C c clean
+  make -C c
+  make -C c clean
+fi
 set -u
 
 echo -e '\n\n### Running perl tests ###\n'
