@@ -118,7 +118,7 @@ char **parse_contig_list(char *contigs){
     ign_count++;
     tag = strtok(NULL,",");
   }
-  ignore_list = malloc(sizeof(char *) * count);
+  ignore_list = malloc(sizeof(char *) * ign_count);
   char *tmp;
   char *tg = strtok(contigs,",");
   int idx=0;
@@ -131,7 +131,7 @@ char **parse_contig_list(char *contigs){
   return ignore_list;
 }
 
-int check_ignore(const char **ignore_list, const int ign_size, const char *contig){
+int check_ignore(char **ignore_list, int ign_size, char *contig){
   int i=0;
   for(i=0;i<ign_size;i++){
     if(strcmp(ignore_list[i],contig)==0) return 1;
