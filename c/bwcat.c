@@ -119,7 +119,6 @@ char **parse_contig_list(char *contigs){
     tag = strtok(NULL,",");
   }
   ignore_list = malloc(sizeof(char *) * ign_count);
-  char *tmp;
   char *tg = strtok(contigs,",");
   int idx=0;
   while(tg != NULL){
