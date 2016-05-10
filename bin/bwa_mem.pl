@@ -118,6 +118,11 @@ sub setup {
   PCAP::Cli::file_for_reading('reference', $opts{'reference'});
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
 
+  $opts{'dict'} = $opts{'reference'}.'.dict';
+  unless(-r $opts{'dict'}) {
+    die "ERROR: Please generate $opts{dict}, e.g.\n\t\$ samtools dict -a \$ASSEMBLY -s \$SPECIES $opts{reference} > $opts{dict}\n";
+  }
+
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
   delete $opts{'bwa'} unless(defined $opts{'bwa'});

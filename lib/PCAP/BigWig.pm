@@ -81,7 +81,7 @@ sub mergeBw {
   }
 
   my $bedGraph = File::Spec->catfile($options->{'tmp'}, 'merged.bedGraph');
-  my $command = _which('bigWigMerge').q{ };
+  my $command = _which('bigWigMerge').q{ -threshold=-0.1 };
   $command .= join q{ }, @files;
   $command .= q{ }.$bedGraph;
 

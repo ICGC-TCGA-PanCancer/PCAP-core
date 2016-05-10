@@ -9,6 +9,8 @@
 char *out_file = "concatenated.bw";
 char *fai = NULL;
 char *path = NULL;
+char *contig_input = NULL;
+int ign_count = 0;
 
 int check_exist(char *fname){
 	FILE *fp;
@@ -28,7 +30,8 @@ void print_usage (int exit_code){
 	printf("Usage: bigWigCat -f genome.fai -o output.bw\n\n");
 	printf("-p  --input-path [dir]                           Path to the input bigwig files named [path]/<contig_name>.bw\n");
 	printf("-f  --fasta-index [file]                         Fasta index file (.fai)\n");
-	printf("-o  --outfile [file]                             Path to the output .bw file produced. [default:'%s']\n\n",out_file);
+	printf("-o  --outfile [file]                             Path to the output .bw file produced. [default:'%s']\n",out_file);
+	printf("-g  --ignore-contigs [comma separated list]      Comma separated list of contigs to ignore.\n\n");
   printf ("Other:\n");
 	printf ("-h --help      Display this usage information.\n");
 	printf ("-v --version   Prints the version number.\n\n");
@@ -58,6 +61,7 @@ void setup_options(int argc, char *argv[]){
              	{"input-path", required_argument, 0, 'p'},
              	{"fasta-index", required_argument, 0, 'f'},
              	{"outfile",required_argument,0,'o'},
+             	{"ignore-contigs",required_argument,0,'g'},
              	{"help", no_argument, 0, 'h'},
              	{"version", no_argument, 0, 'v'},
              	{ NULL, 0, NULL, 0}
@@ -67,7 +71,7 @@ void setup_options(int argc, char *argv[]){
    int iarg = 0;
 
    //Iterate through options
-   while((iarg = getopt_long(argc, argv, "f:o:p:hv",long_opts, &index)) != -1){
+   while((iarg = getopt_long(argc, argv, "f:o:g:p:hv",long_opts, &index)) != -1){
     switch(iarg){
       case 'p':
         path = optarg;
@@ -84,6 +88,9 @@ void setup_options(int argc, char *argv[]){
 			case 'v':
 				print_version (0);
 				break;
+			case 'g':
+			  contig_input = optarg;
+			  break;
 			case '?':
         print_usage (1);
         break;
@@ -93,15 +100,48 @@ void setup_options(int argc, char *argv[]){
 
    }//End of iteration through options
 
-     //Do some checking to ensure required arguments were passed and are accessible files
+  //Do some checking to ensure required arguments were passed and are accessible files
   if(check_exist(fai) != 1){
     fprintf(stderr,"Fasta index (.fai) file %s does not appear to exist.\n",fai);
     print_usage(1);
   }
 }
 
+char **parse_contig_list(char *contigs){
+  if(contigs == NULL) return NULL;
+  char **ignore_list = NULL;
+  char *copy = malloc(sizeof(char) * strlen(contigs)+1);
+  strcpy(copy,contigs);
+  char *tag = strtok(copy,",");
+  ign_count=0;
+  while(tag != NULL){
+    ign_count++;
+    tag = strtok(NULL,",");
+  }
+  ignore_list = malloc(sizeof(char *) * ign_count);
+  char *tg = strtok(contigs,",");
+  int idx=0;
+  while(tg != NULL){
+    ignore_list[idx] = malloc(sizeof(char) * strlen(tg)+1);
+    strcpy(ignore_list[idx],tg);
+    idx++;
+    tg = strtok(NULL,",");
+  }
+  return ignore_list;
+}
+
+int check_ignore(char **ignore_list, int ign_size, char *contig){
+  int i=0;
+  for(i=0;i<ign_size;i++){
+    if(strcmp(ignore_list[i],contig)==0) return 1;
+  }
+  return 0;
+}
+
 int main(int argc, char *argv[]){
   setup_options(argc, argv);
+
+  char **ignore = parse_contig_list(contig_input);
   //Open file as a bw file
   bigWigFile_t *bw_in = NULL;
   bwOverlappingIntervals_t *intervals = NULL;
@@ -188,6 +228,8 @@ int main(int argc, char *argv[]){
 
   int j=0;
   for(j=0;j<chromList->nKeys;j++){//Iterate through each contig and access file.
+
+    if(ignore != NULL && check_ignore(ignore,ign_count,chromList->chrom[j])) continue;
     //Open file as a bw file
     bw_in = NULL;
     //Initialize enough space to hold 128KiB (1<<17) of data at a time

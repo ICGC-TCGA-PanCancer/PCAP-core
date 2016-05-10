@@ -11,20 +11,33 @@ CC = gcc -O3 -DVERSION='"$(VERSION)"' -g
 # -Wall turns on most warnings from compiler
 CFLAGS = -Wall
 
+
 HTSLOC?=$(HTSLIB)
+
+#if test -z "$$LIBBIGWIG"
+#LIBBIGWIGLOC?=$(LIBBIGWIG)
+#echo "*******DEFINED"
+#endif
+
 HTSTMP?=./htslib_tmp
 prefix=?/usr/local/
 
 #Define locations of header files
 OPTINC?= -I$(HTSLOC)/
 INCLUDES= -I./ $(OPTINC) -rdynamic
-CAT_INCLUDES?= -I$(prefix)/include
+
+ifdef LIBBIGWIG
+CAT_INCLUDES= -I$(LIBBIGWIG)
+CAT_LFLAGS= -L$(LIBBIGWIG)
+endif
+
+CAT_INCLUDES+= -I$(prefix)/include
+CAT_LFLAGS+= -L$(prefix)/lib
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
 LFLAGS?= -L$(HTSTMP)
-CAT_LFLAGS?= -L$(prefix)/lib
 
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
@@ -52,6 +65,7 @@ MD := mkdir
 #Build target executable
 BAM_STATS_TARGET=../bin/bam_stats
 CAT_TARGET=../bin/bwcat
+SQ_TARGET=../bin/reheadSQ
 
 #
 # The following part of the makefile is generic; it can be used to
@@ -59,18 +73,22 @@ CAT_TARGET=../bin/bwcat
 # deleting dependencies appended to the file from 'make depend'
 #
 
-.PHONY: depend clean test make_htslib_tmp remove_htslib_tmp
+.PHONY: depend clean test make_htslib_tmp remove_htslib_tmp pre
 
 .NOTPARALLEL: test
 
-all: clean make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp $(CAT_TARGET)
-	@echo  bam_stats and bwcat compiled.
+all: clean pre make_htslib_tmp $(BAM_STATS_TARGET) test remove_htslib_tmp $(CAT_TARGET) $(SQ_TARGET)
+	@echo  bam_stats, reheadSQ and bwcat compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
 
 $(CAT_TARGET):
 	$(CC) $(CAT_INCLUDES) $(CFLAGS) ./bwcat.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit -o $(CAT_TARGET)
+
+$(SQ_TARGET):
+	$(CC) $(CFLAGS) ./reheadSQ.c -o $(SQ_TARGET)
+
 
 #Unit Tests
 test: $(BAM_STATS_TARGET)
@@ -96,7 +114,7 @@ remove_htslib_tmp:
 
 copyscript:
 	cp ./scripts/* ./bin/
-	chmod a+x $(BAM_STATS_TARGET) $(CAT_TARGET)
+	chmod a+x $(BAM_STATS_TARGET) $(CAT_TARGET) $(SQ_TARGET)
 
 valgrind:
 	VALGRIND="valgrind --log-file=/tmp/valgrind-%p.log" $(MAKE)
@@ -111,9 +129,8 @@ valgrind:
 
 clean:
 	@echo clean
-	$(RM) ./*.o *~ $(BAM_STATS_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
+	$(RM) ./*.o *~ $(BAM_STATS_TARGET) $(SQ_TARGET) $(CAT_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
 	-rm -rf $(HTSTMP)
-
 
 depend: $(SRCS)
 	makedepend $(INCLUDES) $^

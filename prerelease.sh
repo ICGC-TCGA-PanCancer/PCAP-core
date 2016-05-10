@@ -22,8 +22,8 @@ cd $MY_PATH
 
 echo -e '\n### Compile/Test C ###\n'
 set +u
-if [ "x$HTSLIB" == "x" ]; then
-  echo -e '\n\t$HTSLIB not defined skipping C compile/test\n'
+if [ "x$HTSLIB" == "x" ] || [ "x$LIBBIGWIG" == "x" ]; then
+  echo -e '\n\t$HTSLIB or $LIBBIGWIG not defined skipping C compile/test\n'
 else
   make -C c clean
   make -C c
