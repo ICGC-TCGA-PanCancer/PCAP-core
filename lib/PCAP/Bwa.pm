@@ -268,6 +268,10 @@ sub bwa_mem {
     }
     $command .= $bwa;
 
+    # now add the code for reheadSQ
+    my $rehead_sq = sprintf '%s -d %s', _which('reheadSQ'), $options->{'dict'};
+    $command .= ' | '.$rehead_sq;
+
     my $helpers = 1;
     # uncoverable branch true
     # uncoverable branch false
