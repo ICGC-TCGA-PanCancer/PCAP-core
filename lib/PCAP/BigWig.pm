@@ -67,44 +67,18 @@ sub bamToBw {
   }
 }
 
-sub mergeBw {
-  my $options = shift;
-
-  my $tmp = $options->{'tmp'};
-  return 1 if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
-
-  my @files;
-  opendir(my $dh, $options->{'tmp'});
-  while(readdir $dh) {
-    next if($_ =~ m/^[.]/);
-    push @files, $_ if($_ =~ m/[.]bw$/);
-  }
-
-  my $bedGraph = File::Spec->catfile($options->{'tmp'}, 'merged.bedGraph');
-  my $command = "cd $options->{tmp}; ";
-  $command .= _which('bigWigMerge').q{ -threshold=-0.1 };
-  for (@files) {
-    $command .= qq{ '$_'}; # handle daft characters like *
-  }
-  $command .= q{ }.$bedGraph;
-
-  PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
-
-  PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
-}
-
 sub generateBw {
   my $options = shift;
 
   my $tmp = $options->{'tmp'};
   return 1 if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
 
-  my $bedGraph = File::Spec->catfile($options->{'tmp'}, 'merged.bedGraph');
+  my $outfile = File::Spec->catfile($options->{'outdir'}, $options->{'sample'}.'.bw');
 
-  my $outfile = File::Spec->catfile($options->{'outdir'}, 'merged.bw');
-  my $command = _which('wigToBigWig');
-  $command .= ' '.$bedGraph.' '.$options->{'reference'}.'.fai '.$outfile;
-  #wigToBigWig /var/tmp/kr2/bwTest/X.bedGraph /var/tmp/kr2/bwTest/X.bedGraph /var/tmp/kr2/bwTest/new.bw
+  my $command = sprintf '%s -p %s -f %s -o %s', _which('bwcat'),
+                                                $options->{'tmp'},
+                                                $options->{'reference'}.'.fai',
+                                                $outfile;
 
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
 

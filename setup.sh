@@ -117,13 +117,7 @@ else
   if [[ `uname -m` == x86_64 ]] ; then
     get_file $INST_PATH/bin/wigToBigWig $SOURCE_JKENT_BIN/wigToBigWig
     chmod +x $INST_PATH/bin/wigToBigWig
-    get_file $INST_PATH/bin/bigWigMerge $SOURCE_JKENT_BIN/bigWigMerge
-    chmod +x $INST_PATH/bin/bigWigMerge
   else
-    if [ ! -e $INST_DIR/bin/bigWigMerge ]; then
-      echo "Binaries only available for x86_64, please install bigWigMerge from kentUtils: https://github.com/ENCODE-DCC/kentUtils"
-      exit 1
-    fi
     if [ ! -e $INST_DIR/bin/wigToBigWig ]; then
       echo "Binaries only available for x86_64, please install wigToBigWig from kentUtils: https://github.com/ENCODE-DCC/kentUtils"
       exit 1
