@@ -41,7 +41,6 @@ use version;
 
 const my @VALID_PROCESS => qw(bamToBw mergeBw generateBw);
 const my %INDEX_FACTOR => ( 'bamToBw' => -1,
-                            'mergeBw' => 1,
                             'generateBw' => 1,
                             );
 
@@ -55,8 +54,6 @@ const my %INDEX_FACTOR => ( 'bamToBw' => -1,
 	$threads->add_function('bamToBw', \&PCAP::BigWig::bamToBw);
 
 	$threads->run(scalar @{$options->{'sequences'}}, 'bamToBw', $options) if(!exists $options->{'process'} || $options->{'process'} eq 'bamToBw');
-
-	PCAP::BigWig::mergeBw($options) if(!exists $options->{'process'} || $options->{'process'} eq 'mergeBw');
 
   if(!exists $options->{'process'} || $options->{'process'} eq 'generateBw') {
     PCAP::BigWig::generateBw($options);
@@ -114,6 +111,8 @@ sub setup {
   $opts{'threads'} = 1 unless(defined $opts{'threads'});
 
   my $bam = PCAP::Bam->new($opts{'bam'});
+
+  ($opts{'sample'}, undef) = PCAP::Bam::sample_name($opts{'bam'}, 1);
 
   my $tmpdir = File::Spec->catdir($opts{'outdir'}, 'tmpBigWig');
   make_path($tmpdir) unless(-d $tmpdir);
@@ -186,7 +185,6 @@ bamToBw.pl [options] [file(s)...]
     bamToBw.pl -b in.bam -o out.bw -p bamToBw -i 1..X
      # X can be determined with 'bamToBw.pl -b in.bam -o out.bw -j'
      # once all above steps completed
-    bamToBw.pl -b in.bam -o out.bw -p mergeBw -i 1
     bamToBw.pl -b in.bam -o out.bw -p generateBw -i 1
 
 
