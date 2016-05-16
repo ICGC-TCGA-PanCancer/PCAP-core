@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <string.h>
 #include <libgen.h>
+#include <regex.h>
 #include "bigWig.h"
 
 char *out_file = "concatenated.bw";
@@ -107,7 +108,29 @@ void setup_options(int argc, char *argv[]){
   }
 }
 
-char **parse_contig_list(char *contigs){
+char *build_regex_string(char *input){
+  char *new = NULL;
+  new = malloc(sizeof(char) * (strlen(input) + 50));
+  int m=0;
+  new[0] = '^';
+  int pos = 1;
+  for(m=0;m<strlen(input);m++){
+    if(input[m]=='%'){
+     new[pos]='.';
+     pos++;
+     new[pos]='*';
+    }else{
+      new[pos]=input[m];
+    }
+    pos++;
+  }
+  new[pos] = '$';
+  pos++;
+  new[pos] = '\0';
+  return new;
+}
+
+char **parse_contig_list(char *contigs, char **chrNames, int noChrs){
   if(contigs == NULL) return NULL;
   char **ignore_list = NULL;
   char *copy = malloc(sizeof(char) * strlen(contigs)+1);
@@ -115,16 +138,52 @@ char **parse_contig_list(char *contigs){
   char *tag = strtok(copy,",");
   ign_count=0;
   while(tag != NULL){
-    ign_count++;
+    if(strchr(tag,'%')){
+      char *reg = build_regex_string(tag);
+      regex_t regex;
+      int reti = regcomp(&regex, reg, 0);
+      if (reti) {
+          fprintf(stderr, "Could not compile regex %s\n",reg);
+          exit(1);
+      }
+      int k=0;
+      for(k=0;k<noChrs;k++){
+        reti = regexec(&regex, chrNames[k], 0, NULL, 0);
+        if (!reti){
+          ign_count++;
+        }
+      }
+    }else{
+      ign_count++;
+    }
     tag = strtok(NULL,",");
   }
   ignore_list = malloc(sizeof(char *) * ign_count);
   char *tg = strtok(contigs,",");
   int idx=0;
   while(tg != NULL){
-    ignore_list[idx] = malloc(sizeof(char) * strlen(tg)+1);
-    strcpy(ignore_list[idx],tg);
-    idx++;
+    if(strchr(tg,'%')){
+      char *reg = build_regex_string(tg);
+      regex_t regex;
+      int reti = regcomp(&regex, reg, 0);
+      if (reti) {
+          fprintf(stderr, "Could not compile regex %s\n",reg);
+          exit(1);
+      }
+      int k=0;
+      for(k=0;k<noChrs;k++){
+        reti = regexec(&regex, chrNames[k], 0, NULL, 0);
+        if (!reti){
+          ignore_list[idx] = malloc(sizeof(char) * strlen(chrNames[k])+1);
+          strcpy(ignore_list[idx],chrNames[k]);
+          idx++;
+        }
+      }
+    }else{
+      ignore_list[idx] = malloc(sizeof(char) * strlen(tg)+1);
+      strcpy(ignore_list[idx],tg);
+      idx++;
+    }
     tg = strtok(NULL,",");
   }
   return ignore_list;
@@ -141,7 +200,7 @@ int check_ignore(char **ignore_list, int ign_size, char *contig){
 int main(int argc, char *argv[]){
   setup_options(argc, argv);
 
-  char **ignore = parse_contig_list(contig_input);
+  char **ignore = NULL;
   //Open file as a bw file
   bigWigFile_t *bw_in = NULL;
   bwOverlappingIntervals_t *intervals = NULL;
@@ -219,6 +278,8 @@ int main(int argc, char *argv[]){
   //Close input file
   fclose(idx);
 
+  ignore = parse_contig_list(contig_input,chromList->chrom,chromList->nKeys);
+
   //Open output file
   bw_out = bwOpen(out_file, NULL, "w");
   if(!bw_out) {
@@ -227,9 +288,12 @@ int main(int argc, char *argv[]){
   }
 
   int j=0;
+  int first=1;
   for(j=0;j<chromList->nKeys;j++){//Iterate through each contig and access file.
 
-    if(ignore != NULL && check_ignore(ignore,ign_count,chromList->chrom[j])) continue;
+    if(ignore != NULL && check_ignore(ignore,ign_count,chromList->chrom[j])){
+      continue;
+    }
     //Open file as a bw file
     bw_in = NULL;
     //Initialize enough space to hold 128KiB (1<<17) of data at a time
@@ -247,8 +311,8 @@ int main(int argc, char *argv[]){
       goto error;
     }
 
-    //Write the header if this is the first file.
-    if(j==0){
+    //Write the header to file
+    if(first==1){
       if(bwCreateHdr(bw_out, bw_in->hdr->nLevels)){
         fprintf(stderr,"Error creating header for output bw file");
         goto error;
@@ -262,6 +326,7 @@ int main(int argc, char *argv[]){
         fprintf(stderr,"Error writing header to file\n");
         goto error;
       }
+      first=0;
     }
 
     intervals = NULL;
