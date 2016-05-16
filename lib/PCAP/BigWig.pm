@@ -43,23 +43,23 @@ sub bamToBw {
   for my $seq(@seqs) {
     next if($iter++ != $index); # skip to the relevant input in the list
 
-    my $outfile = File::Spec->catfile($options->{'tmp'}, $seq.'.bw');
+    my $outfile = q{'}.File::Spec->catfile($options->{'tmp'}, $seq.'.bw').q{'};
 
-    my $command = q{bash -c 'set pipefail; };
+    my $command = q{bash -c "set pipefail; };
     if($options->{'bam'} =~ m/\.bam$/) {
       $command .= _which('bam2bedgraph');
-      $command .= q{ }.$options->{'bam'}.q{ }.$seq;
+      $command .= q{ }.$options->{'bam'}.q{ '}.$seq.q{'};
     }
     else {
       $command .= _which('samtools');
       $command .= q{ view -T }.$options->{'reference'};
-      $command .= q{ -ub }.$options->{'bam'}.q{ }.$seq;
+      $command .= q{ -ub }.$options->{'bam'}.q{ '}.$seq.q{'};
       $command .= ' | '._which('bam2bedgraph').' - ';
     }
     $command .= ' | ';
     $command .= _which('wigToBigWig');
     $command .= ' -fixedSummaries -keepAllChromosomes stdin '.$options->{'reference'}.'.fai '.$outfile;
-    $command .= q{'};
+    $command .= q{"};
 
     PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, $index);
 
@@ -77,12 +77,15 @@ sub mergeBw {
   opendir(my $dh, $options->{'tmp'});
   while(readdir $dh) {
     next if($_ =~ m/^[.]/);
-    push @files, File::Spec->catfile($options->{'tmp'}, $_) if($_ =~ m/[.]bw$/);
+    push @files, $_ if($_ =~ m/[.]bw$/);
   }
 
   my $bedGraph = File::Spec->catfile($options->{'tmp'}, 'merged.bedGraph');
-  my $command = _which('bigWigMerge').q{ -threshold=-0.1 };
-  $command .= join q{ }, @files;
+  my $command = "cd $options->{tmp}; ";
+  $command .= _which('bigWigMerge').q{ -threshold=-0.1 };
+  for (@files) {
+    $command .= qq{ '$_'}; # handle daft characters like *
+  }
   $command .= q{ }.$bedGraph;
 
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
