@@ -43,23 +43,23 @@ sub bamToBw {
   for my $seq(@seqs) {
     next if($iter++ != $index); # skip to the relevant input in the list
 
-    my $outfile = File::Spec->catfile($options->{'tmp'}, $seq.'.bw');
+    my $outfile = q{'}.File::Spec->catfile($options->{'tmp'}, $seq.'.bw').q{'};
 
-    my $command = q{bash -c 'set pipefail; };
+    my $command = q{bash -c "set pipefail; };
     if($options->{'bam'} =~ m/\.bam$/) {
       $command .= _which('bam2bedgraph');
-      $command .= q{ }.$options->{'bam'}.q{ }.$seq;
+      $command .= q{ }.$options->{'bam'}.q{ '}.$seq.q{'};
     }
     else {
       $command .= _which('samtools');
       $command .= q{ view -T }.$options->{'reference'};
-      $command .= q{ -ub }.$options->{'bam'}.q{ }.$seq;
+      $command .= q{ -ub }.$options->{'bam'}.q{ '}.$seq.q{'};
       $command .= ' | '._which('bam2bedgraph').' - ';
     }
     $command .= ' | ';
     $command .= _which('wigToBigWig');
     $command .= ' -fixedSummaries -keepAllChromosomes stdin '.$options->{'reference'}.'.fai '.$outfile;
-    $command .= q{'};
+    $command .= q{"};
 
     PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, $index);
 
