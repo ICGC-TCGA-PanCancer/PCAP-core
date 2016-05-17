@@ -39,7 +39,7 @@ use PCAP::BigWig;
 use PCAP::Threaded;
 use version;
 
-const my @VALID_PROCESS => qw(bamToBw mergeBw generateBw);
+const my @VALID_PROCESS => qw(bamToBw generateBw);
 const my %INDEX_FACTOR => ( 'bamToBw' => -1,
                             'generateBw' => 1,
                             );
@@ -166,9 +166,8 @@ bamToBw.pl [options] [file(s)...]
 
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index
-                      bwamem - only applicable if input is bam
-                        mark - Run duplicate marking (-index N/A)
-                       stats - Generates the *.bas file for the final BAM.
+                         bamToBw - Per chromosome BigWigs
+                      generateBw - Generates merged BigWig
 
     -index     -i   Optionally restrict '-p' to single job
                       bwamem - 1..<lane_count>
