@@ -4,7 +4,7 @@
 #include <errno.h>
 #include <string.h>
 
-#define BUF_SIZE 4096
+#define BUF_SIZE 8192
 
 char *dict = NULL;
 char **dict_name;
@@ -161,26 +161,34 @@ int main (int argc, char* argv[]){
 
   read_dict_file(dict);
 
-  char *line = malloc(BUF_SIZE * sizeof(char));
-  while(gets(line)){
+  //Read from stdin and write to stdout
+  char *line = NULL;
+  ssize_t read;
+  size_t linelen = 0;
+
+  while((read = getline(&line,&linelen,stdin)) != -1){
     if(strncmp(line, "@", 1) == 0){//If we're matching a header
       if(strncmp(line, "@SQ" ,3)==0){//Code to replace/append to SQ lines here @SQ
         char *nom = get_contig_name_fromSQ_line(line);
         char *new = get_dict_sq_line_by_name(nom);
         fprintf(stdout,"%s",new);
+        fflush(stdout);
         free(nom);
       }else{//Not a SQ header
-        puts(line);
+        fprintf(stdout,"%s",line);
       }
     }else{ // We're no longer matching a header
-      puts(line);
+      fprintf(stdout,"%s",line);
       break;
     }//End of checking for a header
   }
-  while(gets(line)){
-    puts(line);
+  //Another loop, this time we know we're past the SQ headers so it goes straight to stdout.
+  while((read = getline(&line,&linelen,stdin)) != -1){
+    fprintf(stdout,"%s",line);
   }
+  fflush(stdout);
   free(line);
+
   int j=0;
   for(j=0;j<dict_entries;j++){
     free(dict_name[j]);
