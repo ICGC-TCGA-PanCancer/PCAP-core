@@ -3,6 +3,7 @@ bin/bam_to_sra_sub.pl
 bin/bamToBw.pl
 bin/bwa_aln.pl
 bin/bwa_mem.pl
+bin/detectExtremeDepth.pl
 bin/diff_bams.pl
 bin/gnos_pull.pl
 bin/monitor.pl
