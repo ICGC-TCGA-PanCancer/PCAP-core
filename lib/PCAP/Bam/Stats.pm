@@ -31,11 +31,17 @@ use Const::Fast qw( const );
 use Try::Tiny;
 use File::Basename;
 
-use Math::Gradient;
 use List::Util qw(sum sum0 first);
 use Bio::DB::HTS;
-use GD::Image;
 use JSON;
+
+my $plots_available = 0;
+eval {
+  require Math::Gradient;
+  require GD::Image;
+  $plots_available = 1;
+  1;
+};
 
 const my $PAIRED     => 1; # not needed
 const my $PROPER     => 2;
@@ -75,7 +81,11 @@ sub init{
 
   my $path = $args{-path};
   my $sam;
-  my $q_scoring = $args{-qscoring};
+  my $q_scoring = $args{-qscoring} ? 1 : 0;
+  if($q_scoring && $plots_available == 0) {
+    $q_scoring = 0;
+    warn "WARN: quality plots have been disabled as Math::Gradient and GD::Image were not found\n";
+  }
 
   unless ($sam && ref $sam eq 'Bio::DB::HTS'){
     $sam = Bio::DB::HTS->new(-bam => $path);
@@ -89,10 +99,10 @@ sub init{
   }
 
   my $groups = _parse_header($sam);
-  _process_reads($groups,$sam,$q_scoring, $mod, $rem) unless(defined $args{-no_proc});
   $self->{_file_path} = $path;
-  $self->{_qualiy_scoring} = $q_scoring ? 1 : 0;
+  $self->{_qualiy_scoring} = $q_scoring;
   $self->{_groups} = $groups;
+  _process_reads($groups,$sam,$q_scoring, $mod, $rem) unless(defined $args{-no_proc});
 }
 
 sub merge_json_stats {
@@ -147,7 +157,6 @@ sub _parse_header {
 
 sub _process_reads {
   my ($groups, $sam, $qualiy_scoring, $mod, $rem) = @_;
-
   my $bam = $sam->hts_file;
   my $header = $bam->header_read;
   my $processed_x = 0;
@@ -675,8 +684,13 @@ sub fqplots {
     for my $rg(keys %{$groups}) {
       for my $read(1..2) {
         my $plot_vals = $groups->{$rg}->{'fqp_'.$read};
-        down_pop_quals($plot_vals); # adds mem bloat as undef values are all filled
-        fastq2image($output_dir_path, $plot_vals, $rg, $read, $groups->{$rg}->{'length_'.$read}, $groups->{$rg}->{'count_'.$read});
+        if($plot_vals) {
+          down_pop_quals($plot_vals); # adds mem bloat as undef values are all filled
+          fastq2image($output_dir_path, $plot_vals, $rg, $read, $groups->{$rg}->{'length_'.$read}, $groups->{$rg}->{'count_'.$read});
+        }
+        elsif($rg ne q{.}) {
+          warn "WARN: No plot_vals found for RG '$rg'\n";
+        }
         delete $groups->{$rg}->{'fqp_'.$read};
       }
     }
@@ -754,7 +768,7 @@ sub fastq2image {
     my $value;
     while (scalar @{$values}) {
       if ($cycle_count == 1 && ($quality == 1 || ($quality > 1 && $quality % 5 == 0))) {
-        $im->string(GD::gdSmallFont, 25, $y1-5, $quality, $black);
+        $im->string(GD::Font->Small, 25, $y1-5, $quality, $black);
       }
       $y2 = $y1 + $shift;
       $im->filledRectangle($x1,$y1,$x2,$y2, $colours->{int ((pop @{$values}) / $read_pct)});
@@ -763,7 +777,7 @@ sub fastq2image {
     }
 
     if ($cycle_count == 1 || $cycle_count % 5 == 0) {
-      $im->string(GD::gdSmallFont, $x1, $y1+5, $cycle_count, $black);
+      $im->string(GD::Font->Small, $x1, $y1+5, $cycle_count, $black);
     }
     $x1 = $x2;
   }
@@ -775,9 +789,9 @@ sub fastq2image {
 
   my $start_xaxis_label = (int $num_cycles*$shift/2) - 40;
   if ($start_xaxis_label < 0) { $start_xaxis_label = 0; }
-  $im->string(GD::gdSmallFont, $start_xaxis_label, $y1+20, $xaxis_label, $black);
+  $im->string(GD::Font->Small, $start_xaxis_label, $y1+20, $xaxis_label, $black);
 
-  $im->stringUp(GD::gdSmallFont, 5, $height/2, q[Quality], $black);
+  $im->stringUp(GD::Font->Small, 5, $height/2, q[Quality], $black);
 
   open my $PNG, '>', $out_file;
   binmode($PNG);

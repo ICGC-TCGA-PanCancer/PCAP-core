@@ -9,6 +9,9 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.3.1.tar.gz"
 
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
+# for Bio::DB::BigWig
+SOURCE_KENTSRC="http://hgdownload.cse.ucsc.edu/admin/jksrc.zip"
+# for fast merging of per-chr BW files
 SOURCE_LIB_BW="https://github.com/dpryan79/libBigWig/archive/0.1.6.tar.gz"
 
 # for biobambam
@@ -191,21 +194,21 @@ else
 fi
 
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
-  echo -n "Building biobambam ..."
-  if [ -e $SETUP_DIR/biobambam.success ]; then
-    echo " previously installed ..."
+  echo -n "Building biobambam2 ..."
+  if [ -e $SETUP_DIR/biobambam2.success ]; then
+    echo " previously installed2 ..."
   else
     cd $SETUP_DIR
-    get_distro "biobambam" $SOURCE_BBB_BIN_DIST
-    mkdir -p biobambam
-    tar --strip-components 1 -C biobambam -zxf biobambam.tar.gz
+    get_distro "biobambam2" $SOURCE_BBB_BIN_DIST
+    mkdir -p biobambam2
+    tar --strip-components 1 -C biobambam2 -zxf biobambam2.tar.gz
     mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
-    rm -f biobambam/bin/curl # don't let this file in SSL doesn't work
-    cp -r biobambam/bin/* $INST_PATH/bin/.
-    cp -r biobambam/etc/* $INST_PATH/etc/.
-    cp -r biobambam/lib/* $INST_PATH/lib/.
-    cp -r biobambam/share/* $INST_PATH/share/.
-    touch $SETUP_DIR/biobambam.success
+    rm -f biobambam2/bin/curl # don't let this file in SSL doesn't work
+    cp -r biobambam2/bin/* $INST_PATH/bin/.
+    cp -r biobambam2/etc/* $INST_PATH/etc/.
+    cp -r biobambam2/lib/* $INST_PATH/lib/.
+    cp -r biobambam2/share/* $INST_PATH/share/.
+    touch $SETUP_DIR/biobambam2.success
     echo
   fi
 else
@@ -239,7 +242,7 @@ cd $INIT_DIR
 if [[ ",$COMPILE," == *,samtools,* ]] ; then
   echo -n "Building Bio::DB::HTS ..."
   if [ -e $SETUP_DIR/biohts.success ]; then
-    echo -n " previously installed ...";
+    echo " previously installed ...";
   else
     cd $SETUP_DIR
     $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH Module::Build Bio::Root::Version
@@ -252,6 +255,23 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
   echo
 else
   echo "Bio::DB::HTS - No change between PCAP versions" # based on samtools tag
+fi
+
+echo -n "Building kentsrc + Bio::DB::BigFile ..."
+if [ -e $SETUP_DIR/kentsrc.success ]; then
+  echo " previously installed ...";
+else
+  cd $SETUP_DIR
+  get_distro "kentsrc" $SOURCE_KENTSRC
+  unzip -q kentsrc.zip
+  perl -pi -e 's/(\s+CFLAGS=)$/${1}-fPIC/' kent/src/inc/common.mk
+  cd kent/src/lib
+  export MACHTYPE=i686    # for a 64-bit system
+  make
+  cd ../
+  export KENT_SRC=`pwd`
+  cd $SETUP_DIR
+  $CPANM --mirror http://cpan.metacpan.org -l $INST_PATH Bio::DB::BigFile
 fi
 
 cd $INIT_DIR

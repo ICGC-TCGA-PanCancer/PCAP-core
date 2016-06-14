@@ -2,7 +2,7 @@
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2016 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ WriteMakefile(
                         bin/bwa_aln.pl
                         bin/bwa_mem.pl
                         bin/bam_stats.pl
+                        bin/detectExtremeDepth.pl
                         bin/diff_bams.pl
                         bin/monitor.pl
                         bin/xml_to_bas.pl
@@ -55,8 +56,6 @@ WriteMakefile(
                      'Proc::ProcessTable' => 0.50,
                      'Data::UUID' => 1.219,
                      'Test::Fatal' => 0.013,
-                     'GD' => 2.52,
-                     'Math::Gradient' => 0.04,
                      'Devel::Cover' => 1.09,
                      'Pod::Coverage' => 0.23,
                      'Term::UI' => 0.42, # currently in core but scheduled for removal 5.17, no alternative recommended
