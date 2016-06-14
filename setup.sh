@@ -194,21 +194,21 @@ else
 fi
 
 if [[ ",$COMPILE," == *,biobambam,* ]] ; then
-  echo -n "Building biobambam ..."
-  if [ -e $SETUP_DIR/biobambam.success ]; then
-    echo " previously installed ..."
+  echo -n "Building biobambam2 ..."
+  if [ -e $SETUP_DIR/biobambam2.success ]; then
+    echo " previously installed2 ..."
   else
     cd $SETUP_DIR
-    get_distro "biobambam" $SOURCE_BBB_BIN_DIST
-    mkdir -p biobambam
-    tar --strip-components 1 -C biobambam -zxf biobambam.tar.gz
+    get_distro "biobambam2" $SOURCE_BBB_BIN_DIST
+    mkdir -p biobambam2
+    tar --strip-components 1 -C biobambam2 -zxf biobambam2.tar.gz
     mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
-    rm -f biobambam/bin/curl # don't let this file in SSL doesn't work
-    cp -r biobambam/bin/* $INST_PATH/bin/.
-    cp -r biobambam/etc/* $INST_PATH/etc/.
-    cp -r biobambam/lib/* $INST_PATH/lib/.
-    cp -r biobambam/share/* $INST_PATH/share/.
-    touch $SETUP_DIR/biobambam.success
+    rm -f biobambam2/bin/curl # don't let this file in SSL doesn't work
+    cp -r biobambam2/bin/* $INST_PATH/bin/.
+    cp -r biobambam2/etc/* $INST_PATH/etc/.
+    cp -r biobambam2/lib/* $INST_PATH/lib/.
+    cp -r biobambam2/share/* $INST_PATH/share/.
+    touch $SETUP_DIR/biobambam2.success
     echo
   fi
 else

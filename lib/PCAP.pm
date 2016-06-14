@@ -80,6 +80,7 @@ const my %UPGRADE_PATH => ( # all earlier versions need full upgrade
                             '2.2.1' => '',
                             '2.3.0' => '',
                             '2.4.0' => '',
+                            '2.5.0' => '',
                           );
 
 sub license {
