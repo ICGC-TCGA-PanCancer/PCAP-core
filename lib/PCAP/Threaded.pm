@@ -206,6 +206,8 @@ sub external_process_handler {
       system("$script 1> $out 2> $err");
     }
     catch { die $_; };
+
+    unlink $script; # only leave scripts if we fail
   }
 
   return 1;
