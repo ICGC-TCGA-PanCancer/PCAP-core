@@ -221,7 +221,7 @@ sub _create_script {
     print $SH qq{/usr/bin/time $c\n};
   }
   close $SH;
-  chmod '0755', $script;
+  chmod "0777", $script;
   return $script;
 }
 
