@@ -194,6 +194,7 @@ sub external_process_handler {
   }
   else {
     my $caller = (caller(1))[3];
+    $caller =~ s/::/_/g;
     my $suffix = join q{.}, @indexes;
 
     my $script = _create_script(\@commands, File::Spec->catfile($tmp, "$caller.$suffix"));
@@ -202,7 +203,7 @@ sub external_process_handler {
     my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
     try {
-      system("(bash $script > $out) >& $err");
+      system("$script 1> $out 2> $err");
     }
     catch { die $_; };
   }
@@ -215,11 +216,12 @@ sub _create_script {
 
   my $script = "$stub.sh";
   open my $SH, '>', $script or die "Cannot create $script: $!\n";
-  print $SH qq{set -eux\n};
+  print $SH qq{#!/bin/bash\nset -eux\n};
   for my $c(@{$commands}) {
     print $SH qq{/usr/bin/time $c\n};
   }
   close $SH;
+  chmod '0755', $script;
   return $script;
 }
 
