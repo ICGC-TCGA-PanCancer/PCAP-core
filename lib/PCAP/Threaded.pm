@@ -195,35 +195,32 @@ sub external_process_handler {
   else {
     my $caller = (caller(1))[3];
     my $suffix = join q{.}, @indexes;
+
+    my $script = _create_script(\@commands, File::Spec->catfile($tmp, "$caller.$suffix"));
+
     my $out = File::Spec->catfile($tmp, "$caller.$suffix.out");
     my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
-    my $out_fh = IO::File->new($out, "w+");
-    my $err_fh = IO::File->new($err, "w+");
     try {
-      for my $c(@commands) {
-        print $err_fh "\nErrors from command: $c\n\n";
-        print $out_fh "\nOutput from command: $c\n\n";
-        capture { system($c); } stdout => $out_fh, stderr => $err_fh;
-      }
-    } catch {
-      die $_ if($_);
+      system("(bash $script > $out) >& $err");
     }
-    finally {
-      if($out_fh) {
-        $out_fh->flush;
-        $out_fh->close;
-        undef $out_fh;
-      }
-      if($err_fh) {
-        $err_fh->flush;
-        $err_fh->close;
-        undef $err_fh;
-      }
-    };
+    catch { die $_; };
   }
 
   return 1;
+}
+
+sub _create_script {
+  my ($commands, $stub) = @_;
+
+  my $script = "$stub.sh";
+  open my $SH, '>', $script or die "Cannot create $script: $!\n";
+  print $SH qq{set -eux\n};
+  for my $c(@{$commands}) {
+    print $SH qq{/usr/bin/time $c\n};
+  }
+  close $SH;
+  return $script;
 }
 
 1;
