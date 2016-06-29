@@ -153,6 +153,7 @@ sub _suitable_threads {
 sub success_exists {
   my ($tmp, @indexes) = @_;
   my ($type) = (caller(1))[3];
+  $type =~ s/::/_/g;
   my $file = join '.', $type, @indexes;
   my $path = File::Spec->catfile($tmp, $file);
   if(-e $path) {
@@ -165,6 +166,7 @@ sub success_exists {
 sub touch_success {
   my ($tmp, @indexes) = @_;
   my ($type) = (caller(1))[3];
+  $type =~ s/::/_/g;
   make_path($tmp) unless(-d $tmp);
   my $file = join '.', $type, @indexes;
   my $path = File::Spec->catfile($tmp, $file);
