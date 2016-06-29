@@ -33,7 +33,7 @@ use File::Path qw(make_path);
 use Try::Tiny qw(try catch finally);
 use Capture::Tiny qw(capture);
 use IO::File;
-use Const:Fast qw(const);
+use Const::Fast qw(const);
 
 BEGIN {
   if($Config{useithreads}) { use threads; }
