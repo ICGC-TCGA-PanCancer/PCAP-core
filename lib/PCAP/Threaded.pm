@@ -39,7 +39,7 @@ BEGIN {
   if($Config{useithreads}) { use threads; }
 };
 
-const my $SCRIPT_OCT_MODE = 0777;
+const my $SCRIPT_OCT_MODE => 0777;
 
 our $OUT_ERR = 1;
 
