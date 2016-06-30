@@ -208,7 +208,7 @@ sub external_process_handler {
     my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
     try {
-      system("$script 1> $out 2> $err");
+      system("/usr/bin/time $script 1> $out 2> $err");
     }
     catch { die $_; };
 
@@ -224,9 +224,8 @@ sub _create_script {
   my $script = "$stub.sh";
   open my $SH, '>', $script or die "Cannot create $script: $!\n";
   print $SH qq{#!/bin/bash\nset -eux\n};
-  for my $c(@{$commands}) {
-    print $SH qq{/usr/bin/time $c\n};
-  }
+  print $SH join qq{\n}, @{$commands};
+  print $SH qq{\n};
   close $SH;
   chmod $SCRIPT_OCT_MODE, $script;
   return $script;
