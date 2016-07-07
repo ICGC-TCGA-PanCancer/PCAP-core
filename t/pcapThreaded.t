@@ -77,7 +77,7 @@ subtest 'completion utility checks' => sub {
   is(PCAP::Threaded::success_exists($dir, 1), 0, 'No success file');
   ok(PCAP::Threaded::touch_success($dir, 1), 'No success file');
   is(PCAP::Threaded::success_exists($dir, 1), 1, 'Success file present');
-  ok(PCAP::Threaded::external_process_handler($dir, 'ls', [1]), 'External process executes');
+  ok(PCAP::Threaded::external_process_handler($dir, 'ls', 1), 'External process executes');
 };
 
 subtest 'thread divisor checks' => sub {
