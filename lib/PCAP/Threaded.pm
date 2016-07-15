@@ -152,13 +152,18 @@ sub _suitable_threads {
 
 sub success_exists {
   my ($tmp, @indexes) = @_;
-  my ($type) = (caller(1))[3];
-  $type =~ s/::/_/g;
-  my $file = join '.', $type, @indexes;
-  my $path = File::Spec->catfile($tmp, $file);
-  if(-e $path) {
-    warn "Skipping $file as previously successful\n";
-    return 1;
+  my ($legacy_type) = (caller(1))[3];
+  my $new_type = $legacy_type;
+  $new_type =~ s/::/_/g;
+
+  my $suffix = join '.', @indexes;
+  for my $type($new_type, $legacy_type) { # we should test the new file name style first
+    my $file = $type.'.'.$suffix;
+    my $path = File::Spec->catfile($tmp, $file);
+    if(-e $path) {
+      warn "Skipping $file as previously successful\n";
+      return 1;
+    }
   }
   return 0;
 }
@@ -167,6 +172,17 @@ sub touch_success {
   my ($tmp, @indexes) = @_;
   my ($type) = (caller(1))[3];
   $type =~ s/::/_/g;
+  make_path($tmp) unless(-d $tmp);
+  my $file = join '.', $type, @indexes;
+  my $path = File::Spec->catfile($tmp, $file);
+  open my $TOUCH, '>', $path;
+  close $TOUCH;
+  return 1;
+}
+
+sub _legacy_touch_success {
+  my ($tmp, @indexes) = @_;
+  my ($type) = (caller(1))[3];
   make_path($tmp) unless(-d $tmp);
   my $file = join '.', $type, @indexes;
   my $path = File::Spec->catfile($tmp, $file);
