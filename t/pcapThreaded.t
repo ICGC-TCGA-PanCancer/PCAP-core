@@ -75,9 +75,22 @@ subtest 'completion utility checks' => sub {
   local $SIG{__WARN__}=sub{};
   my $dir = tempdir( CLEANUP => 1 );
   is(PCAP::Threaded::success_exists($dir, 1), 0, 'No success file');
-  ok(PCAP::Threaded::touch_success($dir, 1), 'No success file');
+  ok(PCAP::Threaded::touch_success($dir, 1), 'Create success file');
   is(PCAP::Threaded::success_exists($dir, 1), 1, 'Success file present');
-  ok(PCAP::Threaded::external_process_handler($dir, 'ls', [1]), 'External process executes');
+};
+
+# test we can handle legacy exists files
+subtest 'completion utility checks (legacy)' => sub {
+  local $SIG{__WARN__}=sub{};
+  my $dir = tempdir( CLEANUP => 1 );
+  is(PCAP::Threaded::success_exists($dir, 1), 0, 'No success file');
+  ok(PCAP::Threaded::_legacy_touch_success($dir, 1), 'Create legacy success file');
+  is(PCAP::Threaded::success_exists($dir, 1), 1, 'Success file present');
+};
+
+subtest 'expternal process handling' => sub {
+  my $dir = tempdir( CLEANUP => 1 );
+  ok(PCAP::Threaded::external_process_handler($dir, 'ls', 1), 'External process executes');
 };
 
 subtest 'thread divisor checks' => sub {

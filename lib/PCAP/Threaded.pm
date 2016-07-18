@@ -33,10 +33,13 @@ use File::Path qw(make_path);
 use Try::Tiny qw(try catch finally);
 use Capture::Tiny qw(capture);
 use IO::File;
+use Const::Fast qw(const);
 
 BEGIN {
   if($Config{useithreads}) { use threads; }
 };
+
+const my $SCRIPT_OCT_MODE => 0777;
 
 our $OUT_ERR = 1;
 
@@ -149,17 +152,35 @@ sub _suitable_threads {
 
 sub success_exists {
   my ($tmp, @indexes) = @_;
-  my ($type) = (caller(1))[3];
-  my $file = join '.', $type, @indexes;
-  my $path = File::Spec->catfile($tmp, $file);
-  if(-e $path) {
-    warn "Skipping $file as previously successful\n";
-    return 1;
+  my ($legacy_type) = (caller(1))[3];
+  my $new_type = $legacy_type;
+  $new_type =~ s/::/_/g;
+
+  my $suffix = join '.', @indexes;
+  for my $type($new_type, $legacy_type) { # we should test the new file name style first
+    my $file = $type.'.'.$suffix;
+    my $path = File::Spec->catfile($tmp, $file);
+    if(-e $path) {
+      warn "Skipping $file as previously successful\n";
+      return 1;
+    }
   }
   return 0;
 }
 
 sub touch_success {
+  my ($tmp, @indexes) = @_;
+  my ($type) = (caller(1))[3];
+  $type =~ s/::/_/g;
+  make_path($tmp) unless(-d $tmp);
+  my $file = join '.', $type, @indexes;
+  my $path = File::Spec->catfile($tmp, $file);
+  open my $TOUCH, '>', $path;
+  close $TOUCH;
+  return 1;
+}
+
+sub _legacy_touch_success {
   my ($tmp, @indexes) = @_;
   my ($type) = (caller(1))[3];
   make_path($tmp) unless(-d $tmp);
@@ -194,36 +215,38 @@ sub external_process_handler {
   }
   else {
     my $caller = (caller(1))[3];
+    $caller =~ s/::/_/g;
     my $suffix = join q{.}, @indexes;
+
+    my $script = _create_script(\@commands, File::Spec->catfile($tmp, "$caller.$suffix"));
+
     my $out = File::Spec->catfile($tmp, "$caller.$suffix.out");
     my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
-    my $out_fh = IO::File->new($out, "w+");
-    my $err_fh = IO::File->new($err, "w+");
     try {
-      for my $c(@commands) {
-        print $err_fh "\nErrors from command: $c\n\n";
-        print $out_fh "\nOutput from command: $c\n\n";
-        capture { system($c); } stdout => $out_fh, stderr => $err_fh;
-      }
-    } catch {
-      die $_ if($_);
+      system("/usr/bin/time $script 1> $out 2> $err");
     }
-    finally {
-      if($out_fh) {
-        $out_fh->flush;
-        $out_fh->close;
-        undef $out_fh;
-      }
-      if($err_fh) {
-        $err_fh->flush;
-        $err_fh->close;
-        undef $err_fh;
-      }
-    };
+    catch { die $_; };
+
+    unlink $script; # only leave scripts if we fail
   }
 
   return 1;
+}
+
+sub _create_script {
+  my ($commands, $stub) = @_;
+
+  my $script = "$stub.sh";
+  open my $SH, '>', $script or die "Cannot create $script: $!\n";
+  print $SH qq{#!/bin/bash\nset -eux\n};
+  print $SH join qq{\n}, @{$commands};
+  print $SH qq{\n};
+  close $SH;
+  sleep 1;
+  chmod $SCRIPT_OCT_MODE, $script;
+  sleep 1;
+  return $script;
 }
 
 1;
