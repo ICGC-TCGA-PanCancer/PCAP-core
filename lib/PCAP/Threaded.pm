@@ -243,7 +243,9 @@ sub _create_script {
   print $SH join qq{\n}, @{$commands};
   print $SH qq{\n};
   close $SH;
+  sleep 1;
   chmod $SCRIPT_OCT_MODE, $script;
+  sleep 1;
   return $script;
 }
 
