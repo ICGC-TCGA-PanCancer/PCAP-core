@@ -1,3 +1,9 @@
+### 3.0.0
+* Threading module now converts currently running step to bash script for following reasons:
+  * Changes logging to use file redirects instead of Capture::Tiny - prevent log bleed into wrong files
+  * Commands for failed jobs remain after shutdown for easy debug/testing
+* Log and progress file names simplified so more portable.
+
 ### 2.4.1
 * Modified reheadSQ to be more robust.
 
