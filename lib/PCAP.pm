@@ -26,7 +26,7 @@ use base 'Exporter';
 use FindBin qw($Bin);
 use File::Which qw(which);
 
-our $VERSION = '3.0.0';
+our $VERSION = '3.0.1';
 our @EXPORT = qw($VERSION _which);
 
 const my $LICENSE =>
