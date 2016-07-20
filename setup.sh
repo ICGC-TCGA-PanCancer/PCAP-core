@@ -249,7 +249,7 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
     # now Bio::DB::HTS
     get_file "INSTALL.pl" $BIODBHTS_INSTALL
     perl -I $PERL5LIB INSTALL.pl --prefix $INST_PATH --static
-    rm -f BioDbHTS_INSTALL.pl
+    rm -f INSTALL.pl
     touch $SETUP_DIR/biohts.success
   fi
   echo

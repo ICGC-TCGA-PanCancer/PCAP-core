@@ -29,7 +29,7 @@ bwa_mem.pl will only function when 0.7.x installed
 ```
 apt-get update && \
 apt-get -y install \
-build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev libgd-dev nettle-dev &&\
+build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev nettle-dev &&\
 apt-get clean
 ```
 
@@ -37,7 +37,7 @@ apt-get clean
 ```
 yum -q -y update && \
 yum -y install \
-make glibc-devel gcc patch ncurses-devel expat-devel gd-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel
+make glibc-devel gcc patch ncurses-devel expat-devel perl-core openssl-devel libcurl-devel gnutls-devel libtasn1-devel p11-kit-devel gmp-devel nettle-devel
 ```
 
 **Should nettle-devel not exist**
