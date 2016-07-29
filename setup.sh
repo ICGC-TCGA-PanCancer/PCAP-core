@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.12.tar.gz"
+SOURCE_BWA="https://github.com/lh3/bwa/archive/v0.7.15.tar.gz"
 
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2"
 
