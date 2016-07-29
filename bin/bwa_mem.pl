@@ -191,8 +191,8 @@ bwa_mem.pl [options] [file(s)...]
   Optional parameters:
     -fragment  -f   Split input into fragements of X million repairs
     -nomarkdup -n   Don't mark duplicates
-    -bwa       -b   Single quoted string of parameters to pass to BWA
-                     - overrides all defaults except '-t,-p,-R'
+    -bwa       -b   Single quoted string of additional parameters to pass to BWA
+                     - '-t,-p,-R' are used internally and cannot be modified
 
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index

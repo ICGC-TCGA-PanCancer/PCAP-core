@@ -247,12 +247,12 @@ sub bwa_mem {
     # uncoverable branch true
     # uncoverable branch false
     $interleaved_fq = q{ -p}, unless($input->paired_fq);
-    if(exists $options->{'bwa'}) {
-      $bwa .= sprintf $BWA_MEM, $options->{'bwa'}, $interleaved_fq, $rg_line, $threads, $options->{'reference'};
-    }
-    else {
-      $bwa .= sprintf $BWA_MEM, '-T 0', $interleaved_fq, $rg_line, $threads, $options->{'reference'};
-    }
+
+    my $add_options = q{};
+    $add_options = $options->{'bwa'} if(exists $options->{'bwa'});
+
+    $bwa .= sprintf $BWA_MEM, $add_options, $interleaved_fq, $rg_line, $threads, $options->{'reference'};
+
     # uncoverable branch true
     # uncoverable branch false
     if($input->paired_fq) {
