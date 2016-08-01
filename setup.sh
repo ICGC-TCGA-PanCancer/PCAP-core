@@ -4,8 +4,11 @@ SOURCE_BWA="https://github.com/lh3/bwa/archive/v0.7.15.tar.gz"
 
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2"
 
-# for bamstats
+# for bamstats and Bio::DB::HTS
 SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.3.1.tar.gz"
+
+# Bio::DB::HTS
+SOURCE_BIOBDHTS="https://github.com/Ensembl/Bio-HTS/archive/2.3.tar.gz"
 
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
@@ -98,9 +101,9 @@ if ! ( perl -MExtUtils::MakeMaker -e 1 >/dev/null 2>&1); then
     echo "WARNING: Your Perl installation does not seem to include a complete set of core modules.  Attempting to cope with this, but if installation fails please make sure that at least ExtUtils::MakeMaker is installed.  For most users, the best way to do this is to use your system's package manager: apt, yum, fink, homebrew, or similar."
 fi
 
-perlmods=( "File::ShareDir" "File::ShareDir::Install" "Const::Fast" "File::Which" )
+perlmods=( "ExtUtils::CBuilder" "Module::Build~0.42" "File::ShareDir" "File::ShareDir::Install" "Const::Fast" "File::Which" "LWP::UserAgent" "Bio::Root::Version~1.006009001")
 for i in "${perlmods[@]}" ; do
-  $CPANM --mirror http://cpan.metacpan.org -l $INST_PATH $i
+  $CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH $i
 done
 
 # figure out the upgrade path
@@ -120,6 +123,7 @@ else
   if [[ `uname -m` == x86_64 ]] ; then
     get_file $INST_PATH/bin/wigToBigWig $SOURCE_JKENT_BIN/wigToBigWig
     chmod +x $INST_PATH/bin/wigToBigWig
+    touch $SETUP_DIR/jkentUtils.success
   else
     if [ ! -e $INST_DIR/bin/wigToBigWig ]; then
       echo "Binaries only available for x86_64, please install wigToBigWig from kentUtils: https://github.com/ENCODE-DCC/kentUtils"
@@ -146,6 +150,7 @@ echo -n "Building libBigWig ..."
 if [ -e $SETUP_DIR/libBigWig.success ]; then
   echo -n " previously installed ...";
 else
+  echo
   cd $SETUP_DIR
   get_distro "libBigWig" $SOURCE_LIB_BW
   mkdir -p libBigWig
@@ -162,6 +167,7 @@ echo -n "Building bam_stats ..."
 if [ -e $SETUP_DIR/bam_stats.success ]; then
   echo -n " previously installed ...";
 else
+  echo
   cd $INIT_DIR
   make -C c clean
   make -C c -j$CPU prefix=$INST_PATH
@@ -175,18 +181,49 @@ else
 fi
 echo
 
+echo -n "Building Bio::DB::HTS ..."
+if [ -e $SETUP_DIR/biohts.success ]; then
+  echo " previously installed ...";
+else
+  echo
+  cd $SETUP_DIR
+  rm -rf bioDbHts
+  get_distro "bioDbHts" $SOURCE_BIOBDHTS
+  mkdir -p bioDbHts
+  tar --strip-components 1 -C bioDbHts -zxf bioDbHts.tar.gz
+  cd bioDbHts
+  get_distro "htslib" $SOURCE_HTSLIB
+  mkdir -p htslib
+  tar --strip-components 1 -C htslib -zxf htslib.tar.gz
+  cd htslib
+  perl -pne 'if($_ =~ m/^CFLAGS/ && $_ !~ m/\-fPIC/i){chomp; s/#.+//; $_ .= " -fPIC -Wno-unused -Wno-unused-result\n"};' < Makefile > Makefile.new
+  mv Makefile Makefile.orig
+  mv Makefile.new Makefile
+  make clean
+  make -j$CPU
+  make install prefix=$INST_PATH
+  rm -f libhts.so*
+  cd ../
+  env HTSLIB_DIR=htslib perl Build.PL --install_base=$INST_PATH --static=1
+  ./Build test
+  ./Build install
+  rm -f htslib/libhts.a
+  touch $SETUP_DIR/biohts.success
+fi
+
 cd $SETUP_DIR
 if [[ ",$COMPILE," == *,bwa,* ]] ; then
   echo -n "Building BWA ..."
   if [ -e $SETUP_DIR/bwa.success ]; then
     echo -n " previously installed ..."
   else
-      get_distro "bwa" $SOURCE_BWA
-      mkdir -p bwa
-      tar --strip-components 1 -C bwa -zxf bwa.tar.gz
-      make -C bwa -j$CPU
-      cp bwa/bwa $INST_PATH/bin/.
-      touch $SETUP_DIR/bwa.success
+    echo
+    get_distro "bwa" $SOURCE_BWA
+    mkdir -p bwa
+    tar --strip-components 1 -C bwa -zxf bwa.tar.gz
+    make -C bwa -j$CPU
+    cp bwa/bwa $INST_PATH/bin/.
+    touch $SETUP_DIR/bwa.success
   fi
   echo
 else
@@ -223,12 +260,13 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
     echo -n " previously installed ...";
   else
     cd $SETUP_DIR
+    rm -rf samtools
     get_distro "samtools" $SOURCE_SAMTOOLS
     mkdir -p samtools
     tar --strip-components 1 -C samtools -xjf samtools.tar.bz2
     cd samtools
     ./configure --enable-plugins --enable-libcurl --prefix=$INST_PATH
-    make all all-htslib
+    make -j$CPU all all-htslib
     make install install-htslib
     touch $SETUP_DIR/samtools.success
   fi
@@ -239,49 +277,34 @@ fi
 
 cd $INIT_DIR
 
-if [[ ",$COMPILE," == *,samtools,* ]] ; then
-  echo -n "Building Bio::DB::HTS ..."
-  if [ -e $SETUP_DIR/biohts.success ]; then
-    echo " previously installed ...";
-  else
-    cd $SETUP_DIR
-    $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH Module::Build Bio::Root::Version
-    # now Bio::DB::HTS
-    get_file "INSTALL.pl" $BIODBHTS_INSTALL
-    perl -I $PERL5LIB INSTALL.pl --prefix $INST_PATH --static
-    rm -f INSTALL.pl
-    touch $SETUP_DIR/biohts.success
-  fi
-  echo
-else
-  echo "Bio::DB::HTS - No change between PCAP versions" # based on samtools tag
-fi
-
 echo -n "Building kentsrc + Bio::DB::BigFile ..."
 if [ -e $SETUP_DIR/kentsrc.success ]; then
   echo " previously installed ...";
 else
+  echo
   cd $SETUP_DIR
+  rm -rf kent kentsrc.zip
   get_distro "kentsrc" $SOURCE_KENTSRC
   unzip -q kentsrc.zip
   perl -pi -e 's/(\s+CFLAGS=)$/${1}-fPIC/' kent/src/inc/common.mk
   cd kent/src/lib
   export MACHTYPE=i686    # for a 64-bit system
-  make
+  make -j$CPU
   cd ../
   export KENT_SRC=`pwd`
   cd $SETUP_DIR
-  $CPANM --mirror http://cpan.metacpan.org -l $INST_PATH Bio::DB::BigFile
+  $CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH Bio::DB::BigFile
+  touch $SETUP_DIR/kentsrc.success
 fi
 
 cd $INIT_DIR
 
 echo -n "Installing Perl prerequisites ..."
-$CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+$CPANM -v --no-interactive --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
 echo
 
 echo -n "Installing PCAP ..."
-$CPANM --mirror http://cpan.metacpan.org -l $INST_PATH .
+$CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
 echo
 
 # cleanup all junk
