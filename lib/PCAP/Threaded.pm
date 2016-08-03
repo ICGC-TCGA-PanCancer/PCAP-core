@@ -33,8 +33,10 @@ use Try::Tiny qw(try catch finally);
 use Capture::Tiny qw(capture);
 use IO::File;
 use Const::Fast qw(const);
+use Scalar::Util qw(looks_like_number);
 
-our $CAN_USE_THREADS = eval 'use threads; 1';
+our $CAN_USE_THREADS = 0;
+$CAN_USE_THREADS = eval 'use threads; 1';
 
 const my $SCRIPT_OCT_MODE => 0777;
 
@@ -42,6 +44,7 @@ our $OUT_ERR = 1;
 
 sub new {
   my ($class, $max_threads) = @_;
+  croak "Number of threads was NAN: $max_threads" if(defined $max_threads && !looks_like_number($max_threads));
   unless($CAN_USE_THREADS) {
     warn "Threading is not available perl component will run as a single process";
     $max_threads = 1;
@@ -50,7 +53,7 @@ sub new {
     warn "Thread count not defined, defaulting to 1.\n";
     $max_threads = 1;
   }
-  croak "Number of threads was NAN: $max_threads" if($max_threads !~ m/^[[:digit:]]+$/xms);
+
   my $self = {'threads' => $max_threads,
               'join_interval' => 1,};
   bless $self, $class;
