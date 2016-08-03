@@ -32,11 +32,8 @@ use Pod::Usage qw(pod2usage);
 use Config; # so we can see if threads are enabled
 use Data::Dumper;
 
-BEGIN {
-  if($Config{useithreads}) {
-    require threads;
-  }
-};
+our $CAN_USE_THREADS = 0;
+$CAN_USE_THREADS = eval 'use threads; 1';
 
 use PCAP::Bam::Stats;
 
@@ -54,15 +51,20 @@ use PCAP::Bam::Stats;
     $out_location = 'STDOUT';
   }
 
+  if($opts->{'threads'} > 1 && $CAN_USE_THREADS == 0) {
+    warn "Threading is not available perl component will run as a single process";
+    $opts->{'threads'} = 1;
+  }
+
   try{
     my $stats;
-    if($opts->{'threads'} > 1 && $Config{useithreads}) {
+    if($opts->{'threads'} > 1 && $CAN_USE_THREADS) {
       for my $thread(0..($opts->{'threads'}-1)) {
          my ($thr) = threads->create(\&stat_thread, $opts, $thread);
       }
-      sleep 2 while(threads->list(threads::running) > 0);
+      sleep 2 while(threads->list(threads::running()) > 0);
       my @bas_objs;
-      for my $thr(threads->list(threads::joinable)) {
+      for my $thr(threads->list(threads::joinable())) {
         push @bas_objs, $thr->join;
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
