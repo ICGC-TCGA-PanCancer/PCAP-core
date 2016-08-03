@@ -14,6 +14,7 @@ SOURCE_BIOBDHTS="https://github.com/Ensembl/Bio-HTS/archive/2.3.tar.gz"
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 # for Bio::DB::BigWig
 SOURCE_KENTSRC="ftp://ftp.sanger.ac.uk/pub/cancer/legacy-dependancies/jksrc.v334.zip"
+SOURCE_BIGFILE="http://www.cpan.org/authors/id/L/LD/LDS/Bio-BigFile-1.07.tar.gz"
 # for fast merging of per-chr BW files
 SOURCE_LIB_BW="https://github.com/dpryan79/libBigWig/archive/0.1.6.tar.gz"
 
@@ -126,6 +127,7 @@ echo -n "Building jkentUtils ..."
 if [ -e $SETUP_DIR/jkentUtils.success ]; then
   echo " previously installed ...";
 else
+  echo
   cd $SETUP_DIR
   if [[ `uname -m` == x86_64 ]] ; then
     get_file $INST_PATH/bin/wigToBigWig $SOURCE_JKENT_BIN/wigToBigWig
@@ -291,7 +293,16 @@ else
   cd ../
   export KENT_SRC=`pwd`
   cd $SETUP_DIR
-  $CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH Bio::DB::BigFile
+  mkdir bigfile
+  get_distro "bigfile" $SOURCE_BIGFILE
+  tar --strip-components 1 -C bigfile -zxf bigfile.tar.gz
+  cd bigfile
+  chmod u+w Build.PL
+  patch -p1 Build.PL < $INIT_DIR/dists/patch/Bio-BigFile_build.patch
+  perl Build.PL --install_base=$INST_PATH
+  ./Build
+  ./Build test
+  ./Build install
   rm -f kentsrc.zip
   touch $SETUP_DIR/kentsrc.success
 fi
