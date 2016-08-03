@@ -108,7 +108,7 @@ if [ -e $SETUP_DIR/basePerlDeps.success ]; then
 else
   perlmods=( "ExtUtils::CBuilder" "Module::Build~0.42" "File::ShareDir" "File::ShareDir::Install" "Const::Fast" "File::Which" "LWP::UserAgent" "Bio::Root::Version~1.006009001")
   for i in "${perlmods[@]}" ; do
-    $CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH $i
+    $CPANM -v --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH $i
   done
   touch $SETUP_DIR/basePerlDeps.success
 fi
