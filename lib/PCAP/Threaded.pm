@@ -27,7 +27,6 @@ use autodie qw(:all);
 use English qw( -no_match_vars );
 use warnings FATAL => 'all';
 use Carp qw( croak );
-use Config; # so we can see if threads are enabled
 use File::Spec;
 use File::Path qw(make_path);
 use Try::Tiny qw(try catch finally);
@@ -35,9 +34,7 @@ use Capture::Tiny qw(capture);
 use IO::File;
 use Const::Fast qw(const);
 
-BEGIN {
-  if($Config{useithreads}) { use threads; }
-};
+our $CAN_USE_THREADS = eval 'use threads; 1';
 
 const my $SCRIPT_OCT_MODE => 0777;
 
@@ -45,7 +42,7 @@ our $OUT_ERR = 1;
 
 sub new {
   my ($class, $max_threads) = @_;
-  unless($Config{useithreads}) {
+  unless($CAN_USE_THREADS) {
     warn "Threading is not available perl component will run as a single process";
     $max_threads = 1;
   }
@@ -109,7 +106,7 @@ sub run {
   my $thread_count = $self->{'functions'}->{$function_name}->{'threads'};
 
   # uncoverable branch true
-  if($thread_count > 1 && $Config{useithreads}) {
+  if($thread_count > 1 && $CAN_USE_THREADS) {
     # reserve 0 for when people want to use 'success_exists/touch_success' for non-threaded steps
     # makes it easy to see in progress area which steps are threaded
     my $index = 1;
