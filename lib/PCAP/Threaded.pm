@@ -45,12 +45,12 @@ our $OUT_ERR = 1;
 sub new {
   my ($class, $max_threads) = @_;
   croak "Number of threads was NAN: $max_threads" if(defined $max_threads && !looks_like_number($max_threads));
-  unless($CAN_USE_THREADS) {
-    warn "Threading is not available perl component will run as a single process";
-    $max_threads = 1;
-  }
   unless(defined $max_threads) {
     warn "Thread count not defined, defaulting to 1.\n";
+    $max_threads = 1;
+  }
+  if($max_threads > 1 && $CAN_USE_THREADS == 0) {
+    warn "Threading is not available perl component will run as a single process";
     $max_threads = 1;
   }
 
