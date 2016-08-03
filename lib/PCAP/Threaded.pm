@@ -111,19 +111,19 @@ sub run {
     # makes it easy to see in progress area which steps are threaded
     my $index = 1;
     while($index <= $iterations) {
-      while(threads->list(threads::all) < $thread_count && $index <= $iterations) {
+      while(threads->list(threads::all()) < $thread_count && $index <= $iterations) {
         threads->create($function_ref, $index++, @params);
         last if($index > $iterations);
       }
-      sleep $self->thread_join_interval while(threads->list(threads::joinable) == 0);
-      for my $thr(threads->list(threads::joinable)) {
+      sleep $self->thread_join_interval while(threads->list(threads::joinable()) == 0);
+      for my $thr(threads->list(threads::joinable())) {
         $thr->join;
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
     }
     # last gasp for any remaining threads
-    sleep $self->thread_join_interval while(threads->list(threads::running) > 0);
-    for my $thr(threads->list(threads::joinable)) {
+    sleep $self->thread_join_interval while(threads->list(threads::running()) > 0);
+    for my $thr(threads->list(threads::joinable())) {
       $thr->join;
       if(my $err = $thr->error) { die "Thread error: $err\n"; }
     }
