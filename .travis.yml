@@ -21,7 +21,11 @@ addons:
 
 install: true
 
-language: c # doesn't build Bio::DB::BigFile otherwise
+language: perl
+
+perl:
+ - "5.22"
+ - "5.16"
 
 script:
  - ./setup.sh ~/wtsi-opt
