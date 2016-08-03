@@ -1,0 +1,11 @@
+--- Build.PL	2016-08-03 16:36:03.408448000 +0100
++++ Build.PL.new	2016-08-03 16:38:09.324215000 +0100
+@@ -16,7 +16,7 @@
+     dist_abstract      => "Manipulate Jim Kent's BigWig and BigBed index files for genomic features.",
+     license            => 'perl',
+     include_dirs       => [$jk_include],
+-    extra_linker_flags => ["$jk_lib/$LibFile",'-lz','-lssl'],
++    extra_linker_flags => ["$jk_lib/$LibFile",'-lz','-lssl','-pthread'],
+ 
+     extra_compiler_flags=>[
+ 	# turn off warnings originating in Perl's Newx* calls
