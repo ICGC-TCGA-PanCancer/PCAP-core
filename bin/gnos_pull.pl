@@ -102,7 +102,7 @@ sub load_config {
   }
   if(exists $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'}) {
     my %bl_workflows = map { $_ => 1 } split /[\n,]/, $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'};
-    $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'} = [keys \%bl_workflows];
+    $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'} = [keys %bl_workflows];
   }
 
   croak sprintf q{'KEY_FILE' Ssection is absent from %s}, $options->{'config'} unless($cfg->SectionExists('KEY_FILES'));

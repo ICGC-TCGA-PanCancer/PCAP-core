@@ -338,7 +338,6 @@ else
 fi
 
 echo -n "Installing PCAP ..."
-perl -I lib -c bin/gnos_pull.pl
 $CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
 echo
 
