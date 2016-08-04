@@ -255,7 +255,7 @@ else
   get_distro "bioDbHts" $SOURCE_BIOBDHTS
   mkdir -p bioDbHts/htslib
   tar --strip-components 1 -C bioDbHts -zxf bioDbHts.tar.gz
-  tar --strip-components 1 -C bioDbHts/htslib -jxf $SETUP_DIR/htslib.tar.bz2
+  tar --strip-components 1 -C bioDbHts/htslib -zxf $SETUP_DIR/htslib.tar.gz
   cd bioDbHts/htslib
   perl -pne 'if($_ =~ m/^CFLAGS/ && $_ !~ m/\-fPIC/i){chomp; s/#.+//; $_ .= " -fPIC -Wno-unused -Wno-unused-result\n"};' < Makefile > Makefile.new
   mv Makefile.new Makefile
