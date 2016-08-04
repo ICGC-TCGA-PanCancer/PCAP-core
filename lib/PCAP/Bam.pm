@@ -38,8 +38,8 @@ use PCAP::Threaded;
 const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
 const my $BAMBAM_DUP => q{ %s index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%s };
 const my $BAMBAM_MERGE => q{ %s tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
-const my $BAMBAM_DUP_CRAM => q{ %s tmpfile=%s M=%s markthreads=%s | scramble -I bam -O cram %s | tee %s | samtools index - %s.crai};
-const my $BAMBAM_MERGE_CRAM => q{ %s tmpfile=%s | scramble -I bam -O cram %s | tee %s | samtools index - %s.crai};
+const my $BAMBAM_DUP_CRAM => q{ %s tmpfile=%s M=%s markthreads=%s level=0| scramble -r %s -I bam -O cram %s | tee %s | samtools index - %s.crai};
+const my $BAMBAM_MERGE_CRAM => q{ %s tmpfile=%s level=0 | scramble -r %s -I bam -O cram %s | tee %s | samtools index - %s.crai};
 const my $CRAM_CHKSUM => q{md5sum %s | perl -ne '/^(\S+)/; print "$1";' > %s.md5};
 const my $BAM_STATS => q{ -i %s -o %s};
 
@@ -104,7 +104,6 @@ sub merge_and_mark_dup {
 
   if($options->{'cram'}) {
     $marked .= '.cram';
-    $commands[1] = sprintf $CRAM_CHKSUM, $marked, $marked;
   }
   else {
     $marked .= '.bam';
@@ -133,13 +132,14 @@ sub merge_and_mark_dup {
   my $bbb_tmp = File::Spec->catfile($tmp, 'biormdup');
 
   if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
-    $commands[0] = _which('bammerge') || die "Unable to find 'bammarkduplicates' in path";
+    $commands[0] = _which('bammerge') || die "Unable to find 'bammerge' in path";
 
     if($options->{'cram'}) {
       my $add_sc = $options->{'scramble'} || q{};
       $commands[0] .= sprintf $BAMBAM_MERGE_CRAM,
                               $input_str,
                               $bbb_tmp,
+                              $options->{'reference'},
                               $add_sc,
                               $marked,
                               $marked;
@@ -163,6 +163,7 @@ sub merge_and_mark_dup {
                               $bbb_tmp,
                               $met,
                               $helper_threads,
+                              $options->{'reference'},
                               $add_sc,
                               $marked,
                               $marked;
@@ -175,6 +176,12 @@ sub merge_and_mark_dup {
                               $met,
                               $helper_threads;
     }
+  }
+
+  if($options->{'cram'}) {
+    unshift @commands, 'set -o pipefail';
+    push @commands, sprintf $CRAM_CHKSUM, $marked, $marked;
+    push @commands, 'set +o pipefail';
   }
 
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), \@commands, 0);
