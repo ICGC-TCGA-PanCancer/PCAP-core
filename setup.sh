@@ -1,14 +1,11 @@
 #!/bin/bash
 
-SOURCE_BWA="https://github.com/lh3/bwa/archive/v0.7.15.tar.gz"
+SOURCE_BWA="https://github.com/lh3/bwa/archive/0.7.12.tar.gz"
 
 SOURCE_SAMTOOLS="https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2"
 
-# for bamstats and Bio::DB::HTS
-SOURCE_HTSLIB="https://github.com/samtools/htslib/releases/download/1.3.1/htslib-1.3.1.tar.bz2"
-
-# Bio::DB::HTS
-SOURCE_BIOBDHTS="https://github.com/Ensembl/Bio-HTS/archive/2.3.tar.gz"
+# for bamstats
+SOURCE_HTSLIB="https://github.com/samtools/htslib/archive/1.3.1.tar.gz"
 
 # for bigwig
 SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
@@ -35,11 +32,10 @@ get_distro () {
     echo "I don't understand the file type for $1"
     exit 1
   fi
-  rm -f $1.$EXT
   if hash curl 2>/dev/null; then
-    curl --retry 10 -sS -o $1.$EXT -L $2
+    curl -sS -o $1.$EXT -L $2
   else
-    wget --tries=10 -nv -O $1.$EXT $2
+    wget -nv -O $1.$EXT $2
   fi
 }
 
@@ -113,15 +109,12 @@ else
   touch $SETUP_DIR/basePerlDeps.success
 fi
 
-
 # figure out the upgrade path
 COMPILE=`echo 'nothing' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
 if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
   COMPILE=`perl -I $INST_PATH/lib/perl5 -MPCAP -e 'print PCAP->VERSION,"\n";' | perl -I lib -MPCAP -ne 'print PCAP::upgrade_path($_);'`
 fi
 COMPILE=",$COMPILE,"
-
-#Need to add CaVEMan stuff here... will depend on samtools too (for now).
 
 echo -n "Building jkentUtils ..."
 if [ -e $SETUP_DIR/jkentUtils.success ]; then
@@ -141,57 +134,116 @@ else
   fi
 fi
 
-echo -n "Get htslib ..."
-if [ -e $SETUP_DIR/htslibGet.success ]; then
-  echo " already staged ...";
-else
-  echo
-  cd $SETUP_DIR
-  get_distro "htslib" $SOURCE_HTSLIB
-  touch $SETUP_DIR/htslibGet.success
-fi
-
 echo -n "Building htslib ..."
 if [ -e $SETUP_DIR/htslib.success ]; then
   echo " previously installed ...";
 else
   echo
-  mkdir -p htslib
-  tar --strip-components 1 -C htslib -jxf htslib.tar.bz2
-  cd htslib
-  ./configure --enable-plugins --enable-libcurl --prefix=$INST_PATH
-  make -j$CPU
-  make install
   cd $SETUP_DIR
+  get_distro "htslib" $SOURCE_HTSLIB
+  mkdir -p htslib
+  tar --strip-components 1 -C htslib -zxf htslib.tar.gz
+  make -C htslib -j$CPU
   touch $SETUP_DIR/htslib.success
 fi
 
-export HTSLIB=$INST_PATH
+echo -n "Building libBigWig ..."
+if [ -e $SETUP_DIR/libBigWig.success ]; then
+  echo " previously installed ...";
+else
+  echo
+  cd $SETUP_DIR
+  get_distro "libBigWig" $SOURCE_LIB_BW
+  mkdir -p libBigWig
+  tar --strip-components 1 -C libBigWig -zxf libBigWig.tar.gz
+  make -C libBigWig -j$CPU install prefix=$INST_PATH
+  rm -f $INST_PATH/lib/libBigWig.so
+  touch $SETUP_DIR/libBigWig.success
+fi
+
+export HTSLIB="$SETUP_DIR/htslib"
+
+echo -n "Building bam_stats ..."
+if [ -e $SETUP_DIR/bam_stats.success ]; then
+  echo " previously installed ...";
+else
+  echo
+  cd $INIT_DIR
+  make -C c clean
+  make -C c -j$CPU prefix=$INST_PATH
+  cp bin/bam_stats $INST_PATH/bin/.
+  cp bin/bwcat $INST_PATH/bin/.
+  cp bin/reheadSQ $INST_PATH/bin/.
+  touch $SETUP_DIR/bam_stats.success
+  # need to clean up as will clash with other version
+  rm -rf $SAMTOOLS
+  make -C c clean
+fi
+
+cd $SETUP_DIR
+if [[ ",$COMPILE," == *,bwa,* ]] ; then
+  echo -n "Building BWA ..."
+  if [ -e $SETUP_DIR/bwa.success ]; then
+    echo  " previously installed ..."
+  else
+    echo
+    get_distro "bwa" $SOURCE_BWA
+    mkdir -p bwa
+    tar --strip-components 1 -C bwa -zxf bwa.tar.gz
+    make -C bwa -j$CPU
+    cp bwa/bwa $INST_PATH/bin/.
+    touch $SETUP_DIR/bwa.success
+  fi
+else
+  echo "BWA - No change between PCAP versions"
+fi
+
+if [[ ",$COMPILE," == *,biobambam,* ]] ; then
+  echo -n "Building biobambam2 ..."
+  if [ -e $SETUP_DIR/biobambam2.success ]; then
+    echo " previously installed ..."
+  else
+    echo
+    cd $SETUP_DIR
+    get_distro "biobambam2" $SOURCE_BBB_BIN_DIST
+    mkdir -p biobambam2
+    tar --strip-components 1 -C biobambam2 -zxf biobambam2.tar.gz
+    mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
+    rm -f biobambam2/bin/curl # don't let this file in SSL doesn't work
+    cp -r biobambam2/bin/* $INST_PATH/bin/.
+    cp -r biobambam2/etc/* $INST_PATH/etc/.
+    cp -r biobambam2/lib/* $INST_PATH/lib/.
+    cp -r biobambam2/share/* $INST_PATH/share/.
+    touch $SETUP_DIR/biobambam2.success
+  fi
+else
+  echo "biobambam - No change between PCAP versions"
+fi
 
 cd $INIT_DIR
 
 if [[ ",$COMPILE," == *,samtools,* ]] ; then
   echo -n "Building samtools ..."
   if [ -e $SETUP_DIR/samtools.success ]; then
-    echo " previously installed ...";
+    echo  " previously installed ...";
   else
-  echo
+    echo
     cd $SETUP_DIR
-    rm -rf samtools
     get_distro "samtools" $SOURCE_SAMTOOLS
     mkdir -p samtools
     tar --strip-components 1 -C samtools -xjf samtools.tar.bz2
     cd samtools
     ./configure --enable-plugins --enable-libcurl --prefix=$INST_PATH
-    make -j$CPU all all-htslib
-    make install all all-htslib
-    cd $SETUP_DIR
-    rm -f samtools.tar.bz2
+    make all all-htslib
+    make install install-htslib
     touch $SETUP_DIR/samtools.success
   fi
 else
   echo "samtools - No change between PCAP versions"
 fi
+
+cd $INIT_DIR
+
 
 echo -n "Building Bio::DB::HTS ..."
 if [ -e $SETUP_DIR/biohts.success ]; then
@@ -218,64 +270,23 @@ else
   touch $SETUP_DIR/biohts.success
 fi
 
-echo -n "Building libBigWig ..."
-if [ -e $SETUP_DIR/libBigWig.success ]; then
-  echo " previously installed ...";
-else
-  echo
-  cd $SETUP_DIR
-  get_distro "libBigWig" $SOURCE_LIB_BW
-  mkdir -p libBigWig
-  tar --strip-components 1 -C libBigWig -zxf libBigWig.tar.gz
-  make -C libBigWig -j$CPU install prefix=$INST_PATH
-  rm -f $INST_PATH/lib/libBigWig.so
-  rm -f libBigWig.tar.gz
-  touch $SETUP_DIR/libBigWig.success
-fi
-
-cd $SETUP_DIR
-if [[ ",$COMPILE," == *,bwa,* ]] ; then
-  echo -n "Building BWA ..."
-  if [ -e $SETUP_DIR/bwa.success ]; then
-    echo " previously installed ..."
-  else
-    echo
-    get_distro "bwa" $SOURCE_BWA
-    mkdir -p bwa
-    tar --strip-components 1 -C bwa -zxf bwa.tar.gz
-    make -C bwa -j$CPU
-    cp bwa/bwa $INST_PATH/bin/.
-    rm -f bwa.tar.gz
-    touch $SETUP_DIR/bwa.success
-  fi
-else
-  echo "BWA - No change between PCAP versions"
-fi
-
-if [[ ",$COMPILE," == *,biobambam,* ]] ; then
-  echo -n "Building biobambam2 ..."
-  if [ -e $SETUP_DIR/biobambam2.success ]; then
-    echo " previously installed2 ..."
-  else
-  echo
-    cd $SETUP_DIR
-    get_distro "biobambam2" $SOURCE_BBB_BIN_DIST
-    mkdir -p biobambam2
-    tar --strip-components 1 -C biobambam2 -zxf biobambam2.tar.gz
-    mkdir -p $INST_PATH/bin $INST_PATH/etc $INST_PATH/lib $INST_PATH/share
-    rm -f biobambam2/bin/curl # don't let this file in SSL doesn't work
-    cp -r biobambam2/bin/* $INST_PATH/bin/.
-    cp -r biobambam2/etc/* $INST_PATH/etc/.
-    cp -r biobambam2/lib/* $INST_PATH/lib/.
-    cp -r biobambam2/share/* $INST_PATH/share/.
-    rm -f biobambam2.tar.gz
-    touch $SETUP_DIR/biobambam2.success
-  fi
-else
-  echo "biobambam - No change between PCAP versions"
-fi
-
-cd $INIT_DIR
+# if [[ ",$COMPILE," == *,samtools,* ]] ; then
+#   echo -n "Building Bio::DB::HTS ..."
+#   if [ -e $SETUP_DIR/biohts.success ]; then
+#     echo " previously installed ...";
+#   else
+#     echo
+#     cd $SETUP_DIR
+#     $CPANM --mirror http://cpan.metacpan.org --notest -l $INST_PATH Module::Build Bio::Root::Version
+#     # now Bio::DB::HTS
+#     get_file "INSTALL.pl" $BIODBHTS_INSTALL
+#     perl -I $PERL5LIB INSTALL.pl --prefix $INST_PATH --static
+#     rm -f INSTALL.pl
+#     touch $SETUP_DIR/biohts.success
+#   fi
+# else
+#   echo "Bio::DB::HTS - No change between PCAP versions" # based on samtools tag
+# fi
 
 echo -n "Building kentsrc + Bio::DB::BigFile ..."
 if [ -e $SETUP_DIR/kentsrc.success ]; then
@@ -309,25 +320,6 @@ fi
 
 cd $INIT_DIR
 
-echo -n "Building bam_stats ..."
-if [ -e $SETUP_DIR/bam_stats.success ]; then
-  echo " previously installed ...";
-else
-  echo
-  cd $INIT_DIR
-  make -C c clean
-  env HTSLIB=$SETUP_DIR/htslib make -C c -j$CPU prefix=$INST_PATH
-  cp bin/bam_stats $INST_PATH/bin/.
-  cp bin/bwcat $INST_PATH/bin/.
-  cp bin/reheadSQ $INST_PATH/bin/.
-  touch $SETUP_DIR/bam_stats.success
-  # need to clean up as will clash with other version
-  rm -rf $SAMTOOLS
-  make -C c clean
-fi
-
-cd $INIT_DIR
-
 echo -n "Building PCAP_perlPrereq ..."
 if [ -e $SETUP_DIR/PCAP_perlPrereq.success ]; then
   echo "PCAP_perlPrereq previously installed ...";
@@ -338,7 +330,7 @@ else
 fi
 
 echo -n "Installing PCAP ..."
-$CPANM -v --no-interactive --mirror http://cpan.metacpan.org -l $INST_PATH .
+$CPANM --mirror http://cpan.metacpan.org -l $INST_PATH .
 echo
 
 # cleanup all junk
