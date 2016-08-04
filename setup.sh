@@ -121,7 +121,40 @@ if [ -e "$INST_PATH/lib/perl5/PCAP.pm" ]; then
 fi
 COMPILE=",$COMPILE,"
 
-#Need to add CaVEMan stuff here... will depend on samtools too (for now).
+echo -n "Get htslib ..."
+if [ -e $SETUP_DIR/htslibGet.success ]; then
+  echo " already staged ...";
+else
+  echo
+  cd $SETUP_DIR
+  get_distro "htslib" $SOURCE_HTSLIB
+  touch $SETUP_DIR/htslibGet.success
+fi
+
+echo -n "Building Bio::DB::HTS ..."
+if [ -e $SETUP_DIR/biohts.success ]; then
+  echo " previously installed ...";
+else
+  echo
+  cd $SETUP_DIR
+  rm -rf bioDbHts
+  get_distro "bioDbHts" $SOURCE_BIOBDHTS
+  mkdir -p bioDbHts/htslib
+  tar --strip-components 1 -C bioDbHts -zxf bioDbHts.tar.gz
+  tar --strip-components 1 -C bioDbHts/htslib -jxf $SETUP_DIR/htslib.tar.bz2
+  cd bioDbHts/htslib
+  perl -pi -e 'if($_ =~ m/^CFLAGS/ && $_ !~ m/\-fPIC/i){chomp; s/#.+//; $_ .= " -fPIC -Wno-unused -Wno-unused-result\n"};' Makefile
+  make -j$CPU
+  rm -f libhts.so*
+  cd ../
+  env HTSLIB_DIR=$SETUP_DIR/bioDbHts/htslib perl Build.PL --install_base=$INST_PATH
+  ./Build test
+  ./Build install
+  cd $SETUP_DIR
+  rm -f bioDbHts.tar.gz
+  touch $SETUP_DIR/biohts.success
+fi
+
 
 echo -n "Building jkentUtils ..."
 if [ -e $SETUP_DIR/jkentUtils.success ]; then
@@ -139,16 +172,6 @@ else
       exit 1
     fi
   fi
-fi
-
-echo -n "Get htslib ..."
-if [ -e $SETUP_DIR/htslibGet.success ]; then
-  echo " already staged ...";
-else
-  echo
-  cd $SETUP_DIR
-  get_distro "htslib" $SOURCE_HTSLIB
-  touch $SETUP_DIR/htslibGet.success
 fi
 
 echo -n "Building htslib ..."
@@ -191,31 +214,6 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
   fi
 else
   echo "samtools - No change between PCAP versions"
-fi
-
-echo -n "Building Bio::DB::HTS ..."
-if [ -e $SETUP_DIR/biohts.success ]; then
-  echo " previously installed ...";
-else
-  echo
-  cd $SETUP_DIR
-  rm -rf bioDbHts
-  get_distro "bioDbHts" $SOURCE_BIOBDHTS
-  mkdir -p bioDbHts/htslib
-  tar --strip-components 1 -C bioDbHts -zxf bioDbHts.tar.gz
-  tar --strip-components 1 -C bioDbHts/htslib -jxf $SETUP_DIR/htslib.tar.bz2
-  cd bioDbHts/htslib
-  perl -pne 'if($_ =~ m/^CFLAGS/ && $_ !~ m/\-fPIC/i){chomp; s/#.+//; $_ .= " -fPIC -Wno-unused -Wno-unused-result\n"};' < Makefile > Makefile.new
-  mv Makefile.new Makefile
-  make
-  rm -f htslib/libhts.so*
-  cd ../
-  env HTSLIB_DIR=$SETUP_DIR/bioDbHts/htslib perl Build.PL --install_base=$INST_PATH
-  ./Build test
-  ./Build install
-  cd $SETUP_DIR
-  rm -f bioDbHts.tar.gz
-  touch $SETUP_DIR/biohts.success
 fi
 
 echo -n "Building libBigWig ..."
