@@ -5,7 +5,7 @@
      license            => 'perl',
      include_dirs       => [$jk_include],
 -    extra_linker_flags => ["$jk_lib/$LibFile",'-lz','-lssl'],
-+    extra_linker_flags => ["$jk_lib/$LibFile",'-lz','-lssl','-pthread'],
- 
++    extra_linker_flags => ["$jk_lib/$LibFile",'-lz','-lssl','-lpthread'],
+
      extra_compiler_flags=>[
  	# turn off warnings originating in Perl's Newx* calls
