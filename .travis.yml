@@ -32,3 +32,4 @@ perl:
 
 script:
  - ./setup.sh ~/wtsi-opt
+ - ~/wtsi-opt/bin/samtools view # dump usage to show intact
