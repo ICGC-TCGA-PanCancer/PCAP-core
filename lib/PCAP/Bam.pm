@@ -187,7 +187,7 @@ sub bam_stats {
   my $options = shift;
   my $tmp = $options->{'tmp'};
   my $ext = '.bam';
-  $ext = '.cram' if($options->{'c'});
+  $ext = '.cram' if($options->{'cram'});
   my $xam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).$ext;
   my $bas = "$xam.bas";
   return $bas if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
