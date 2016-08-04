@@ -37,7 +37,7 @@ export HARNESS_PERL_SWITCHES=-MDevel::Cover=-db,reports,-select='^lib/*\.pm$',-i
 rm -rf reports docs pm_to_blib blib
 cover -delete
 mkdir -p docs/reports_text
-prove -w -I ./lib
+prove -w -j 9 -I ./lib
 
 echo -e '\n\n### Generating test/pod coverage reports ###\n'
 # removed 'condition' from coverage as '||' 'or' doesn't work properly
