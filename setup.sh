@@ -291,7 +291,7 @@ else
   cd ../
   export KENT_SRC=`pwd`
   cd $SETUP_DIR
-  mkdir bigfile
+  mkdir -p bigfile
   get_distro "bigfile" $SOURCE_BIGFILE
   tar --strip-components 1 -C bigfile -zxf bigfile.tar.gz
   cd bigfile
@@ -307,7 +307,7 @@ fi
 
 cd $INIT_DIR
 
-echo -n "Building bam_stats ..."
+echo -n "Building PCAP-c ..."
 if [ -e $SETUP_DIR/bam_stats.success ]; then
   echo " previously installed ...";
 else
@@ -319,8 +319,6 @@ else
   cp bin/bwcat $INST_PATH/bin/.
   cp bin/reheadSQ $INST_PATH/bin/.
   touch $SETUP_DIR/bam_stats.success
-  # need to clean up as will clash with other version
-  rm -rf $SAMTOOLS
   make -C c clean
 fi
 
