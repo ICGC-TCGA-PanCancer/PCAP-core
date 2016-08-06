@@ -27,17 +27,16 @@ use autodie qw(:all);
 use English qw( -no_match_vars );
 use warnings FATAL => 'all';
 use Carp qw( croak );
-use Config; # so we can see if threads are enabled
 use File::Spec;
 use File::Path qw(make_path);
 use Try::Tiny qw(try catch finally);
 use Capture::Tiny qw(capture);
 use IO::File;
 use Const::Fast qw(const);
+use Scalar::Util qw(looks_like_number);
 
-BEGIN {
-  if($Config{useithreads}) { use threads; }
-};
+our $CAN_USE_THREADS = 0;
+$CAN_USE_THREADS = eval 'use threads; 1';
 
 const my $SCRIPT_OCT_MODE => 0777;
 
@@ -45,15 +44,16 @@ our $OUT_ERR = 1;
 
 sub new {
   my ($class, $max_threads) = @_;
-  unless($Config{useithreads}) {
-    warn "Threading is not available perl component will run as a single process";
-    $max_threads = 1;
-  }
+  croak "Number of threads was NAN: $max_threads" if(defined $max_threads && !looks_like_number($max_threads));
   unless(defined $max_threads) {
     warn "Thread count not defined, defaulting to 1.\n";
     $max_threads = 1;
   }
-  croak "Number of threads was NAN: $max_threads" if($max_threads !~ m/^[[:digit:]]+$/xms);
+  if($max_threads > 1 && $CAN_USE_THREADS == 0) {
+    warn "Threading is not available perl component will run as a single process";
+    $max_threads = 1;
+  }
+
   my $self = {'threads' => $max_threads,
               'join_interval' => 1,};
   bless $self, $class;
@@ -109,24 +109,24 @@ sub run {
   my $thread_count = $self->{'functions'}->{$function_name}->{'threads'};
 
   # uncoverable branch true
-  if($thread_count > 1 && $Config{useithreads}) {
+  if($thread_count > 1 && $CAN_USE_THREADS) {
     # reserve 0 for when people want to use 'success_exists/touch_success' for non-threaded steps
     # makes it easy to see in progress area which steps are threaded
     my $index = 1;
     while($index <= $iterations) {
-      while(threads->list(threads::all) < $thread_count && $index <= $iterations) {
+      while(threads->list(threads::all()) < $thread_count && $index <= $iterations) {
         threads->create($function_ref, $index++, @params);
         last if($index > $iterations);
       }
-      sleep $self->thread_join_interval while(threads->list(threads::joinable) == 0);
-      for my $thr(threads->list(threads::joinable)) {
+      sleep $self->thread_join_interval while(threads->list(threads::joinable()) == 0);
+      for my $thr(threads->list(threads::joinable())) {
         $thr->join;
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
     }
     # last gasp for any remaining threads
-    sleep $self->thread_join_interval while(threads->list(threads::running) > 0);
-    for my $thr(threads->list(threads::joinable)) {
+    sleep $self->thread_join_interval while(threads->list(threads::running()) > 0);
+    for my $thr(threads->list(threads::joinable())) {
       $thr->join;
       if(my $err = $thr->error) { die "Thread error: $err\n"; }
     }
