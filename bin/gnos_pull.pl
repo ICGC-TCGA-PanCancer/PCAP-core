@@ -43,6 +43,9 @@ use List::Util qw(first any);
 use Proc::PID::File;
 use Data::Dumper;
 
+my $CAN_USE_THREADS = 0;
+$CAN_USE_THREADS = eval 'use threads; 1';
+
 use PCAP;
 use PCAP::Cli;
 
@@ -99,7 +102,7 @@ sub load_config {
   }
   if(exists $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'}) {
     my %bl_workflows = map { $_ => 1 } split /[\n,]/, $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'};
-    $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'} = [keys \%bl_workflows];
+    $options->{'COMPOSITE_FILTERS'}->{'not_sanger_workflow'} = [keys %bl_workflows];
   }
 
   croak sprintf q{'KEY_FILE' Ssection is absent from %s}, $options->{'config'} unless($cfg->SectionExists('KEY_FILES'));
@@ -132,8 +135,6 @@ sub load_config {
   return 1;
 }
 
-use threads;
-
 sub pull_data {
   my ($options, $to_process) = @_;
 
@@ -153,6 +154,10 @@ sub pull_data {
   }
 
   my $thread_count = $options->{'threads'};
+  if($CAN_USE_THREADS == 0) {
+    warn "Threading is not available perl component will run as a single process";
+    $thread_count = 1;
+  }
 
 
   while(@{$to_process} > 0) {
@@ -170,13 +175,13 @@ sub pull_data {
 
     warn "Submitting: $donor->{donor_unique_id}\n";
     if($thread_count > 1) {
-      if(threads->list(threads::all) < $thread_count) {
+      if(threads->list(threads::all()) < $thread_count) {
         threads->create($code_ref, $options, $donor, $orig_base, $donor_base);
         # don't sleep if not full yet
-        next if(threads->list(threads::all) < $thread_count);
+        next if(threads->list(threads::all()) < $thread_count);
       }
-      sleep 1 while(threads->list(threads::joinable) == 0);
-      for my $thr(threads->list(threads::joinable)) {
+      sleep 1 while(threads->list(threads::joinable()) == 0);
+      for my $thr(threads->list(threads::joinable())) {
         $thr->join;
         if(my $err = $thr->error) { die "Thread error: $err\n"; }
       }
@@ -187,8 +192,8 @@ sub pull_data {
   }
   if($thread_count > 1) {
     # last gasp for any remaining threads
-    sleep 1 while(threads->list(threads::running) > 0);
-    for my $thr(threads->list(threads::joinable)) {
+    sleep 1 while(threads->list(threads::running()) > 0);
+    for my $thr(threads->list(threads::joinable())) {
       $thr->join;
       if(my $err = $thr->error) { die "Thread error: $err\n"; }
     }

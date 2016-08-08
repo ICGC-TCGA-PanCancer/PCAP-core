@@ -42,7 +42,7 @@ LFLAGS?= -L$(HTSTMP)
 # define any libraries to link into executable:
 #   if I want to link in libraries (libx.so or libx.a) I use the -llibname
 #   option, something like (this will link in libmylib.so and libm.so:
-LIBS =-lhts -lpthread -lz -lm
+LIBS =-lhts -lpthread -lz -lm -ldl
 
 # define the C source files
 SRCS = ./bam_access.c ./bam_stats_output.c ./bam_stats_calcs.c
