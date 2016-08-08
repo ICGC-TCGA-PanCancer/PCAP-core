@@ -168,6 +168,7 @@ else
   cp bin/bam_stats $INST_PATH/bin/.
   cp bin/bwcat $INST_PATH/bin/.
   cp bin/reheadSQ $INST_PATH/bin/.
+  cp bin/bam2bedgraph $INST_PATH/bin/.
   touch $SETUP_DIR/bam_stats.success
   # need to clean up as will clash with other version
   rm -rf $SAMTOOLS
