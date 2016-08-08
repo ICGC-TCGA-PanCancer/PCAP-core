@@ -66,7 +66,7 @@ MD := mkdir
 BAM_STATS_TARGET=../bin/bam_stats
 CAT_TARGET=../bin/bwcat
 SQ_TARGET=../bin/reheadSQ
-BAM2BW_TARGET=../bin/bam2bedgraph
+BAM2BG_TARGET=../bin/bam2bedgraph
 
 #
 # The following part of the makefile is generic; it can be used to
@@ -78,7 +78,7 @@ BAM2BW_TARGET=../bin/bam2bedgraph
 
 .NOTPARALLEL: test
 
-all: clean pre make_htslib_tmp $(BAM_STATS_TARGET) $(BAM2BW_TARGET) test remove_htslib_tmp $(CAT_TARGET) $(SQ_TARGET)
+all: clean pre make_htslib_tmp $(BAM_STATS_TARGET) $(BAM2BG_TARGET) test remove_htslib_tmp $(CAT_TARGET) $(SQ_TARGET)
 	@echo  bam_stats, reheadSQ and bwcat compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
@@ -87,8 +87,8 @@ $(BAM_STATS_TARGET): $(OBJS)
 $(CAT_TARGET):
 	$(CC) $(CAT_INCLUDES) $(CFLAGS) ./bwcat.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit -o $(CAT_TARGET)
 
-$(BAM2BW_TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM2BW_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam2bedgraph.c
+$(BAM2BG_TARGET): $(OBJS)
+	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM2BG_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam2bedgraph.c
 
 $(SQ_TARGET):
 	$(CC) $(CFLAGS) ./reheadSQ.c -o $(SQ_TARGET)
