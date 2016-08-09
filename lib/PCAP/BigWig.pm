@@ -46,11 +46,10 @@ sub bamToBw {
     my $outfile = q{'}.File::Spec->catfile($options->{'tmp'}, $seq.'.bw').q{'};
 
     my $command = q{bash -c "set pipefail; };
-    $command .= _which('samtools');
-    $command .= q{ view -T }.$options->{'reference'};
-    $command .= q{ -F 3844}; # don't include data that set these flags
-    $command .= q{ -ub }.$options->{'bam'}.q{ '}.$seq.q{'};
-    $command .= ' | '._which('bam2bedgraph').' - ';
+    $command .= _which('bam2bedgraph');
+    $command .= q{ -f 3844};
+    $command .= q{ -r }.$seq;
+    $command .= q{ -i }.$options->{'bam'};
     $command .= ' | ';
     $command .= _which('wigToBigWig');
     $command .= ' -fixedSummaries -keepAllChromosomes stdin '.$options->{'reference'}.'.fai '.$outfile;
