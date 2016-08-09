@@ -38,6 +38,9 @@ sub bamToBw {
   return if(exists $options->{'index'} && $index != $options->{'index'});
   return if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
 
+  my $filter = 3844; # see https://broadinstitute.github.io/picard/explain-flags.html
+  $filter = $options->{'filter'} if(exists($options->{'filter'});
+
   my @seqs = @{$options->{'sequences'}};
   my $iter = 1;
   for my $seq(@seqs) {
@@ -47,7 +50,7 @@ sub bamToBw {
 
     my $command = q{bash -c "set pipefail; };
     $command .= _which('bam2bedgraph');
-    $command .= q{ -f 3844};
+    $command .= q{ -f }.$filter;
     $command .= q{ -r }.$seq;
     $command .= q{ -i }.$options->{'bam'};
     $command .= ' | ';

@@ -82,6 +82,7 @@ sub setup {
               'r|reference=s' => \$opts{'reference'},
               'p|process=s' => \$opts{'process'},
               'i|index=i' => \$opts{'index'},
+              'f|filter=i' => \$opts{'filter'},
               'j|jobs' => \$opts{'jobs'},
   ) or pod2usage(2);
 
@@ -106,6 +107,7 @@ sub setup {
 
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
+  delete $opts{'filter'} unless(defined $opts{'filter'});
 
   # now safe to apply defaults
   $opts{'threads'} = 1 unless(defined $opts{'threads'});
@@ -160,9 +162,12 @@ bamToBw.pl [options] [file(s)...]
   Required parameters:
     -bam       -b   BAM/CRAM file to be processed.
     -outdir    -o   Folder to output result to.
-    -threads   -t   Number of threads to use. [1]
     -reference -r   Path to genome.fa.
                      - Actually using fa.fai but for convention just provide '.fa' file
+
+  Optional parameters:
+    -threads   -t   Number of threads to use. [1]
+    -filter    -f   Ignore reads with the filter flags [int]
 
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index
