@@ -39,7 +39,7 @@ sub bamToBw {
   return if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), $index);
 
   my $filter = 3844; # see https://broadinstitute.github.io/picard/explain-flags.html
-  $filter = $options->{'filter'} if(exists($options->{'filter'});
+  $filter = $options->{'filter'} if(exists $options->{'filter'});
 
   my @seqs = @{$options->{'sequences'}};
   my $iter = 1;
