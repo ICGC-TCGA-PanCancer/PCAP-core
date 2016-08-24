@@ -319,6 +319,7 @@ else
   cp bin/bwcat $INST_PATH/bin/.
   cp bin/reheadSQ $INST_PATH/bin/.
   cp bin/bam2bedgraph $INST_PATH/bin/.
+  cp bin/bam2bw $INST_PATH/bin/.
   touch $SETUP_DIR/bam_stats.success
   make -C c clean
 fi
