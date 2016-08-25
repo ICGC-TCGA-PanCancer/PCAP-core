@@ -208,7 +208,7 @@ int main(int argc, char *argv[]){
 	}
 
   //Check we've written everything...
-	int ret, n_plp, tid, pos;
+	int n_plp, tid, pos;
   const bam_pileup1_t *plp;
   while ((plp = bam_plp_next(buf, &tid, &pos, &n_plp)) != 0){
     pileup_func(tid, pos, n_plp, plp, &tmp);

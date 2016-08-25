@@ -67,6 +67,7 @@ BAM_STATS_TARGET=../bin/bam_stats
 CAT_TARGET=../bin/bwcat
 SQ_TARGET=../bin/reheadSQ
 BAM2BG_TARGET=../bin/bam2bedgraph
+BAM2BW_TARGET=../bin/bam2bw
 
 #
 # The following part of the makefile is generic; it can be used to
@@ -78,14 +79,17 @@ BAM2BG_TARGET=../bin/bam2bedgraph
 
 .NOTPARALLEL: test
 
-all: clean pre make_htslib_tmp $(BAM_STATS_TARGET) $(BAM2BG_TARGET) test remove_htslib_tmp $(CAT_TARGET) $(SQ_TARGET)
-	@echo  bam_stats, reheadSQ and bwcat compiled.
+all: clean pre make_htslib_tmp $(BAM_STATS_TARGET) $(BAM2BG_TARGET) $(BAM2BW_TARGET) test remove_htslib_tmp $(CAT_TARGET) $(SQ_TARGET)
+	@echo  bam_stats, reheadSQ, bwcat and bam2bw compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
 
 $(CAT_TARGET):
 	$(CC) $(CAT_INCLUDES) $(CFLAGS) ./bwcat.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit -o $(CAT_TARGET)
+
+$(BAM2BW_TARGET):
+	$(CC) $(CAT_INCLUDES) $(INCLUDES) $(CFLAGS) ./bam2bw.c $(CAT_LFLAGS) -lBigWig -lz -lcurl -lm -lgnutls -ltasn1 -lhogweed -lnettle -lgmp -lp11-kit $(LFLAGS) $(LIBS) -o $(BAM2BW_TARGET)
 
 $(BAM2BG_TARGET): $(OBJS)
 	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM2BG_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam2bedgraph.c
@@ -104,6 +108,9 @@ test: $(TESTS)
 coverage: CFLAGS += --coverage
 coverage: test
 
+make_bam2bw: clean pre make_htslib_tmp $(BAM2BW_TARGET) remove_htslib_tmp
+	@echo $(BAM2BW_TARGET) done
+
 make_bigwigcat: $(CAT_TARGET)
 	@echo $(CAT_TARGET) done
 
@@ -118,7 +125,7 @@ remove_htslib_tmp:
 
 copyscript:
 	cp ./scripts/* ./bin/
-	chmod a+x $(BAM_STATS_TARGET) $(CAT_TARGET) $(SQ_TARGET)
+	chmod a+x $(BAM_STATS_TARGET) $(CAT_TARGET) $(SQ_TARGET) $(BAM2BW_TARGET) $(BAM2BG_TARGET)
 
 valgrind:
 	VALGRIND="valgrind --log-file=/tmp/valgrind-%p.log" $(MAKE)
@@ -133,7 +140,7 @@ valgrind:
 
 clean:
 	@echo clean
-	$(RM) ./*.o *~ $(BAM_STATS_TARGET) $(SQ_TARGET) $(CAT_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
+	$(RM) ./*.o *~ $(BAM_STATS_TARGET) $(SQ_TARGET) $(CAT_TARGET) $(BAM2BW_TARGET) $(BAM2BG_TARGET) ./tests/tests_log $(TESTS) ./*.gcda ./*.gcov ./*.gcno *.gcda *.gcov *.gcno ./tests/*.gcda ./tests/*.gcov ./tests/*.gcno
 	-rm -rf $(HTSTMP)
 
 depend: $(SRCS)
