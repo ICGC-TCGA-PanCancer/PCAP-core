@@ -13,10 +13,11 @@ char *out_file = "output.bam.bw";
 char *input_file = NULL;
 char *region_store = NULL;
 char **our_region_list = NULL;
+char *reference = NULL;
 uint32_t region_list_count = 0;
 int is_regions_file = 0;
-uint8_t base_bit = 0;
-int filter = 0;
+uint8_t is_base = 0;
+int filter = 4;
 char base = 0;
 uint32_t single = 1;
 
@@ -27,7 +28,19 @@ typedef struct {
   hts_idx_t *idx;
 	bam_hdr_t *head;
 	bigWigFile_t *out;
+
 } tmpstruct_t;
+
+typedef struct {
+  uint32_t ltid;
+  int      lstart,lcoverage,lpos,beg,end;
+  float lbaseprop;
+  htsFile *in;
+  hts_idx_t *idx;
+	bam_hdr_t *head;
+	bigWigFile_t *out;
+	uint8_t base_bit;
+} tmpstructbase_t;
 
 void print_version (int exit_code){
   printf ("%s\n",VERSION);
@@ -59,13 +72,15 @@ int check_exist(char *fname){
 }
 
 void print_usage (int exit_code){
-	printf("Usage: bam2bw -i input.[b|cr]am -o output.bw\n\n");
+	printf("Usage: bam2bw -i input.[b|cr]am -o output.bw\n");
+	printf("bam2bw can be used to generate a bw file of coverage from a [cr|b]am file or a per base proportion bigwig file over a specified region.\n\n");
 	printf("-i  --input [file]                                Path to the input [b|cr]am file.\n");
 	printf("-F  --filter [int]                                SAM flags to filter. [default: %d]\n",filter);
-	printf("-o  --outfile [file]                              Path to the output .bw file produced. [default:'%s']\n\n",out_file);
+	printf("-o  --outfile [file]                              Path to the output .bw file produced. Per base results wiillbe output as four bw files [ACGT].outputname.bw [default:'%s']\n\n",out_file);
 	printf("Optional: \n");
-	printf("-b  --base [char]                                 To produce a single base coverage bigwig file [ACTG]. Must be used in conjunction with -r|--region\n");
-	printf("-r  --region [file]                               A samtools style region (contig:start-stop) or a bed file of regions over which to produce the bigwig file\n\n");
+	printf("-b  --perbase                                     To produce per base coverage bigwig files [ACTG]. Must be used in conjunction with -r|--region\n");
+	printf("-c  --region [file]                               A samtools style region (contig:start-stop) or a bed file of regions over which to produce the bigwig file\n");
+	printf("-r  --reference [file]                            Path to reference genome.fa file (required for cram if ref_path cannot be resolved)\n\n");
   printf ("Other:\n");
 	printf("-h  --help                                        Display this usage information.\n");
 	printf("-v  --version                                     Prints the version number.\n\n");
@@ -220,8 +235,9 @@ void setup_options(int argc, char *argv[]){
              	{"input", required_argument, 0, 'i'},
              	{"filter", required_argument, 0, 'F'},
              	{"outfile",required_argument, 0, 'o'},
-             	{"base",required_argument, 0, 'b'},
-             	{"region",required_argument, 0, 'r'},
+             	{"base",no_argument, 0, 'b'},
+             	{"region",required_argument, 0, 'c'},
+             	{"reference",required_argument, 0, 'r'},
              	{"help", no_argument, 0, 'h'},
              	{"version", no_argument, 0, 'v'},
              	{ NULL, 0, NULL, 0}
@@ -232,7 +248,7 @@ void setup_options(int argc, char *argv[]){
    int iarg = 0;
 
    //Iterate through options
-   while((iarg = getopt_long(argc, argv, "F:i:o:b:r:hv",long_opts, &index)) != -1){
+   while((iarg = getopt_long(argc, argv, "F:i:o:c:r:bhv",long_opts, &index)) != -1){
     switch(iarg){
       case 'F':
         if(sscanf(optarg, "%i", &filter) != 1){
@@ -256,7 +272,7 @@ void setup_options(int argc, char *argv[]){
 			case 'v':
 				print_version (0);
 				break;
-			case 'r':
+			case 'c':
 			  region_store = optarg;
 			  //First check for a region format
 			  int res = check_region_string(region_store);
@@ -265,30 +281,11 @@ void setup_options(int argc, char *argv[]){
           print_usage(1);
         }
 			  break;
+			case 'r':
+			  reference = optarg;
+			  break;
 			case 'b':
-			  if(sscanf(optarg, "%c", &base) != 1){
-      		fprintf(stderr,"Error parsing -b|--base argument '%s'. Should be a single character > 0",optarg);
-      		print_usage(1);
-      	}
-			  if(base != 'A' && base != 'C' && base != 'G' && base != 'T'){
-          fprintf(stderr,"Single base %c provided must match [ACGT].\n",base);
-          print_usage(1);
-			  }else{
-          switch (base){
-            case 'A':
-              base_bit = 1;
-              break;
-            case 'C':
-              base_bit = 2;
-              break;
-            case 'G':
-              base_bit = 4;
-              break;
-            case 'T':
-              base_bit = 8;
-              break;
-          }
-			  }
+			  is_base = 1;
 			  break;
 			case '?':
         print_usage (1);
@@ -304,7 +301,7 @@ void setup_options(int argc, char *argv[]){
     print_usage(1);
   }
 
-  if(base_bit != 0 && region_store==NULL){
+  if(is_base && region_store==NULL){
     fprintf(stderr,"Option -r|--region must be used with the -b|--base option.\n");
     print_usage(1);
   }
@@ -313,20 +310,49 @@ void setup_options(int argc, char *argv[]){
 }
 
 // callback for bam_plbuf_init()
-static int pileup_func(uint32_t tid, uint32_t position, int n, const bam_pileup1_t *pl, void *data)
-{
+static int perbase_pileup_func(uint32_t tid, uint32_t position, int n, const bam_pileup1_t *pl, void *data){
+  tmpstructbase_t *tmp = (tmpstructbase_t*)data;
+  int pos              = (int)position;
+  int coverage         = n;
+  int base_coverage    = 0;
+  int i;
+  for (i=0;i<n;i++){
+    if (pl[i].is_del){
+      coverage--;
+    }else{
+      if(bam_seqi(bam_get_seq(pl[i].b), pl[i].qpos) == tmp->base_bit) base_coverage++;
+    }
+  }
+  float result = 0;
+  if(base_coverage>0) result = (float)base_coverage / (float) coverage;
+  if(tmp->ltid != tid || tmp->lbaseprop != result || pos > tmp->lpos+1){
+    //if(tmp->lpos > 0){
+      uint32_t start =  tmp->lstart;
+      uint32_t stop = (tmp->lpos +1);
+      float res = tmp->lbaseprop;
+      bwAddIntervals(tmp->out,&tmp->head->target_name[tmp->ltid],&start,&stop,&res,single);
+    //}
+    tmp->ltid          = tid;
+    tmp->lstart        = pos;
+    tmp->lbaseprop     = result;
+  }
+  tmp->lpos = pos;
+  return 0;
+}
+
+// callback for bam_plbuf_init()
+static int pileup_func(uint32_t tid, uint32_t position, int n, const bam_pileup1_t *pl, void *data){
   tmpstruct_t *tmp = (tmpstruct_t*)data;
   int pos          = (int)position;
   int coverage     = n;
   int i;
   for (i=0;i<n;i++)
-    if (pl[i].is_del ||
-          (base_bit>0 && bam_seqi(bam_get_seq(pl[i].b), pl[i].qpos)!=base_bit)) coverage--;
+    if (pl[i].is_del) coverage--;
   if (tmp->ltid != tid || tmp->lcoverage != coverage || pos > tmp->lpos+1) {
     if (tmp->lpos > 0 && tmp->lcoverage > 0){
       uint32_t start =  tmp->lstart;
-      uint32_t stop = tmp->lpos+1;
-      float cvg = tmp->lcoverage;
+      uint32_t stop = (tmp->lpos +1);
+      float cvg = (float)tmp->lcoverage;
       bwAddIntervals(tmp->out,&tmp->head->target_name[tmp->ltid],&start,&stop,&cvg,single);
     }
     tmp->ltid       = tid;
@@ -337,9 +363,28 @@ static int pileup_func(uint32_t tid, uint32_t position, int n, const bam_pileup1
   return 0;
 }
 
+bigWigFile_t *initialise_bw_output(char *out_file, chromList_t *chromList){
+  //Open output file
+  bigWigFile_t *fp = bwOpen(out_file, NULL, "w");
+  check(fp, "Error opening %s for writing.",out_file);
+  //10 zoom levels
+  int res = bwCreateHdr(fp, 10);
+  check(!res,"Received error %d in bwCreateHeader for %s",res,out_file);
+  //Create the chromosome lists
+  fp->cl = bwCreateChromList(chromList->chrom, chromList->len, chromList->nKeys);
+  check(fp->cl != NULL, "Error generating chromlist as bw for %s.",out_file);
+  res = bwWriteHdr(fp);
+  check(!res,"Error %d writing bw header for %s.",res,out_file);
+
+  return fp;
+error:
+  return NULL;
+}
+
 int main(int argc, char *argv[]){
 	setup_options(argc, argv);
 	tmpstruct_t tmp;
+	tmpstructbase_t *perbase = NULL;
 	int no_of_regions = 0;
 	int sq_lines = get_no_of_SQ_lines(input_file);
 	FILE *fp_bed = NULL;
@@ -413,7 +458,6 @@ int main(int argc, char *argv[]){
   //Now create a bigwigfile
   //Open file as a bw file
   chromList_t *chromList = NULL;
-  bigWigFile_t *bw_out = NULL;
   bam_plp_t buf = NULL;
 	bam1_t *b = NULL;
   hts_itr_t *iter = NULL;
@@ -429,32 +473,58 @@ int main(int argc, char *argv[]){
   int res = build_chromList_from_bam(chromList,input_file);
   check(res==1,"Error building chromList from bam header.");
 
-  //Open output file
-  bw_out = bwOpen(out_file, NULL, "w");
-  check(bw_out!=NULL, "Error opening %s for writing.",out_file);
   //Initialise bw
   res = bwInit(1<<17);
   check(res==0,"Received an error in bwInit");
-  //10 zoom levels
-  res = bwCreateHdr(bw_out, 10);
-  check(res==0,"Received error %d in bwCreateHeader",res);
-  //Create the chromosome lists
-  bw_out->cl = bwCreateChromList(chromList->chrom, chromList->len, chromList->nKeys);
-  check(bw_out->cl != NULL, "Error generating chromlist as bw.");
-  res = bwWriteHdr(bw_out);
-  check(res==0,"Error %d writing bw header.",res);
+
+  if(!is_base){
+    tmp.out = initialise_bw_output(out_file,chromList);
+    check(tmp.out!= NULL,"Error initialising bw output file %s.",out_file);
+  }
 
   tmp.beg = 0; tmp.end = 0x7fffffff;
   tmp.lstart    = 0;
   tmp.lcoverage = 0;
   tmp.ltid      = 0;
   tmp.lpos      = 0;
-  tmp.out       = bw_out;
-
   //Open input file
   tmp.in = hts_open(input_file, "r");
   check(tmp.in!=0,"Failed to open [CR|B]AM file '%s'.", input_file);
+  if(reference){
+    int check = hts_set_fai_filename(tmp.in, reference);
+    check(check==0,"Error setting reference %s for hts file %s.",reference,input_file);
+  }
   tmp.head = sam_hdr_read(tmp.in);
+  check(tmp.head!=0,"Failed to read header from [CR|B]AM file '%s'.", input_file);
+
+  if(is_base){
+    uint8_t base_bit_list[] = {1,2,4,8};
+    char *base_list[] = {"A","C","G","T"};
+    perbase = malloc(4 * sizeof(tmpstructbase_t));
+    check_mem(perbase);
+    int l=0;
+    for(l=0;l<4;l++){
+      perbase[l].lstart = 0;
+      perbase[l].lcoverage = 0;
+      perbase[l].ltid = 0;
+      perbase[l].lpos = 0;
+      perbase[l].beg = 0;
+      perbase[l].end = 0x7fffffff;
+      perbase[l].lbaseprop = 0;
+      perbase[l].base_bit = base_bit_list[l];
+      char *name = malloc(sizeof(char *) * (strlen(out_file)+3));
+      check_mem(name);
+      memcpy(name,base_list[l],sizeof(base_list[l]));
+      strcat(name,".");
+      strcat(name,out_file);
+      perbase[l].out = initialise_bw_output(name,chromList);
+      check(perbase[l].out != NULL,"Error initialising bw output file %s.",name);
+      free(name);
+      perbase[l].in = tmp.in;
+      perbase[l].head = tmp.head;
+    }
+  }
+
   //Now we generate the bw info
   int i=0;
 	for(i=0;i<no_of_regions;i++){
@@ -464,8 +534,7 @@ int main(int argc, char *argv[]){
     tmp.idx = sam_index_load(tmp.in,input_file);
     check(tmp.idx!=0,"Fail to open [CR|B]AM index for file '%s'.", input_file);
     iter = sam_itr_querys(tmp.idx, tmp.head, our_region_list[i]);
-
-     //TODO bam to bedgraph but instead put into BW.
+    //bam to bedgraph equivalent, straight into BW.
     int result;
     while ((result = sam_itr_next(tmp.in, iter, b)) >= 0) {
       if((b->core.flag & filter)>0) continue; //Skip if this is a filtered read
@@ -474,7 +543,15 @@ int main(int argc, char *argv[]){
       ret = bam_plp_push(buf, b);
       if (ret < 0) break;
       while ((plp = bam_plp_next(buf, &tid, &pos, &n_plp)) != 0){
+        if(is_base){
+          int b=0;
+          for(b=0;b<4;b++){
+            perbase[b].idx = tmp.idx;
+            perbase_pileup_func(tid, pos, n_plp, plp, &perbase[b]);
+          }
+        }else{
           pileup_func(tid, pos, n_plp, plp, &tmp);
+        }
       }
     }
     bam_plp_push(buf,0);
@@ -483,19 +560,45 @@ int main(int argc, char *argv[]){
     int n_plp, tid, pos;
     const bam_pileup1_t *plp;
     while ((plp = bam_plp_next(buf, &tid, &pos, &n_plp)) != 0){
-      pileup_func(tid, pos, n_plp, plp, &tmp);
+      if(is_base){
+        int b=0;
+        for(b=0;b<4;b++){
+          perbase_pileup_func(tid, pos, n_plp, plp, &perbase[b]);
+        }
+      }else{
+        pileup_func(tid, pos, n_plp, plp, &tmp);
+      }
     }
     uint32_t start =  tmp.lstart;
     uint32_t stop = tmp.lpos+1;
     float cvg = tmp.lcoverage;
-    bwAddIntervals(tmp.out,&tmp.head->target_name[tmp.ltid],&start,&stop,&cvg,single);
+    if(is_base){
+      int b=0;
+      for(b=0;b<4;b++){
+        float result = perbase[b].lbaseprop;
+        uint32_t start =  perbase[b].lstart;
+        uint32_t stop = perbase[b].lpos+1;
+        bwAddIntervals(perbase[b].out,&perbase[b].head->target_name[perbase[b].ltid],&start,&stop,&result,single);
+      }
+    }else{
+      bwAddIntervals(tmp.out,&tmp.head->target_name[tmp.ltid],&start,&stop,&cvg,single);
+    }
 
     bam_plp_destroy(buf);
     bam_destroy1(b);
     sam_itr_destroy(iter);
 	}
 
-  bwClose(bw_out);
+
+  if(is_base){
+    int b=0;
+    for(b=0;b<4;b++){
+      bwClose(perbase[b].out);
+    }
+  }else{
+    bwClose(tmp.out);
+  }
+
   bwCleanup();
   hts_close(tmp.in);
   int clean=0;
@@ -504,9 +607,11 @@ int main(int argc, char *argv[]){
       free(chromList->chrom[clean]);
     }
   }
+  free(chromList->chrom);
   free(chromList->len);
   free(chromList);
   hts_idx_destroy(tmp.idx);
+  if(is_base) free(perbase);
   bam_hdr_destroy(tmp.head);
   free(our_region_list);
   return 0;
@@ -514,5 +619,6 @@ int main(int argc, char *argv[]){
 error:
   if(our_region_list) free(our_region_list);
   if(fp_bed) fclose(fp_bed);
+  if(perbase) free(perbase);
   return -1;
 }
