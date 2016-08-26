@@ -1,3 +1,5 @@
+.travis.yml
+bin/bam2bedgraph
 bin/bam_stats.pl
 bin/bam_to_sra_sub.pl
 bin/bamToBw.pl
@@ -9,6 +11,7 @@ bin/gnos_pull.pl
 bin/monitor.pl
 bin/xam_coverage_bins.pl
 bin/xml_to_bas.pl
+c/bam2bedgraph.c
 c/bam_access.c
 c/bam_access.h
 c/bam_stats.c
@@ -27,6 +30,7 @@ c/dbg.h
 c/khash.h
 c/reheadSQ.c
 CHANGES.md
+dists/patch/Bio-BigFile_build.patch
 dists/snappy-1.1.2.tar.gz
 docs.tar.gz
 examples/gnos_pull.ini
