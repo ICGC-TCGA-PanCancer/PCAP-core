@@ -97,6 +97,8 @@ sub setup {
               'p|process=s' => \$opts{'process'},
               'i|index=i' => \$opts{'index'},
               'b|bwa=s' => \$opts{'bwa'},
+              'c|cram' => \$opts{'cram'},
+              'sc|scramble=s' => \$opts{'scramble'},
   ) or pod2usage(2);
 
   pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -126,6 +128,9 @@ sub setup {
   delete $opts{'process'} unless(defined $opts{'process'});
   delete $opts{'index'} unless(defined $opts{'index'});
   delete $opts{'bwa'} unless(defined $opts{'bwa'});
+  delete $opts{'scramble'} unless(defined $opts{'scramble'});
+
+  PCAP::Cli::opt_requires_opts('scramble', \%opts, ['cram']);
 
   # now safe to apply defaults
   $opts{'threads'} = 1 unless(defined $opts{'threads'});
@@ -189,10 +194,13 @@ bwa_mem.pl [options] [file(s)...]
     -threads   -t   Number of threads to use. [1]
 
   Optional parameters:
-    -fragment  -f   Split input into fragements of X million repairs
+    -fragment  -f   Split input into fragements of X million repairs [10]
     -nomarkdup -n   Don't mark duplicates
-    -bwa       -b   Single quoted string of parameters to pass to BWA
-                     - overrides all defaults except '-t,-p,-R'
+    -cram      -c   Output cram, see '-sc'
+    -scramble  -sc  Single quoted string of parameters to pass to Scramble when '-c' used
+                    - '-I,-O' are used internally and should not be provided
+    -bwa       -b   Single quoted string of additional parameters to pass to BWA
+                     - '-t,-p,-R' are used internally and should not be provided
 
   Targeted processing:
     -process   -p   Only process this step then exit, optionally set -index

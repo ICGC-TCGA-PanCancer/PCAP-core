@@ -36,8 +36,11 @@ use Data::UUID;
 use PCAP::Threaded;
 
 const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
-const my $BAMBAM_DUP => q{ index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%s };
-const my $BAMBAM_MERGE => q{ tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
+const my $BAMBAM_DUP => q{ %s index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%s };
+const my $BAMBAM_MERGE => q{ %s tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
+const my $BAMBAM_DUP_CRAM => q{ %s tmpfile=%s M=%s markthreads=%s level=0| scramble -r %s -I bam -O cram %s | tee %s | samtools index - %s.crai};
+const my $BAMBAM_MERGE_CRAM => q{ %s tmpfile=%s level=0 | scramble -r %s -I bam -O cram %s | tee %s | samtools index - %s.crai};
+const my $CRAM_CHKSUM => q{md5sum %s | perl -ne '/^(\S+)/; print "$1";' > %s.md5};
 const my $BAM_STATS => q{ -i %s -o %s};
 
 sub new {
@@ -96,45 +99,92 @@ sub merge_and_mark_dup {
   my ($options, $source) = @_;
   my $tmp = $options->{'tmp'};
   my $marked = File::Spec->catdir($options->{'outdir'}, $options->{'sample'});
-  $marked .= '.bam';
-  return $marked if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
-  my $helper_threads = $options->{'threads'}-1;
-  # uncoverable branch true
-  # uncoverable branch false
-  $helper_threads = 1 if($helper_threads < 1);
-  # uncoverable branch true
-  # uncoverable branch false
-  my $command;
-  if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
-    $command = _which('bammerge') || die "Unable to find 'bammarkduplicates' in path";
-    $command .= sprintf $BAMBAM_MERGE,  File::Spec->catfile($tmp, 'biormdup'),
-                                        $marked,
-                                        $marked,
-                                        $marked;
+
+  my @commands;
+
+  if($options->{'cram'}) {
+    $marked .= '.cram';
   }
   else {
-    my $met = "$marked.met";
-    $command = _which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
-    $command .= sprintf $BAMBAM_DUP,  File::Spec->catfile($tmp, 'biormdup'),
-                                      $marked,
-                                      $met,
-                                      $helper_threads;
+    $marked .= '.bam';
   }
 
+  return $marked if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
+  my $helper_threads = $options->{'threads'}-1;
+
+  $helper_threads = 1 if($helper_threads < 1);
+
+  my $input_str = q{};
   if(defined $source) {
     opendir(my $dh, $source);
     while(my $file = readdir $dh) {
       next unless($file =~ m/_sorted\.bam$/);
-      $command .= ' I='.File::Spec->catfile($source, $file);
+      $input_str .= ' I='.File::Spec->catfile($source, $file);
     }
     closedir $dh;
   }
   else {
     for(@{$options->{'meta_set'}}) {
-      $command .= ' I='.$_->tstub.'_sorted.bam';
+      $input_str .= ' I='.$_->tstub.'_sorted.bam';
     }
   }
-  PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
+
+  my $bbb_tmp = File::Spec->catfile($tmp, 'biormdup');
+
+  if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
+    $commands[0] = _which('bammerge') || die "Unable to find 'bammerge' in path";
+
+    if($options->{'cram'}) {
+      my $add_sc = $options->{'scramble'} || q{};
+      $commands[0] .= sprintf $BAMBAM_MERGE_CRAM,
+                              $input_str,
+                              $bbb_tmp,
+                              $options->{'reference'},
+                              $add_sc,
+                              $marked,
+                              $marked;
+    }
+    else {
+      $commands[0] .= sprintf $BAMBAM_MERGE,
+                              $input_str,
+                              $bbb_tmp,
+                              $marked,
+                              $marked,
+                              $marked;
+    }
+  }
+  else {
+    my $met = "$marked.met";
+    $commands[0] = _which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
+    if($options->{'cram'}) {
+      my $add_sc = $options->{'scramble'} || q{};
+      $commands[0] .= sprintf $BAMBAM_DUP_CRAM,
+                              $input_str,
+                              $bbb_tmp,
+                              $met,
+                              $helper_threads,
+                              $options->{'reference'},
+                              $add_sc,
+                              $marked,
+                              $marked;
+    }
+    else {
+      $commands[0] .= sprintf $BAMBAM_DUP,
+                              $input_str,
+                              $bbb_tmp,
+                              $marked,
+                              $met,
+                              $helper_threads;
+    }
+  }
+
+  if($options->{'cram'}) {
+    unshift @commands, 'set -o pipefail';
+    push @commands, sprintf $CRAM_CHKSUM, $marked, $marked;
+    push @commands, 'set +o pipefail';
+  }
+
+  PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), \@commands, 0);
   PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $marked;
 }
@@ -143,11 +193,13 @@ sub bam_stats {
   # uncoverable subroutine
   my $options = shift;
   my $tmp = $options->{'tmp'};
-  my $bam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).'.bam';;
-  my $bas = "$bam.bas";
+  my $ext = '.bam';
+  $ext = '.cram' if($options->{'cram'});
+  my $xam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).$ext;
+  my $bas = "$xam.bas";
   return $bas if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
   my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
-  $command .= sprintf $BAM_STATS, $bam, $bas;
+  $command .= sprintf $BAM_STATS, $xam, $bas;
   PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
   PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $bas;
