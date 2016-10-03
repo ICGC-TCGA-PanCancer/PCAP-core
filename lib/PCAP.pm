@@ -25,6 +25,7 @@ use Const::Fast qw(const);
 use base 'Exporter';
 use FindBin qw($Bin);
 use File::Which qw(which);
+use autodie qw(:all);
 
 our $VERSION = '3.1.0';
 our @EXPORT = qw($VERSION _which);
@@ -104,6 +105,17 @@ sub _which {
   $path = which($prog) unless(-e $path);
   die "Failed to find $prog in path or local bin folder ($l_bin)\n\tPATH: $ENV{PATH}\n" unless(defined $path && -e $path);
   return $path;
+}
+
+sub ref_lengths {
+  my $fai_file = shift;
+  my %ctg_lengths;
+  open my $FAI, '<', $fai_file;
+  while(my $l = <$FAI>) {
+    my ($ctg, $len) = split /\t/, $l;
+    $ctg_lengths{$ctg} = $len;
+  }
+  return \%ctg_lengths;
 }
 
 1;

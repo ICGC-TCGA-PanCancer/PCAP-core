@@ -29,6 +29,12 @@ language: perl
 perl:
  - "5.22"
 
+before_script:
+ - git clone --depth 1 --single-branch --branch dev https://github.com/cancerit/cgpBigWig.git
+ - cd cgpBigWig
+ - ./setup.sh $HOME/wtsi-opt
+ - cd ../
+
 script:
  - ./setup.sh ~/wtsi-opt
  - ~/wtsi-opt/bin/samtools view # dump usage to show intact

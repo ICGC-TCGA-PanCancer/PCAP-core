@@ -10,13 +10,9 @@ SOURCE_HTSLIB="https://github.com/samtools/htslib/releases/download/1.3.1/htslib
 # Bio::DB::HTS
 SOURCE_BIOBDHTS="https://github.com/Ensembl/Bio-HTS/archive/2.3.tar.gz"
 
-# for bigwig
-SOURCE_JKENT_BIN="https://github.com/ENCODE-DCC/kentUtils/raw/master/bin/linux.x86_64"
 # for Bio::DB::BigWig
 SOURCE_KENTSRC="ftp://ftp.sanger.ac.uk/pub/cancer/legacy-dependancies/jksrc.v334.zip"
 SOURCE_BIGFILE="http://www.cpan.org/authors/id/L/LD/LDS/Bio-BigFile-1.07.tar.gz"
-# for fast merging of per-chr BW files
-SOURCE_LIB_BW="https://github.com/dpryan79/libBigWig/archive/b36da5a06bffcc1b33c369e078b82f84625fd212.tar.gz"
 
 # for biobambam
 SOURCE_BBB_BIN_DIST="https://github.com/gt1/biobambam2/releases/download/2.0.54-release-20160802163650/biobambam2-2.0.54-release-20160802163650-x86_64-etch-linux-gnu.tar.gz"
@@ -92,6 +88,14 @@ export PATH="$INST_PATH/bin:$PATH"
 SETUP_DIR=$INIT_DIR/install_tmp
 mkdir -p $SETUP_DIR
 
+# check for cgpBigWig
+if [ -e "$INST_PATH/bin/bwjoin" ]; then
+  echo -e "\tcgpBigWig installation found";
+else
+  echo -e "\tERROR: Please see README.md and install cgpBigWig";
+  exit 1
+fi
+
 ## grab cpanm and stick in workspace, then do a self upgrade into bin:
 get_file $SETUP_DIR/cpanm https://cpanmin.us/
 perl $SETUP_DIR/cpanm -l $INST_PATH App::cpanminus
@@ -155,25 +159,6 @@ else
   touch $SETUP_DIR/biohts.success
 fi
 
-
-echo -n "Building jkentUtils ..."
-if [ -e $SETUP_DIR/jkentUtils.success ]; then
-  echo " previously installed ...";
-else
-  echo
-  cd $SETUP_DIR
-  if [[ `uname -m` == x86_64 ]] ; then
-    get_file $INST_PATH/bin/wigToBigWig $SOURCE_JKENT_BIN/wigToBigWig
-    chmod +x $INST_PATH/bin/wigToBigWig
-    touch $SETUP_DIR/jkentUtils.success
-  else
-    if [ ! -e $INST_DIR/bin/wigToBigWig ]; then
-      echo "Binaries only available for x86_64, please install wigToBigWig from kentUtils: https://github.com/ENCODE-DCC/kentUtils"
-      exit 1
-    fi
-  fi
-fi
-
 echo -n "Building htslib ..."
 if [ -e $SETUP_DIR/htslib.success ]; then
   echo " previously installed ...";
@@ -214,21 +199,6 @@ if [[ ",$COMPILE," == *,samtools,* ]] ; then
   fi
 else
   echo "samtools - No change between PCAP versions"
-fi
-
-echo -n "Building libBigWig ..."
-if [ -e $SETUP_DIR/libBigWig.success ]; then
-  echo " previously installed ...";
-else
-  echo
-  cd $SETUP_DIR
-  get_distro "libBigWig" $SOURCE_LIB_BW
-  mkdir -p libBigWig
-  tar --strip-components 1 -C libBigWig -zxf libBigWig.tar.gz
-  make -C libBigWig -j$CPU install prefix=$INST_PATH
-  rm -f $INST_PATH/lib/libBigWig.so
-  rm -f libBigWig.tar.gz
-  touch $SETUP_DIR/libBigWig.success
 fi
 
 cd $SETUP_DIR
@@ -316,10 +286,7 @@ else
   make -C c clean
   env HTSLIB=$SETUP_DIR/htslib make -C c -j$CPU prefix=$INST_PATH
   cp bin/bam_stats $INST_PATH/bin/.
-  cp bin/bwcat $INST_PATH/bin/.
   cp bin/reheadSQ $INST_PATH/bin/.
-  cp bin/bam2bedgraph $INST_PATH/bin/.
-  cp bin/bam2bw $INST_PATH/bin/.
   touch $SETUP_DIR/bam_stats.success
   make -C c clean
 fi
