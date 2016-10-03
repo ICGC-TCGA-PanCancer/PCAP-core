@@ -30,7 +30,7 @@ perl:
  - "5.22"
 
 before_script:
- - git clone --depth 1 --single-branch --branch dev https://github.com/cancerit/cgpBigWig.git
+ - git clone --depth 1 --single-branch --branch develop https://github.com/cancerit/cgpBigWig.git
  - cd cgpBigWig
  - ./setup.sh $HOME/wtsi-opt
  - cd ../
