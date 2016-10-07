@@ -106,9 +106,9 @@ fi
 if [ -e $SETUP_DIR/basePerlDeps.success ]; then
   echo "Previously installed base perl deps..."
 else
-  perlmods=( "ExtUtils::CBuilder" "Module::Build~0.42" "File::ShareDir" "File::ShareDir::Install" "Const::Fast" "File::Which" "LWP::UserAgent" "Bio::Root::Version~1.006009001")
+  perlmods=( "ExtUtils::CBuilder" "Module::Build~0.42" "File::ShareDir" "File::ShareDir::Install" "Const::Fast" "File::Which" "LWP::UserAgent" "Bio::Root::Version@1.006924")
   for i in "${perlmods[@]}" ; do
-    $CPANM -v --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH $i
+    $CPANM --no-interactive --notest --mirror http://cpan.metacpan.org -l $INST_PATH $i
   done
   touch $SETUP_DIR/basePerlDeps.success
 fi
@@ -331,7 +331,7 @@ if [ -e $SETUP_DIR/PCAP_perlPrereq.success ]; then
   echo "PCAP_perlPrereq previously installed ...";
 else
   echo
-  $CPANM -v --no-interactive --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
+  $CPANM --no-interactive --notest --mirror http://cpan.metacpan.org --notest -l $INST_PATH --installdeps .
   touch $SETUP_DIR/PCAP_perlPrereq.success
 fi
 
