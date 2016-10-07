@@ -26,7 +26,7 @@ use base 'Exporter';
 use FindBin qw($Bin);
 use File::Which qw(which);
 
-our $VERSION = '3.1.0';
+our $VERSION = '3.1.1';
 our @EXPORT = qw($VERSION _which);
 
 const my $LICENSE =>
@@ -83,6 +83,7 @@ const my %UPGRADE_PATH => ( # all earlier versions need full upgrade
                             '2.5.0' => 'biobambam',
                             '3.0.0' => '',
                             '3.1.0' => '',
+                            '3.1.1' => '',
                           );
 
 sub license {

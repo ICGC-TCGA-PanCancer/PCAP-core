@@ -1,5 +1,4 @@
 .travis.yml
-bin/bam2bedgraph
 bin/bam_stats.pl
 bin/bam_to_sra_sub.pl
 bin/bamToBw.pl
