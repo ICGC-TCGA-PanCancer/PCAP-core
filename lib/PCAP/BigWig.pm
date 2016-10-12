@@ -48,15 +48,13 @@ sub bamToBw {
 
     my $outfile = q{'}.File::Spec->catfile($options->{'tmp'}, $seq.'.bw').q{'};
 
-    my $command = q{bash -c "set pipefail; };
-    $command .= _which('bam2bedgraph');
-    $command .= q{ -f }.$filter;
-    $command .= q{ -r }.$seq;
+    my $command = _which('bam2bw');
+    $command .= q{ -F }.$filter;
+    $command .= q{ -z};
+    $command .= sprintf q{ -c %s:1-%d}, $seq, $options->{'ctg_lengths'}->{$seq};
     $command .= q{ -i }.$options->{'bam'};
-    $command .= ' | ';
-    $command .= _which('wigToBigWig');
-    $command .= ' -fixedSummaries -keepAllChromosomes stdin '.$options->{'reference'}.'.fai '.$outfile;
-    $command .= q{"};
+    $command .= q{ -o }.$outfile;
+    $command .= q{ -r }.$options->{'reference'};
 
     PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, $index);
 
@@ -72,7 +70,7 @@ sub generateBw {
 
   my $outfile = File::Spec->catfile($options->{'outdir'}, $options->{'sample'}.'.bw');
 
-  my $command = sprintf '%s -p %s -f %s -o %s', _which('bwcat'),
+  my $command = sprintf '%s -p %s -f %s -o %s', _which('bwjoin'),
                                                 $options->{'tmp'},
                                                 $options->{'reference'}.'.fai',
                                                 $outfile;

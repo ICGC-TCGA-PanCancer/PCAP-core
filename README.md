@@ -18,19 +18,22 @@ Please see the [wiki](https://github.com/ICGC-TCGA-PanCancer/PCAP-core/wiki) for
 ---
 
 ###Dependencies/Install
-Some of the code included in this package has dependencies on external packages:
 
- * [biobambam](https://github.com/gt1/biobambam)
- * [bwa](https://github.com/lh3/bwa)
- * [samtools](https://github.com/samtools/samtools)
- * [kentUtils](https://github.com/ENCODE-DCC/kentUtils)
+Please install the following before running `setup.sh`:
+
+* [cgpBigWig](https://github.com/cancerit/cgpBigWig/releases)
+
+Dependancies installed by `setup.sh`:
+
+* [biobambam](https://github.com/gt1/biobambam)
+* [bwa](https://github.com/lh3/bwa)
+* [samtools](https://github.com/samtools/samtools)
 
 And various perl modules.
 
 Please see the respective licence for each before use.
 
-Please use `setup.sh` to install the dependencies.  Please be aware that this expects basic C
-compilation libraries and tools to be available, most are listed in `INSTALL`.
+Please be aware that this expects basic C compilation libraries and tools to be available, most are listed in `INSTALL`.
 
 ---
 

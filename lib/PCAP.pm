@@ -25,6 +25,7 @@ use Const::Fast qw(const);
 use base 'Exporter';
 use FindBin qw($Bin);
 use File::Which qw(which);
+# don't use autodie, only core perl in here
 
 our $VERSION = '3.1.1';
 our @EXPORT = qw($VERSION _which);
@@ -107,6 +108,18 @@ sub _which {
   return $path;
 }
 
+sub ref_lengths {
+  my $fai_file = shift;
+  my %ctg_lengths;
+  open my $FAI, '<', $fai_file or die $!;
+  while(my $l = <$FAI>) {
+    my ($ctg, $len) = split /\t/, $l;
+    $ctg_lengths{$ctg} = $len;
+  }
+  close $FAI;
+  return \%ctg_lengths;
+}
+
 1;
 
 __END__
@@ -130,5 +143,11 @@ Output the brief license text for use in help messages.
   my $install_these = PCAP::upgrade_path('<current_version>');
 
 Return the list of tools that should be installed by setup.sh when upgrading from a previous version.
+
+=item ref_lengths
+
+  my $ref_lengths = PCAP::ref_lengths($fai_file);
+
+Return a hash ref of reference sequence lengths keyed by sequence/contig name.
 
 =back
