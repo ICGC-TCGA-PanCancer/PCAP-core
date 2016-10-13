@@ -10,7 +10,6 @@ bin/gnos_pull.pl
 bin/monitor.pl
 bin/xam_coverage_bins.pl
 bin/xml_to_bas.pl
-c/bam2bedgraph.c
 c/bam_access.c
 c/bam_access.h
 c/bam_stats.c
@@ -18,7 +17,6 @@ c/bam_stats_calcs.c
 c/bam_stats_calcs.h
 c/bam_stats_output.c
 c/bam_stats_output.h
-c/bwcat.c
 c/c_tests/01_bam_stats_output_tests.c
 c/c_tests/02_bam_access_tests.c
 c/c_tests/03_bam_stats_calcs_tests.c

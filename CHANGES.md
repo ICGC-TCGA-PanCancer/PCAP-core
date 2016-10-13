@@ -1,3 +1,21 @@
+### 3.2.0
+* Move from legacy kent bigwig manipulation code and to [`cgpBigWig`](https://github.com/cancerit/cgpBigWig)
+  * Faster and handles the huge number of contigs in many new reference builds.
+  * Resulting changes to underlying installed tools is `bwcat` now `bwjoin` to be more descriptive of actual function.
+
+### 3.1.1
+Handle recent changes to BioPerl structure
+
+### 3.1.0
+* Use BWA default for `-T` previously hard coded to `-T 0`.
+  *  Can be passed through `bwa_mem.pl` other ags to bwa via the `-b` option.
+*  Fix `bam2bedgraph` compilation since changes to underlying libraries
+*  `bamToBw.pl` - expose read flag filters
+*  Drop dependancy on `Bio::DB::HTS INSTALL.pl` as can't fix to known good version.
+*  Added travis CI
+*  Add support for output directly to CRAM
+*  `bwa` version upgraded to [0.7.15](https://github.com/lh3/bwa/releases/tag/v0.7.15)
+
 ### 3.0.0
 * Threading module now converts currently running step to bash script for following reasons:
   * Changes logging to use file redirects instead of Capture::Tiny - prevent log bleed into wrong files
