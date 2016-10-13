@@ -25,8 +25,9 @@ use Const::Fast qw(const);
 use base 'Exporter';
 use FindBin qw($Bin);
 use File::Which qw(which);
+# don't use autodie, only core perl in here
 
-our $VERSION = '3.1.1';
+our $VERSION = '3.2.0';
 our @EXPORT = qw($VERSION _which);
 
 const my $LICENSE =>
@@ -37,53 +38,7 @@ const my $LICENSE =>
 #################";
 
 const my $DEFAULT_PATH => 'biobambam,samtools,bwa';
-const my %UPGRADE_PATH => ( # all earlier versions need full upgrade
-                            '1.2.0'  => 'biobambam,samtools,bwa', # if later versions have new versions then all preceding need that tool listing
-                            '1.2.1'  => 'biobambam,samtools,bwa',
-                            '1.2.2'  => 'biobambam,samtools,bwa',
-                            '1.3.0'  => 'biobambam,samtools,bwa',
-                            '1.4.0'  => 'biobambam,samtools,bwa',
-                            '1.5.0'  => 'biobambam,samtools,bwa',
-                            '1.5.1'  => 'biobambam,samtools,bwa',
-                            '1.5.2'  => 'biobambam,samtools,bwa',
-                            '1.5.3'  => 'biobambam,samtools,bwa',
-                            '1.5.4'  => 'biobambam,samtools,bwa',
-                            '1.6.0'  => 'biobambam,samtools,bwa',
-                            '1.6.1'  => 'biobambam,samtools,bwa',
-                            '1.6.2'  => 'biobambam,samtools,bwa',
-                            '1.6.3'  => 'biobambam,samtools,bwa',
-                            '1.7.0'  => 'biobambam,samtools,bwa',
-                            '1.7.1'  => 'biobambam,samtools,bwa',
-                            '1.8.0'  => 'biobambam,samtools',
-                            '1.8.1'  => 'biobambam,samtools',
-                            '1.8.2'  => 'biobambam,samtools',
-                            '1.9.0'  => 'biobambam,samtools',
-                            '1.9.1'  => 'biobambam,samtools',
-                            '1.9.4'  => 'biobambam,samtools',
-                            '1.10.0'  => 'biobambam,samtools',
-                            '1.11.0'  => 'biobambam,samtools',
-                            '1.11.1'  => 'biobambam,samtools',
-                            '1.12.0'  => 'biobambam,samtools',
-                            '1.12.1'  => 'biobambam,samtools',
-                            '1.12.2'  => 'biobambam,samtools',
-                            '1.12.3'  => 'biobambam,samtools',
-                            '1.13.0'  => 'biobambam,samtools',
-                            '1.13.1'  => 'biobambam,samtools',
-                            '1.13.2'  => 'biobambam,samtools',
-                            '1.14.0'  => 'biobambam,samtools',
-                            '2.0.0'  => 'biobambam',
-                            '2.0.1' => 'biobambam,samtools',
-                            '2.1.0' => 'biobambam,samtools',
-                            '2.1.2' => 'biobambam,samtools',
-                            '2.1.3' => 'biobambam,samtools',
-                            '2.2.0' => 'biobambam,samtools',
-                            '2.2.1' => 'biobambam',
-                            '2.3.0' => 'biobambam',
-                            '2.4.0' => 'biobambam',
-                            '2.5.0' => 'biobambam',
-                            '3.0.0' => '',
-                            '3.1.0' => '',
-                            '3.1.1' => '',
+const my %UPGRADE_PATH => ( # just always install, it's safer
                           );
 
 sub license {
@@ -105,6 +60,18 @@ sub _which {
   $path = which($prog) unless(-e $path);
   die "Failed to find $prog in path or local bin folder ($l_bin)\n\tPATH: $ENV{PATH}\n" unless(defined $path && -e $path);
   return $path;
+}
+
+sub ref_lengths {
+  my $fai_file = shift;
+  my %ctg_lengths;
+  open my $FAI, '<', $fai_file or die $!;
+  while(my $l = <$FAI>) {
+    my ($ctg, $len) = split /\t/, $l;
+    $ctg_lengths{$ctg} = $len;
+  }
+  close $FAI;
+  return \%ctg_lengths;
 }
 
 1;
@@ -130,5 +97,11 @@ Output the brief license text for use in help messages.
   my $install_these = PCAP::upgrade_path('<current_version>');
 
 Return the list of tools that should be installed by setup.sh when upgrading from a previous version.
+
+=item ref_lengths
+
+  my $ref_lengths = PCAP::ref_lengths($fai_file);
+
+Return a hash ref of reference sequence lengths keyed by sequence/contig name.
 
 =back

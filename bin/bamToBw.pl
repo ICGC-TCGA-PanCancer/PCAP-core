@@ -47,8 +47,10 @@ const my %INDEX_FACTOR => ( 'bamToBw' => -1,
 {
   my $options = setup();
 
+  $options->{'ctg_lengths'} = PCAP::ref_lengths($options->{'reference'}.'.fai');
+
  	my $threads = PCAP::Threaded->new($options->{'threads'});
-	&PCAP::Threaded::disable_out_err if(exists $options->{'index'});
+	&PCAP::Threaded::disable_out_err unless(exists $options->{'index'});
 
   # register processes
 	$threads->add_function('bamToBw', \&PCAP::BigWig::bamToBw);
