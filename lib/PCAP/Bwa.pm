@@ -235,10 +235,14 @@ sub bwa_mem {
       $rg_line = q{'}.$rg_line.q{'};
     }
 
-    my $threads = $BWA_MEM_MAX_CORES;
-    $threads = $options->{'threads'} if($options->{'threads'} < $BWA_MEM_MAX_CORES);
+    my $threads = $options->{'map_threads'};
+    $threads = $options->{'threads'} if($options->{'threads'} < $options->{'map_threads'});
 
-    my $bwa = _which('bwa') || die "Unable to find 'bwa' in path";
+    my $bwa = q{};
+    if(exists $options->{'bwa_pl'}) {
+      $bwa .= 'LD_PRELOAD='.$options->{'bwa_pl'}.' ';
+    }
+    $bwa .= _which('bwa') || die "Unable to find 'bwa' in path";
 
     $ENV{SHELL} = '/bin/bash'; # ensure bash to allow pipefail
     my $command = 'set -o pipefail; ';

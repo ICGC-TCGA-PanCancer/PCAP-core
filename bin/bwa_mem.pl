@@ -56,7 +56,7 @@ const my %INDEX_FACTOR => ( 'setup' => 1,
 
   # register processes
 	$threads->add_function('split', \&PCAP::Bwa::split_in);
-	$threads->add_function('bwamem', \&PCAP::Bwa::bwa_mem, exists $options->{'index'} ? 1 : &PCAP::Bwa::bwa_mem_max_cores);
+	$threads->add_function('bwamem', \&PCAP::Bwa::bwa_mem, exists $options->{'index'} ? 1 : $options->{'map_threads'});
 
   PCAP::Bwa::mem_setup($options) if(!exists $options->{'process'} || $options->{'process'} eq 'setup');
 
@@ -89,6 +89,7 @@ sub setup {
               'v|version' => \$opts{'v'},
               'j|jobs' => \$opts{'jobs'},
               't|threads=i' => \$opts{'threads'},
+              'mt|map_threads=i' => \$opts{'map_threads'},
               'r|reference=s' => \$opts{'reference'},
               'o|outdir=s' => \$opts{'outdir'},
               's|sample=s' => \$opts{'sample'},
@@ -99,6 +100,7 @@ sub setup {
               'b|bwa=s' => \$opts{'bwa'},
               'c|cram' => \$opts{'cram'},
               'sc|scramble=s' => \$opts{'scramble'},
+              'l|bwa_pl=s' => \$opts{'bwa_pl'},
   ) or pod2usage(2);
 
   pod2usage(-verbose => 1, -exitval => 0) if(defined $opts{'h'});
@@ -129,6 +131,9 @@ sub setup {
   delete $opts{'index'} unless(defined $opts{'index'});
   delete $opts{'bwa'} unless(defined $opts{'bwa'});
   delete $opts{'scramble'} unless(defined $opts{'scramble'});
+  delete $opts{'bwa_pl'} unless(defined $opts{'bwa_pl'});
+
+  $opts{'map_threads'} = &PCAP::Bwa::bwa_mem_max_cores unless(defined $opts{'map_threads'});
 
   PCAP::Cli::opt_requires_opts('scramble', \%opts, ['cram']);
 
@@ -188,33 +193,39 @@ bwa_mem.pl - Align a set of lanes to specified reference with single command.
 bwa_mem.pl [options] [file(s)...]
 
   Required parameters:
-    -outdir    -o   Folder to output result to.
-    -reference -r   Path to reference genome file *.fa[.gz]
-    -sample    -s   Sample name to be applied to output file.
-    -threads   -t   Number of threads to use. [1]
+    -outdir      -o   Folder to output result to.
+    -reference   -r   Path to reference genome file *.fa[.gz]
+    -sample      -s   Sample name to be applied to output file.
+    -threads     -t   Number of threads to use. [1]
 
   Optional parameters:
-    -fragment  -f   Split input into fragements of X million repairs [10]
-    -nomarkdup -n   Don't mark duplicates
-    -cram      -c   Output cram, see '-sc'
-    -scramble  -sc  Single quoted string of parameters to pass to Scramble when '-c' used
-                    - '-I,-O' are used internally and should not be provided
-    -bwa       -b   Single quoted string of additional parameters to pass to BWA
-                     - '-t,-p,-R' are used internally and should not be provided
+    -fragment    -f   Split input into fragements of X million repairs [10]
+    -nomarkdup   -n   Don't mark duplicates
+    -cram        -c   Output cram, see '-sc'
+    -scramble    -sc  Single quoted string of parameters to pass to Scramble when '-c' used
+                      - '-I,-O' are used internally and should not be provided
+    -bwa         -b     Single quoted string of additional parameters to pass to BWA
+                         - '-t,-p,-R' are used internally and should not be provided
+    -map_threads -mt  Number of cores applied to each parallel BWA job when '-t' exceeds this value and '-i' is not in use[6]
 
   Targeted processing:
-    -process   -p   Only process this step then exit, optionally set -index
-                      bwamem - only applicable if input is bam
-                        mark - Run duplicate marking (-index N/A)
-                       stats - Generates the *.bas file for the final BAM.
+    -process     -p   Only process this step then exit, optionally set -index
+                        bwamem - only applicable if input is bam
+                          mark - Run duplicate marking (-index N/A)
+                         stats - Generates the *.bas file for the final BAM.
 
-    -index     -i   Optionally restrict '-p' to single job
-                      bwamem - 1..<lane_count>
+    -index       -i   Optionally restrict '-p' to single job
+                        bwamem - 1..<lane_count>
+
+  Performance variables
+    -bwa_pl      -l   BWA runs ~8% quicker when using the tcmalloc library from
+                      https://github.com/gperftools/ (assuming number of cores not exceeded)
+                      If available specify the path to 'gperftools/lib/libtcmalloc_minimal.so'.
 
   Other:
-    -jobs      -j   For a parallel step report the number of jobs required
-    -help      -h   Brief help message.
-    -man       -m   Full documentation.
+    -jobs        -j   For a parallel step report the number of jobs required
+    -help        -h   Brief help message.
+    -man         -m   Full documentation.
 
 File list can be full file names or wildcard, e.g.
 
