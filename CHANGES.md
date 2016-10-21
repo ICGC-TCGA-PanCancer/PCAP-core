@@ -1,3 +1,7 @@
+### 3.3.0
+* adds `map_threads|mt` option to `bwa_mem.pl` to allow more control of parallel processing in one shot submission.
+* adds `bwa_pl|l` option to `bwa_mem.pl` to allow preload of different malloc libraries.
+
 ### 3.2.0
 * Move from legacy kent bigwig manipulation code and to [`cgpBigWig`](https://github.com/cancerit/cgpBigWig)
   * Faster and handles the huge number of contigs in many new reference builds.
