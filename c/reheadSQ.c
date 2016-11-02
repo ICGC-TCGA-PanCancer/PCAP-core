@@ -74,7 +74,9 @@ int line_count(char *file){
   char line [ 5000 ];
   int line_count=0;
 	while ( fgets(line,sizeof(line),in) != NULL ){
-	  line_count++;
+	  if(strncmp(line, "@SQ" ,3)==0){
+	    line_count++;
+	  }
 	}
 	//Close input file
   fclose(in);
