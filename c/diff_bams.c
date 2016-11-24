@@ -112,7 +112,7 @@ void options(int argc, char *argv[]){
   }
 
   if(strcmp(bam_a_loc,bam_b_loc)==0){
-    fprintf(stderr,"bam_a '%s' and bam_b '%s' cannot be the same file\n",bam_a_loc,bam_b_loc;
+    fprintf(stderr,"bam_a '%s' and bam_b '%s' cannot be the same file\n",bam_a_loc,bam_b_loc);
     print_usage(1);
   }
 
