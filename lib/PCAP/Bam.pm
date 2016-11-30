@@ -36,10 +36,10 @@ use Data::UUID;
 use PCAP::Threaded;
 
 const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
-const my $BAMBAM_DUP => q{ %s index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%s };
-const my $BAMBAM_MERGE => q{ %s tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
-const my $BAMBAM_DUP_CRAM => q{ %s tmpfile=%s M=%s markthreads=%s level=0| scramble -r %s -I bam -O cram %s | tee %s | samtools index - %s.crai};
-const my $BAMBAM_MERGE_CRAM => q{ %s tmpfile=%s level=0 | scramble -r %s -I bam -O cram %s | tee %s | samtools index - %s.crai};
+const my $BAMBAM_DUP => q{%s level=0 %s | %s index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%d};
+const my $BAMBAM_MERGE => q{%s %s tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
+const my $BAMBAM_DUP_CRAM => q{%s level=0 %s | %s tmpfile=%s M=%s markthreads=%s level=0 | %s -r %s -t %d -I bam -O cram %s | tee %s | %s index - %s.crai};
+const my $BAMBAM_MERGE_CRAM => q{%s %s tmpfile=%s level=0 | %s -r %s -t %d -I bam -O cram %s | tee %s | %s index - %s.crai};
 const my $CRAM_CHKSUM => q{md5sum %s | perl -ne '/^(\S+)/; print "$1";' > %s.md5};
 const my $BAM_STATS => q{ -i %s -o %s};
 
@@ -114,38 +114,49 @@ sub merge_and_mark_dup {
 
   $helper_threads = 1 if($helper_threads < 1);
 
+  my @sorted_bams;
   my $input_str = q{};
   if(defined $source) {
     opendir(my $dh, $source);
     while(my $file = readdir $dh) {
       next unless($file =~ m/_sorted\.bam$/);
-      $input_str .= ' I='.File::Spec->catfile($source, $file);
+      push @sorted_bams, File::Spec->catfile($source, $file);
     }
     closedir $dh;
+
   }
   else {
     for(@{$options->{'meta_set'}}) {
-      $input_str .= ' I='.$_->tstub.'_sorted.bam';
+      push @sorted_bams, $_->tstub.'_sorted.bam';
     }
   }
+  $input_str = ' I='.join(' I=', sort @sorted_bams);
 
   my $bbb_tmp = File::Spec->catfile($tmp, 'biormdup');
 
-  if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
-    $commands[0] = _which('bammerge') || die "Unable to find 'bammerge' in path";
+  my %tools;
+  for my $tool(qw(bammerge bammarkduplicates2 scramble samtools)) {
+    $tools{$tool} = _which($tool) || die "Unable to find '$tool' in path";
+  }
 
+  if(defined $options->{'nomarkdup'} && $options->{'nomarkdup'} == 1) {
     if($options->{'cram'}) {
       my $add_sc = $options->{'scramble'} || q{};
-      $commands[0] .= sprintf $BAMBAM_MERGE_CRAM,
+      $commands[0] = sprintf $BAMBAM_MERGE_CRAM,
+                              $tools{'bammerge'},
                               $input_str,
                               $bbb_tmp,
+                              $tools{'scramble'},
                               $options->{'reference'},
+                              $helper_threads,
                               $add_sc,
                               $marked,
+                              $tools{'samtools'},
                               $marked;
     }
     else {
-      $commands[0] .= sprintf $BAMBAM_MERGE,
+      $commands[0] = sprintf $BAMBAM_MERGE,
+                              $tools{'bammerge'},
                               $input_str,
                               $bbb_tmp,
                               $marked,
@@ -155,22 +166,28 @@ sub merge_and_mark_dup {
   }
   else {
     my $met = "$marked.met";
-    $commands[0] = _which('bammarkduplicates2') || die "Unable to find 'bammarkduplicates' in path";
     if($options->{'cram'}) {
       my $add_sc = $options->{'scramble'} || q{};
-      $commands[0] .= sprintf $BAMBAM_DUP_CRAM,
+      $commands[0] = sprintf $BAMBAM_DUP_CRAM,
+                              $tools{'bammerge'},
                               $input_str,
+                              $tools{'bammarkduplicates2'},
                               $bbb_tmp,
                               $met,
                               $helper_threads,
+                              $tools{'scramble'},
                               $options->{'reference'},
+                              $helper_threads,
                               $add_sc,
                               $marked,
+                              $tools{'samtools'},
                               $marked;
     }
     else {
-      $commands[0] .= sprintf $BAMBAM_DUP,
+      $commands[0] = sprintf $BAMBAM_DUP,
+                              $tools{'bammerge'},
                               $input_str,
+                              $tools{'bammarkduplicates2'},
                               $bbb_tmp,
                               $marked,
                               $met,
