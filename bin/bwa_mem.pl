@@ -67,7 +67,11 @@ const my %INDEX_FACTOR => ( 'setup' => 1,
     $threads->run($options->{'max_index'}, 'bwamem', $options);
   }
 
-  PCAP::Bam::merge_and_mark_dup($options, File::Spec->catdir($options->{'tmp'}, 'sorted')) if(!exists $options->{'process'} || $options->{'process'} eq 'mark');
+  if(!exists $options->{'process'} || $options->{'process'} eq 'mark') {
+    # delete the split area if we've made it here to save space
+    remove_tree(File::Spec->catdir($options->{'tmp'}, 'split'));
+    PCAP::Bam::merge_and_mark_dup($options, File::Spec->catdir($options->{'tmp'}, 'sorted'));
+  }
   if(!exists $options->{'process'} || $options->{'process'} eq 'stats') {
     PCAP::Bam::bam_stats($options);
     &cleanup($options);
