@@ -22,6 +22,10 @@ Please see the [wiki](https://github.com/ICGC-TCGA-PanCancer/PCAP-core/wiki) for
 Please install the following before running `setup.sh`:
 
 * [cgpBigWig](https://github.com/cancerit/cgpBigWig/releases)
+* Addtional OS packages required by `kentsrc`, in Ubuntu naming
+  * unzip
+  * libpng12-dev (for libpng-config)
+  * libmariadbclient-dev (for mysql_config)
 
 Dependancies installed by `setup.sh`:
 
