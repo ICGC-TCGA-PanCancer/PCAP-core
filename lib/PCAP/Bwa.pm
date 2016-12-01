@@ -90,6 +90,22 @@ sub mem_prepare {
   return $options->{'max_split'};
 }
 
+sub clear_split_files {
+  my $options = shift;
+  my $split_dir = File::Spec->catdir($options->{'tmp'}, 'split');
+  my @in_list = (1..$options->{'max_split'}); # get the number of folders that will exist inside of split
+  for my $subd(@in_list) {
+    my $folder = File::Spec->catdir($split_dir, $subd);
+    opendir(my $dh, $folder);
+    while(my $file = readdir $dh) {
+      next if($file =~ m/^\./);
+      open my $T, '>', File::Spec->catfile($folder, $file);
+      close $T;
+    }
+  }
+  return;
+}
+
 sub mem_mapmax {
   my $options = shift;
   my $split_dir = File::Spec->catdir($options->{'tmp'}, 'split');
