@@ -69,7 +69,7 @@ const my %INDEX_FACTOR => ( 'setup' => 1,
 
   if(!exists $options->{'process'} || $options->{'process'} eq 'mark') {
     # delete the split area if we've made it here to save space
-    remove_tree(File::Spec->catdir($options->{'tmp'}, 'split'));
+    PCAP::Bwa::clear_split_files($options);
     PCAP::Bam::merge_and_mark_dup($options, File::Spec->catdir($options->{'tmp'}, 'sorted'));
   }
   if(!exists $options->{'process'} || $options->{'process'} eq 'stats') {
