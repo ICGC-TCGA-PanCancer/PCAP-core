@@ -33,6 +33,8 @@ docs.tar.gz
 examples/gnos_pull.ini
 INSTALL.md
 lib/PCAP.pm
+lib/PCAP/.nfs00000000014fb25d00000040
+lib/PCAP/.nfs00000000014fb26200000041
 lib/PCAP/Bam.pm
 lib/PCAP/Bam/Bas.pm
 lib/PCAP/Bam/Coverage.pm
