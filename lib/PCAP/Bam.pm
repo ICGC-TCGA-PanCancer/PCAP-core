@@ -2,7 +2,7 @@ package PCAP::Bam;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2016 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,9 +36,9 @@ use Data::UUID;
 use PCAP::Threaded;
 
 const my $BAMCOLLATE => q{(%s colsbs=268435456 collate=1 reset=1 exclude=SECONDARY,QCFAIL,SUPPLEMENTARY classes=F,F2 T=%s filename=%s level=1 > %s)};
-const my $BAMBAM_DUP => q{%s level=0 %s | %s index=1 md5=1 tmpfile=%s O=%s M=%s markthreads=%d};
+const my $BAMBAM_DUP => q{%s level=0 %s | %s tmpfile=%s level=0 markthreads=%d M=%s.met | %s tmpfile=%s index=1 md5=1 numthreads=%d md5filename=%s.md5 indexfilename=%s.bai | tee %s | %s -o %s.bas};
 const my $BAMBAM_MERGE => q{%s %s tmpfile=%s md5filename=%s.md5 indexfilename=%s.bai index=1 md5=1 > %s};
-const my $BAMBAM_DUP_CRAM => q{%s level=0 %s | %s tmpfile=%s M=%s markthreads=%s level=0 | %s -r %s -t %d -I bam -O cram %s | tee %s | %s index - %s.crai};
+const my $BAMBAM_DUP_CRAM => q{%s level=0 %s | %s tmpfile=%s M=%s.met markthreads=%s level=0 | %s -r %s -t %d -I bam -O cram %s | tee %s | %s index - %s.crai};
 const my $BAMBAM_MERGE_CRAM => q{%s %s tmpfile=%s level=0 | %s -r %s -t %d -I bam -O cram %s | tee %s | %s index - %s.crai};
 const my $CRAM_CHKSUM => q{md5sum %s | perl -ne '/^(\S+)/; print "$1";' > %s.md5};
 const my $BAM_STATS => q{ -i %s -o %s};
@@ -135,7 +135,7 @@ sub merge_and_mark_dup {
   my $bbb_tmp = File::Spec->catfile($tmp, 'biormdup');
 
   my %tools;
-  for my $tool(qw(bammerge bammarkduplicates2 scramble samtools)) {
+  for my $tool(qw(bammerge bammarkduplicates2 bamrecompress scramble samtools bam_stats)) {
     $tools{$tool} = _which($tool) || die "Unable to find '$tool' in path";
   }
 
@@ -165,7 +165,6 @@ sub merge_and_mark_dup {
     }
   }
   else {
-    my $met = "$marked.met";
     if($options->{'cram'}) {
       my $add_sc = $options->{'scramble'} || q{};
       $commands[0] = sprintf $BAMBAM_DUP_CRAM,
@@ -173,7 +172,7 @@ sub merge_and_mark_dup {
                               $input_str,
                               $tools{'bammarkduplicates2'},
                               $bbb_tmp,
-                              $met,
+                              $marked,
                               $helper_threads,
                               $tools{'scramble'},
                               $options->{'reference'},
@@ -184,14 +183,22 @@ sub merge_and_mark_dup {
                               $marked;
     }
     else {
+      my $brc_tmp = File::Spec->catfile($tmp, 'brcTmp');
       $commands[0] = sprintf $BAMBAM_DUP,
                               $tools{'bammerge'},
                               $input_str,
                               $tools{'bammarkduplicates2'},
                               $bbb_tmp,
+                              $helper_threads,
                               $marked,
-                              $met,
-                              $helper_threads;
+                              $tools{'bamrecompress'},
+                              $brc_tmp,
+                              $helper_threads,
+                              $marked,
+                              $marked,
+                              $marked,
+                              $tools{'bam_stats'},
+                              $marked;
     }
   }
 
@@ -215,9 +222,12 @@ sub bam_stats {
   my $xam = File::Spec->catdir($options->{'outdir'}, $options->{'sample'}).$ext;
   my $bas = "$xam.bas";
   return $bas if PCAP::Threaded::success_exists(File::Spec->catdir($tmp, 'progress'), 0);
-  my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
-  $command .= sprintf $BAM_STATS, $xam, $bas;
-  PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
+  if($options->{'nomarkdup'} || $options->{'cram'}) {
+    # BAM with marked duplicates does this in streaming manner now
+    my $command = _which('bam_stats') || die "Unable to find 'bam_stats' in path";
+    $command .= sprintf $BAM_STATS, $xam, $bas;
+    PCAP::Threaded::external_process_handler(File::Spec->catdir($tmp, 'logs'), $command, 0);
+  }
   PCAP::Threaded::touch_success(File::Spec->catdir($tmp, 'progress'), 0);
   return $bas;
 }
