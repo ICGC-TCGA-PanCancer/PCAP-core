@@ -25,7 +25,6 @@ Please install the following before running `setup.sh`:
 * Addtional OS packages required by `kentsrc`, in Ubuntu naming
   * unzip
   * libpng12-dev (for libpng-config)
-  * libmariadbclient-dev (for mysql_config)
 
 Dependancies installed by `setup.sh`:
 
