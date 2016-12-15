@@ -2,7 +2,7 @@ package PCAP::Bwa;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2016 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@ const my $BAMFASTQ => q{%s view -F 2816 -T %s -u %s| %s exclude=QCFAIL,SECONDARY
 const my $CRAMFASTQ => q{%s reference=%s inputformat=cram exclude=QCFAIL,SECONDARY,SUPPLEMENTARY tryoq=1 gz=1 level=1 outputperreadgroup=1 outputperreadgroupsuffixF=_i.fq outputperreadgroupsuffixF2=_i.fq T=%s outputdir=%s split=%s filename=%};
 const my $BWA_MEM => q{ mem %s %s -R %s -t %s %s};
 const my $ALN_TO_SORTED => q{ sampe -P -a 1000 -r '%s' %s %s_1.sai %s_2.sai %s.%s %s.%s | %s fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam};
-const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam inputthreads=%s outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
+const my $BAMSORT => q{ fixmate=1 inputformat=sam level=1 tmpfile=%s_tmp O=%s_sorted.bam outputthreads=%s calmdnm=1 calmdnmrecompindetonly=1 calmdnmreference=%s};
 
 const my $FALSE_RG => q{@RG\tID:%s\tSM:%s\tLB:default\tPL:ILLUMINA};
 
@@ -310,7 +310,7 @@ sub bwa_mem {
     my $helpers = 1;
     # uncoverable branch true
     # uncoverable branch false
-    $helpers = 2 if($options->{'threads'} > 3);
+    $helpers = $options->{'threads'} - 1 if($options->{'threads'} > 1);
 
     my $sorted_bam_stub = $split;
     $sorted_bam_stub =~ s|/split/([[:digit:]]+)/(.+)$|/sorted/$1_$2|;
@@ -318,7 +318,7 @@ sub bwa_mem {
 
     my $ref = exists $options->{'decomp_ref'} ? $options->{'decomp_ref'} : $options->{'reference'};
     my $sort = _which('bamsort') || die "Unable to find 'bamsort' in path\n";
-    $sort .= sprintf $BAMSORT, File::Spec->catfile($tmp, "bamsort.$index"), $sorted_bam_stub, $helpers, $helpers, $ref;
+    $sort .= sprintf $BAMSORT, File::Spec->catfile($tmp, "bamsort.$index"), $sorted_bam_stub, $helpers, $ref;
 
     $command .= " | $sort";
 
