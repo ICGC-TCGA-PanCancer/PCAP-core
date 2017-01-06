@@ -99,7 +99,9 @@ sub clear_split_files {
     opendir(my $dh, $folder);
     while(my $file = readdir $dh) {
       next if($file =~ m/^\./);
-      open my $T, '>', File::Spec->catfile($folder, $file);
+      my $item = File::Spec->catfile($folder, $file);
+      next if(-l $item);
+      open my $T, '>', $item;
       close $T;
     }
   }
