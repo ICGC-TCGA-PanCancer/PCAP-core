@@ -188,10 +188,10 @@ sub files_to_meta {
         # must be paired fq
         next if(exists $seen_paired_stub{$fq_stub});
         $seen_paired_stub{$fq_stub} = 1;
-        die "Unable to find file for read 1, for ${fq_stub}_X${fq_ext}\n" unless(-e "${fq_stub}_1.$fq_ext");
-        die "Unable to find file for read 2, for ${fq_stub}_X${fq_ext}\n" unless(-e "${fq_stub}_2.$fq_ext");
-        die "File for read 1 is empty: ${fq_stub}_X${fq_ext}\n" unless(-s "${fq_stub}_1.$fq_ext");
-        die "File for read 2 is empty: ${fq_stub}_X${fq_ext}\n" unless(-s "${fq_stub}_2.$fq_ext");
+        die "Unable to find file for read 1, for ${fq_stub}_X.${fq_ext}\n" unless(-e "${fq_stub}_1.$fq_ext");
+        die "Unable to find file for read 2, for ${fq_stub}_X.${fq_ext}\n" unless(-e "${fq_stub}_2.$fq_ext");
+        die "File for read 1 is empty: ${fq_stub}_X.${fq_ext}\n" unless(-s "${fq_stub}_1.$fq_ext");
+        die "File for read 2 is empty: ${fq_stub}_X.${fq_ext}\n" unless(-s "${fq_stub}_2.$fq_ext");
         $meta->{'paired_fq'} = 1;
         $are_paired_fq = 1;
       }
