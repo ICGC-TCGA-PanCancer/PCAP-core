@@ -5,6 +5,7 @@ use Const::Fast qw(const);
 use File::Spec;
 use FindBin qw($Bin);
 use File::Temp qw(tempdir);
+use File::Path qw(make_path);
 
 my $test_data = "$Bin/data";
 
@@ -20,10 +21,10 @@ const my @VALID_FASTQ_EXT => qw(fastq fq fastq.gz fq.gz);
 
 my $bail_out = 0;
 
-subtest 'Initialisation checks' => sub {
-  use_ok($MODULE);
-  my $obj = new_ok($MODULE => [$REF_INIT]);
-};
+ subtest 'Initialisation checks' => sub {
+   use_ok($MODULE);
+   my $obj = new_ok($MODULE => [$REF_INIT]);
+ };
 
 subtest 'Non-object funcions' => sub {
 
@@ -85,6 +86,7 @@ subtest 'Non-object funcions' => sub {
 
 subtest 'Objects from file list' => sub {
   my $tmp = tempdir( CLEANUP => 1 );
+  make_path(File::Spec->catdir($tmp,'links')) unless(-d File::Spec->catdir($tmp,'links'));
   is(&PCAP::Bwa::Meta::reset_rg_index, -1, q{Reset of rg_index}); # the rest will fail if this hasn't worked
   like( exception {PCAP::Bwa::Meta::files_to_meta() }
       , qr/Requires tmpdir and array-ref of files/
@@ -169,11 +171,19 @@ subtest 'Objects from file list' => sub {
 my $meta; # for reuse
 subtest 'Accessors' => sub {
   my $tmp = tempdir( CLEANUP => 1 );
-  my $tstub = File::Spec->catfile($tmp, '1');
+  make_path(File::Spec->catdir($tmp,'links')) unless(-d File::Spec->catdir($tmp,'links'));
   is(&PCAP::Bwa::Meta::reset_rg_index, -1, q{Reset of rg_index}); # the rest will fail if this hasn't worked
-  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq')], 'sample');
+  like( exception{ PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq')]
+  , 'sample') }
+  , qr/Unable to find file for read 2/
+  , 'Fail then no read 2 fastq');
+  like( exception{ PCAP::Bwa::Meta->new() }
+  , qr/'in' must be exist at/
+  , 'Empty Meta invalid');
+
+  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq'), File::Spec->catfile($test_data, '1_2.fq')], 'sample');
   $meta = $meta_set->[0];
-  is($meta->in, File::Spec->catfile($test_data, '1'), 'Expected in');
+
   like( exception { $meta->in(1) }
       , qr/'in' can only be set via new\(\)/
       , 'Fail to directly set in');
@@ -187,6 +197,8 @@ subtest 'Accessors' => sub {
   like( exception { $meta->paired_fq(1) }
       , qr/'paired_fq' can only be set via new\(\)/
       , 'Fail to directly set paired_fq');
+
+  my $tstub = File::Spec->catfile($tmp, '2'); # 2 as files_to_meta called twice
 
   is($meta->tstub, $tstub, 'Generate expected tstub');
   ok(exists $meta->{'tstub'}, 'Underlying tstub hash val has been created');
@@ -221,7 +233,8 @@ subtest 'rg_header checks' => sub {
 
   # clear header for further tests
   my $tmp = tempdir( CLEANUP => 1 );
-  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq')]);
+  make_path(File::Spec->catdir($tmp,'links')) unless(-d File::Spec->catdir($tmp,'links'));
+  my $meta_set = PCAP::Bwa::Meta::files_to_meta($tmp, [File::Spec->catfile($test_data, '1_1.fq'), File::Spec->catfile($test_data, '1_2.fq')]);
   $meta = $meta_set->[0];
   like( exception{ $meta->rg_header('.') }
       , qr/'.+' is manditory for RG header/

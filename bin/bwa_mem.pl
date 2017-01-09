@@ -2,7 +2,7 @@
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2017 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -124,6 +124,7 @@ sub setup {
   pod2usage(-msg  => "\nERROR: Options must be defined.\n", -verbose => 1,  -output => \*STDERR) unless($defined);
 
   PCAP::Cli::file_for_reading('reference', $opts{'reference'});
+  $opts{'outdir'} = abs_path($opts{'outdir'});
   PCAP::Cli::out_dir_check('outdir', $opts{'outdir'});
 
   $opts{'dict'} = $opts{'reference'}.'.dict';
@@ -150,6 +151,8 @@ sub setup {
   make_path($progress) unless(-d $progress);
   my $logs = File::Spec->catdir($tmpdir, 'logs');
   make_path($logs) unless(-d $logs);
+  my $links = File::Spec->catdir($tmpdir, 'links');
+  make_path($links) unless(-d $links);
 
   $opts{'tmp'} = $tmpdir;
 
@@ -326,4 +329,3 @@ Single lane BAM files, RG line is transfered to aligned files.  Also accepts mul
 =back
 
 =cut
-
