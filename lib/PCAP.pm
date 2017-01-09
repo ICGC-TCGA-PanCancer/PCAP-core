@@ -2,7 +2,7 @@ package PCAP;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014-2016 ICGC PanCancer Project
+# Copyright (C) 2014-2017 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@ use FindBin qw($Bin);
 use File::Which qw(which);
 # don't use autodie, only core perl in here
 
-our $VERSION = '3.4.0';
+our $VERSION = '3.4.1';
 our @EXPORT = qw($VERSION _which);
 
 const my $LICENSE =>

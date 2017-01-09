@@ -2,7 +2,7 @@ package PCAP::Bwa::Meta;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2017 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@ use Const::Fast qw(const);
 use List::Util qw(first);
 use File::Spec;
 use Data::UUID;
+use File::Basename;
 
 use PCAP::Bam;
 
@@ -177,7 +178,18 @@ sub files_to_meta {
   my $are_paired_fq = 0;
   my $are_inter_fq = 0;
   my @meta_files;
+
+  my $link_tmp = File::Spec->catdir($tmp, 'links');
+  my @linked_files;
   for my $file(@{$files}) {
+    my $fname = fileparse($file);
+    my $link = File::Spec->catfile($link_tmp, $fname);
+    croak "Multiple files have the same filename (not path), name must be unique: $file" if(first { $_ eq $link } @linked_files);
+    symlink($file, $link) unless(-l $link);
+    push @linked_files, $link;
+  }
+
+  for my $file(@linked_files) {
 
     my $meta = {'temp' => $tmp};
 
@@ -188,10 +200,10 @@ sub files_to_meta {
         # must be paired fq
         next if(exists $seen_paired_stub{$fq_stub});
         $seen_paired_stub{$fq_stub} = 1;
-        die "Unable to find file for read 1, for ${fq_stub}_X${fq_ext}\n" unless(-e "${fq_stub}_1.$fq_ext");
-        die "Unable to find file for read 2, for ${fq_stub}_X${fq_ext}\n" unless(-e "${fq_stub}_2.$fq_ext");
-        die "File for read 1 is empty: ${fq_stub}_X${fq_ext}\n" unless(-s "${fq_stub}_1.$fq_ext");
-        die "File for read 2 is empty: ${fq_stub}_X${fq_ext}\n" unless(-s "${fq_stub}_2.$fq_ext");
+        die "Unable to find file for read 1, for ${fq_stub}_X.${fq_ext}\n" unless(-e "${fq_stub}_1.$fq_ext");
+        die "Unable to find file for read 2, for ${fq_stub}_X.${fq_ext}\n" unless(-e "${fq_stub}_2.$fq_ext");
+        die "File for read 1 is empty: ${fq_stub}_X.${fq_ext}\n" unless(-s "${fq_stub}_1.$fq_ext");
+        die "File for read 2 is empty: ${fq_stub}_X.${fq_ext}\n" unless(-s "${fq_stub}_2.$fq_ext");
         $meta->{'paired_fq'} = 1;
         $are_paired_fq = 1;
       }
