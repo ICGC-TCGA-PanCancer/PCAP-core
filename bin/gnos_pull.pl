@@ -238,7 +238,7 @@ sub check_rna_alignments{
   return $to_do;
 }
 
-sub pull_rna_bam {
+sub pull_rna_alignments {
   my ($options, $donor, $outbase, $donor_base) = @_;
   $options->{'analysis'} =~ m/^RNA_(.+)/;
   my $rna_type = lc $1;
