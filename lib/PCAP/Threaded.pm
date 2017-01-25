@@ -34,11 +34,10 @@ use Capture::Tiny qw(capture);
 use IO::File;
 use Const::Fast qw(const);
 use Scalar::Util qw(looks_like_number);
+use Time::HiRes qw(usleep);
 
 our $CAN_USE_THREADS = 0;
 $CAN_USE_THREADS = eval 'use threads; 1';
-
-const my $SCRIPT_OCT_MODE => 0777;
 
 our $OUT_ERR = 1;
 
@@ -243,8 +242,32 @@ sub _create_script {
   print $SH join qq{\n}, @{$commands};
   print $SH qq{\n};
   close $SH;
-  sleep 1;
+  _file_complete($script);
   return $script;
+}
+
+sub _file_complete {
+  my ($script, $debug) = @_;
+  my $tries = 0;
+  my $millisec;
+  while(1) {
+    croak "Failed to confirm script written after 30 attempts: $script" if($tries > 30);
+    my ($stdout, $stderr, $exit) = capture { system([0,1], 'lsof', $script); };
+    if($exit > 1) {
+      croak $stderr;
+    }
+    printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($debug);
+    if($exit == 1) {
+      last if(-e $script);
+    }
+    # sleep for random millisec max 0.5 sec.
+    $millisec = rand 500_000;
+    $millisec = 10000 if($millisec < 10000); # need to allow something to happen
+    warn $millisec if($debug);
+    usleep($millisec);
+    $tries++;
+  }
+  return 1;
 }
 
 1;
