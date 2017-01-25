@@ -229,7 +229,9 @@ sub check_rna_alignments{
   my $rna_type = lc $1;
   my $to_do = 0;
   # for normal:
-  $to_do += check_bam($options, $donor->{'donor_unique_id'}, $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/normal');
+  if(exists $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}) {
+    $to_do += check_bam($options, $donor->{'donor_unique_id'}, $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/normal');
+  }
 
   # for tumour
   for my $tumour_data(@{$donor->{'rna_seq'}->{'alignment'}->{'tumor'}}) {
@@ -243,10 +245,12 @@ sub pull_rna_alignments {
   $options->{'analysis'} =~ m/^RNA_(.+)/;
   my $rna_type = lc $1;
   # for normal:
-  pull_bam($options, $donor->{'donor_unique_id'}, $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/normal');
+  if(exists $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}) {
+    pull_bam($options, $donor->{'donor_unique_id'}, $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/normal');
+  }
 
   # for tumour
-  for my $tumour_data(@{$donor->{'tumor_alignment_status'}}) {
+  for my $tumour_data(@{$donor->{'rna_seq'}->{'alignment'}->{'tumor'}}) {
     pull_bam($options, $donor->{'donor_unique_id'}, $tumour_data->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/tumour');
   }
 }
@@ -287,8 +291,8 @@ sub check_bam {
 
   if(-e $success) {
     check_or_create_symlink($orig_bam, $sym_bam);
-    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-    create_bas($repo, $gnos_id, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai') if(-e $orig_bam.'.bai');
+    create_bas($repo, $gnos_id, $sym_bam) unless($options->{'analysis'} =~ m/^RNA/);
     return 0;
   }
 
@@ -310,7 +314,6 @@ sub pull_alignments {
 
 sub pull_bam {
   my ($options, $donor_id, $bam_data, $outbase, $donor_base, $type) = @_;
-
   my $repo = select_repo($options, $bam_data->{'aligned_bam'}->{'gnos_repo'});
   unless(exists $options->{'keys'}->{$repo}) {
     warn sprintf "Skipping %s BAM for Donor %s - No permission key for repo %s", $type, $donor_id, $repo;
@@ -330,8 +333,8 @@ sub pull_bam {
 
   if(-e $success) {
     check_or_create_symlink($orig_bam, $sym_bam);
-    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-    create_bas($repo, $gnos_id, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai') if(-e $orig_bam.'.bai');
+    create_bas($repo, $gnos_id, $sym_bam) unless($options->{'analysis'} =~ m/^RNA/);
     return;
   }
   return if($options->{'symlinks'});
@@ -362,8 +365,9 @@ sub pull_bam {
   unlink $err_file;
 
   check_or_create_symlink($orig_bam, $sym_bam);
-  check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-  my $bas_valid = create_bas($repo, $gnos_id, $sym_bam);
+  check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai') if(-e $orig_bam.'.bai');
+  my $bas_valid = 1;
+  $bas_valid = create_bas($repo, $gnos_id, $sym_bam) unless($options->{'analysis'} =~ m/^RNA/);
 
   if($bas_valid == 1) {
     # touch a success file in the output loc
@@ -607,7 +611,6 @@ sub load_data {
         warn sprintf "Donor: %s has no variant calling available\n", $donor->{'donor_unique_id'} if($options->{'debug'});
         next;
       }
-
     }
     elsif($options->{'analysis'} =~ m/^RNA_(.+)/) {
       my $rna_type = lc $1;
