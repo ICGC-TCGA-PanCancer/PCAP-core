@@ -2,7 +2,7 @@ package PCAP::Threaded;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2017 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -224,7 +224,7 @@ sub external_process_handler {
     my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
     try {
-      system("/usr/bin/time $script 1> $out 2> $err");
+      system("/usr/bin/time bash $script 1> $out 2> $err");
     }
     catch { die $_; };
 
@@ -243,8 +243,6 @@ sub _create_script {
   print $SH join qq{\n}, @{$commands};
   print $SH qq{\n};
   close $SH;
-  sleep 1;
-  chmod $SCRIPT_OCT_MODE, $script;
   sleep 1;
   return $script;
 }
