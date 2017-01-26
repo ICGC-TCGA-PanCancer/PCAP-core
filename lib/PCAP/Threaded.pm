@@ -39,6 +39,8 @@ use Time::HiRes qw(usleep);
 our $CAN_USE_THREADS = 0;
 $CAN_USE_THREADS = eval 'use threads; 1';
 
+const my $SCRIPT_OCT_MODE => 0777;
+
 our $OUT_ERR = 1;
 
 sub new {
@@ -223,7 +225,7 @@ sub external_process_handler {
     my $err = File::Spec->catfile($tmp, "$caller.$suffix.err");
 
     try {
-      system("/usr/bin/time bash $script 1> $out 2> $err");
+      system("/usr/bin/time $script 1> $out 2> $err");
     }
     catch { die $_; };
 
@@ -242,14 +244,20 @@ sub _create_script {
   print $SH join qq{\n}, @{$commands};
   print $SH qq{\n};
   close $SH;
-  _file_complete($script);
+
+  # sleep for random millisec max 1 sec.
+  my $millisec = rand 1_000_000;
+  $millisec = 100_000 if($millisec < 100_000); # min 0.1 sec
+
+  _file_complete($script, $millisec);
+  chmod $SCRIPT_OCT_MODE, $script;
+  usleep($millisec);
   return $script;
 }
 
 sub _file_complete {
-  my ($script, $debug) = @_;
+  my ($script, $millisec, $debug) = @_;
   my $tries = 0;
-  my $millisec;
   while(1) {
     croak "Failed to confirm script written after 30 attempts: $script" if($tries > 30);
     my ($stdout, $stderr, $exit) = capture { system([0,1], 'lsof', $script); };
@@ -260,9 +268,6 @@ sub _file_complete {
     if($exit == 1) {
       last if(-e $script);
     }
-    # sleep for random millisec max 0.5 sec.
-    $millisec = rand 500_000;
-    $millisec = 10000 if($millisec < 10000); # need to allow something to happen
     warn $millisec if($debug);
     usleep($millisec);
     $tries++;
