@@ -244,6 +244,7 @@ sub _create_script {
   print $SH join qq{\n}, @{$commands};
   print $SH qq{\n};
   close $SH;
+  undef $SH;
 
   # sleep for random millisec max 1 sec.
   my $millisec = rand 1_000_000;
