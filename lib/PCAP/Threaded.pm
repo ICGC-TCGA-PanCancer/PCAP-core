@@ -272,7 +272,7 @@ sub _file_complete {
     if($exit > 1) {
       croak sprintf "ERROR: lsof output\n\tSTDOUT: %s\n\tSTDERR: %s\n\tEXIT: %d\n", $stdout, $stderr, $exit;
     }
-    printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($debug);
+    printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($debug && $exit == 0);
     last if($exit == 1);
     warn $microsec if($debug);
     usleep($microsec);
