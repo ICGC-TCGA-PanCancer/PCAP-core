@@ -240,38 +240,42 @@ sub _create_script {
 
   my $script = "$stub.sh";
   open my $SH, '>', $script or die "Cannot create $script: $!\n";
-  print $SH qq{#!/bin/bash\nset -eux\n};
-  print $SH join qq{\n}, @{$commands};
-  print $SH qq{\n};
+  print $SH qq{#!/bin/bash\nset -eux\n} or die "Write to $script failed";
+  print $SH join qq{\n}, @{$commands}, q{} or die "Write to $script failed";
   close $SH;
   undef $SH;
 
-  # sleep for random millisec max 1 sec.
-  my $millisec = rand 1_000_000;
-  $millisec = 100_000 if($millisec < 100_000); # min 0.1 sec
+  chmod $SCRIPT_OCT_MODE, $script or die "Failed to set executable flag on: $script";
 
-  _file_complete($script, $millisec);
-  chmod $SCRIPT_OCT_MODE, $script;
-  usleep($millisec);
+  # sleep for random microsec max 1 sec.
+  my $microsec = int rand 1_000_000;
+  $microsec = 100_000 if($microsec < 200_000); # min 0.2 sec
+  _file_complete($script, $microsec);
+  usleep($microsec);
   return $script;
 }
 
 sub _file_complete {
-  my ($script, $millisec, $debug) = @_;
+  my ($script, $microsec, $debug) = @_;
+  $debug = 1;
   my $tries = 0;
+  while(! -e $script) {
+    $tries++;
+    croak "Failed to find script after 30 attempts ($microsec us delays): $script" if($tries >= 30);
+    usleep($microsec);
+  }
+  $tries = 0;
   while(1) {
-    croak "Failed to confirm script written after 30 attempts: $script" if($tries > 30);
+    $tries++;
+    croak "Failed to confirm write complete after 30 attempts ($microsec us delays): $script" if($tries >= 30);
     my ($stdout, $stderr, $exit) = capture { system([0,1], 'lsof', $script); };
     if($exit > 1) {
-      croak $stderr;
+      croak sprintf "ERROR: lsof output\n\tSTDOUT: %s\n\tSTDERR: %s\n\tEXIT: %d\n", $stdout, $stderr, $exit;
     }
     printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($debug);
-    if($exit == 1) {
-      last if(-e $script);
-    }
-    warn $millisec if($debug);
-    usleep($millisec);
-    $tries++;
+    last if($exit == 1);
+    warn $microsec if($debug);
+    usleep($microsec);
   }
   return 1;
 }
