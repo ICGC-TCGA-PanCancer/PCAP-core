@@ -21,6 +21,8 @@ addons:
    - unzip
    - libpng12-dev
    - libexpat1-dev
+   - libgoogle-perftools-dev
+   - lsof
 
 install: true
 

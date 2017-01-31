@@ -2,7 +2,7 @@ package PCAP::Threaded;
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014 ICGC PanCancer Project
+# Copyright (C) 2014-2017 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@ use Capture::Tiny qw(capture);
 use IO::File;
 use Const::Fast qw(const);
 use Scalar::Util qw(looks_like_number);
+use Time::HiRes qw(usleep);
 
 our $CAN_USE_THREADS = 0;
 $CAN_USE_THREADS = eval 'use threads; 1';
@@ -239,14 +240,42 @@ sub _create_script {
 
   my $script = "$stub.sh";
   open my $SH, '>', $script or die "Cannot create $script: $!\n";
-  print $SH qq{#!/bin/bash\nset -eux\n};
-  print $SH join qq{\n}, @{$commands};
-  print $SH qq{\n};
+  print $SH qq{#!/bin/bash\nset -eux\n} or die "Write to $script failed";
+  print $SH join qq{\n}, @{$commands}, q{} or die "Write to $script failed";
   close $SH;
-  sleep 1;
-  chmod $SCRIPT_OCT_MODE, $script;
-  sleep 1;
+  undef $SH;
+
+  chmod $SCRIPT_OCT_MODE, $script or die "Failed to set executable flag on: $script";
+
+  # sleep for random microsec max 1 sec.
+  my $microsec = int rand 1_000_000;
+  $microsec = 100_000 if($microsec < 200_000); # min 0.2 sec
+  _file_complete($script, $microsec);
+  usleep($microsec);
   return $script;
+}
+
+sub _file_complete {
+  my ($script, $microsec) = @_;
+  my $tries = 0;
+  while(! -e $script) {
+    $tries++;
+    croak "Failed to find script after 30 attempts ($microsec us delays): $script" if($tries >= 30);
+    usleep($microsec);
+  }
+  $tries = 0;
+  while(1) {
+    $tries++;
+    croak "Failed to confirm write complete after 30 attempts ($microsec us delays): $script" if($tries >= 30);
+    my ($stdout, $stderr, $exit) = capture { system([0,1], 'lsof', $script); };
+    if($exit > 1) {
+      croak sprintf "ERROR: lsof output\n\tSTDOUT: %s\n\tSTDERR: %s\n\tEXIT: %d\n", $stdout, $stderr, $exit;
+    }
+    printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($exit == 0);
+    last if($exit == 1);
+    usleep($microsec);
+  }
+  return 1;
 }
 
 1;
