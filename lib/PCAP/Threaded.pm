@@ -256,8 +256,7 @@ sub _create_script {
 }
 
 sub _file_complete {
-  my ($script, $microsec, $debug) = @_;
-  $debug = 1;
+  my ($script, $microsec) = @_;
   my $tries = 0;
   while(! -e $script) {
     $tries++;
@@ -272,9 +271,8 @@ sub _file_complete {
     if($exit > 1) {
       croak sprintf "ERROR: lsof output\n\tSTDOUT: %s\n\tSTDERR: %s\n\tEXIT: %d\n", $stdout, $stderr, $exit;
     }
-    printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($debug && $exit == 0);
+    printf STDERR "OUT : %s\nERR : %s\nEXIT: %s\n", $stdout,$stderr,$exit if($exit == 0);
     last if($exit == 1);
-    warn $microsec if($debug);
     usleep($microsec);
   }
   return 1;
