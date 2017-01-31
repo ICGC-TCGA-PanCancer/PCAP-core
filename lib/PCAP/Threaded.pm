@@ -239,11 +239,15 @@ sub _create_script {
   my ($commands, $stub) = @_;
 
   my $script = "$stub.sh";
-  open my $SH, '>', $script or die "Cannot create $script: $!\n";
+
+  my $SH = IO::File->new($script, 'w');
+  die "Cannot create $script: $!\n" unless(defined $SH);
+  #open my $SH, '>', $script or die "Cannot create $script: $!\n";
   print $SH qq{#!/bin/bash\nset -eux\n} or die "Write to $script failed";
   print $SH join qq{\n}, @{$commands}, q{} or die "Write to $script failed";
-  close $SH;
   undef $SH;
+  autoflush STDOUT 1;
+  system('sync') if(exists $ENV{CGP_FORCE_SYNC});
 
   chmod $SCRIPT_OCT_MODE, $script or die "Failed to set executable flag on: $script";
 
