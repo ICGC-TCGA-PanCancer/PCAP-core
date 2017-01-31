@@ -161,6 +161,7 @@ sub setup {
     $_ = "$cwd/$_" unless($_ =~ m|^/|);
     push @{$opts{'raw_files'}}, $_;
   }
+  pod2usage(-msg  => "\nERROR: No BAM/CRAM or FASTQ files have been defined.\n", -verbose => 1,  -output => \*STDERR) if(scalar @{$opts{'raw_files'}} == 0);
 
   my $max_split = PCAP::Bwa::mem_prepare(\%opts);
 
