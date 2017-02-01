@@ -245,7 +245,6 @@ sub _create_script {
   }
   my $SH = IO::File->new($script, 'w');
   die "Cannot create $script: $!\n" unless(defined $SH);
-  #open my $SH, '>', $script or die "Cannot create $script: $!\n";
   print $SH qq{#!/bin/bash\nset -eux\n} or die "Write to $script failed";
   print $SH join qq{\n}, @{$commands}, q{} or die "Write to $script failed";
   undef $SH;
