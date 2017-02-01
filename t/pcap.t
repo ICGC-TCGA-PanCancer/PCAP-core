@@ -10,9 +10,9 @@ subtest 'Initialisation checks' => sub {
 
 
 ok(PCAP::license(), 'License text retrieved');
+ok(PCAP->VERSION, 'Version retrieved');
 
 is(PCAP::upgrade_path(), 'biobambam,samtools,bwa', 'Default program install when no previous version');
 is(PCAP::upgrade_path('9.9.9'), 'biobambam,samtools,bwa', 'Default program install when unknown version installed');
 
 done_testing();
-

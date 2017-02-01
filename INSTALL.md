@@ -29,7 +29,7 @@ bwa_mem.pl will only function when 0.7.x installed
 ```
 apt-get update && \
 apt-get -y install \
-build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev nettle-dev &&\
+build-essential zlib1g-dev libncurses5-dev libcurl4-gnutls-dev libssl-dev libexpat1-dev nettle-dev lsof libgoogle-perftools-dev &&\
 apt-get clean
 ```
 

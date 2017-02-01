@@ -2,7 +2,7 @@
 
 ##########LICENCE##########
 # PCAP - NGS reference implementations and helper code for the ICGC/TCGA Pan-Cancer Analysis Project
-# Copyright (C) 2014-2015 ICGC PanCancer Project
+# Copyright (C) 2014-2017 ICGC PanCancer Project
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -49,7 +49,7 @@ $CAN_USE_THREADS = eval 'use threads; 1';
 use PCAP;
 use PCAP::Cli;
 
-const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS));
+const my @ANALYSIS_TYPES => (qw(ALIGNMENTS CALLS RNA_STAR RNA_TOPHAT));
 const my @AVAILABLE_COMPOSITE_FILTERS => (qw(not_sanger_workflow caller max_dataset_GB multi_tumour sanger_version broad_version dkfz_embl_version jamboree_approved manual_donor_blacklist));
 const my $DEFAULT_URL => 'http://pancancer.info/gnos_metadata/latest';
 const my $GTDL_COMMAND => '%s%s --max-children 3 --rate-limit 200 -vv -c %s -d %scghub/data/analysis/download/%s -p %s';
@@ -152,6 +152,10 @@ sub pull_data {
     $check_ref = \&check_alignments;
     $code_ref = \&pull_alignments;
   }
+  elsif($options->{'analysis'} =~ m/^RNA/) {
+    $check_ref = \&check_rna_alignments;
+    $code_ref = \&pull_rna_alignments;
+  }
 
   my $thread_count = $options->{'threads'};
   if($CAN_USE_THREADS == 0) {
@@ -218,6 +222,39 @@ sub check_or_create_symlink {
   return 1;
 }
 
+sub check_rna_alignments{
+  my ($options, $donor, $outbase, $donor_base) = @_;
+  warn "Checking $donor->{donor_unique_id}\n";
+  $options->{'analysis'} =~ m/^RNA_(.+)/;
+  my $rna_type = lc $1;
+  my $to_do = 0;
+  # for normal:
+  if(exists $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}) {
+    $to_do += check_bam($options, $donor->{'donor_unique_id'}, $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/normal');
+  }
+
+  # for tumour
+  for my $tumour_data(@{$donor->{'rna_seq'}->{'alignment'}->{'tumor'}}) {
+    $to_do += check_bam($options, $donor->{'donor_unique_id'}, $tumour_data->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/tumour');
+  }
+  return $to_do;
+}
+
+sub pull_rna_alignments {
+  my ($options, $donor, $outbase, $donor_base) = @_;
+  $options->{'analysis'} =~ m/^RNA_(.+)/;
+  my $rna_type = lc $1;
+  # for normal:
+  if(exists $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}) {
+    pull_bam($options, $donor->{'donor_unique_id'}, $donor->{'rna_seq'}->{'alignment'}->{'normal'}->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/normal');
+  }
+
+  # for tumour
+  for my $tumour_data(@{$donor->{'rna_seq'}->{'alignment'}->{'tumor'}}) {
+    pull_bam($options, $donor->{'donor_unique_id'}, $tumour_data->{$rna_type}, $outbase, $donor_base, 'rna/'.$rna_type.'/tumour');
+  }
+}
+
 sub check_alignments {
   my ($options, $donor, $outbase, $donor_base) = @_;
   warn "Checking $donor->{donor_unique_id}\n";
@@ -254,8 +291,8 @@ sub check_bam {
 
   if(-e $success) {
     check_or_create_symlink($orig_bam, $sym_bam);
-    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-    create_bas($repo, $gnos_id, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai') if(-e $orig_bam.'.bai');
+    create_bas($repo, $gnos_id, $sym_bam) unless($options->{'analysis'} =~ m/^RNA/);
     return 0;
   }
 
@@ -277,7 +314,6 @@ sub pull_alignments {
 
 sub pull_bam {
   my ($options, $donor_id, $bam_data, $outbase, $donor_base, $type) = @_;
-
   my $repo = select_repo($options, $bam_data->{'aligned_bam'}->{'gnos_repo'});
   unless(exists $options->{'keys'}->{$repo}) {
     warn sprintf "Skipping %s BAM for Donor %s - No permission key for repo %s", $type, $donor_id, $repo;
@@ -297,8 +333,8 @@ sub pull_bam {
 
   if(-e $success) {
     check_or_create_symlink($orig_bam, $sym_bam);
-    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-    create_bas($repo, $gnos_id, $sym_bam);
+    check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai') if(-e $orig_bam.'.bai');
+    create_bas($repo, $gnos_id, $sym_bam) unless($options->{'analysis'} =~ m/^RNA/);
     return;
   }
   return if($options->{'symlinks'});
@@ -329,8 +365,9 @@ sub pull_bam {
   unlink $err_file;
 
   check_or_create_symlink($orig_bam, $sym_bam);
-  check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai');
-  my $bas_valid = create_bas($repo, $gnos_id, $sym_bam);
+  check_or_create_symlink($orig_bam.'.bai', $sym_bam.'.bai') if(-e $orig_bam.'.bai');
+  my $bas_valid = 1;
+  $bas_valid = create_bas($repo, $gnos_id, $sym_bam) unless($options->{'analysis'} =~ m/^RNA/);
 
   if($bas_valid == 1) {
     # touch a success file in the output loc
@@ -516,13 +553,15 @@ sub load_data {
       warn sprintf "Donor: %s blacklisted\n", $donor->{'donor_unique_id'} if($options->{'debug'});
       next;
     }
-    unless($donor->{'flags'}->{'is_normal_specimen_aligned'}) {
-      warn sprintf "Donor: %s normal sample not aligned\n", $donor->{'donor_unique_id'} if($options->{'debug'});
-      next;
-    }
-    unless($donor->{'flags'}->{'are_all_tumor_specimens_aligned'}) {
-      warn sprintf "Donor: %s all tumour samples not aligned\n", $donor->{'donor_unique_id'} if($options->{'debug'});
-      next;
+    unless($options->{'analysis'} =~ m/^RNA/) {
+      unless($donor->{'flags'}->{'is_normal_specimen_aligned'}) {
+        warn sprintf "Donor: %s normal sample not aligned\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+        next;
+      }
+      unless($donor->{'flags'}->{'are_all_tumor_specimens_aligned'}) {
+        warn sprintf "Donor: %s all tumour samples not aligned\n", $donor->{'donor_unique_id'} if($options->{'debug'});
+        next;
+      }
     }
 
     if(exists $options->{'COMPOSITE_FILTERS'}->{'multi_tumour'} && $donor->{'flags'}->{'all_tumor_specimen_aliquot_counts'} == 1) {
@@ -572,7 +611,11 @@ sub load_data {
         warn sprintf "Donor: %s has no variant calling available\n", $donor->{'donor_unique_id'} if($options->{'debug'});
         next;
       }
-
+    }
+    elsif($options->{'analysis'} =~ m/^RNA_(.+)/) {
+      my $rna_type = lc $1;
+      next unless(    $donor->{'flags'}->{'is_tumor_'.$rna_type.'_rna_seq_alignment_performed'}
+                  || $donor->{'flags'}->{'is_normal_'.$rna_type.'_rna_seq_alignment_performed'});
     }
     else {
       my $size = data_size_alignments_gb($options, $donor);

@@ -1,3 +1,15 @@
+### 3.5.0
+* Adds RNA downloads to PanCancer download tool `gnos_pull.pl`
+* Hardening of external process handling in `PCAP::Threaded`
+* Adds C version of `diff_bams`
+
+### 3.4.0
+* Significant speed up of BAM generation under `bwa_mem.pl` by using separate process to do compression of mark duplicate output and streaming BAS generation. Not possible to do this to CRAM in same way.
+
+### 3.3.4
+* Reduce disk usage when running `bwa_mem.pl`
+* Improve throughput via slightly unintuitive use of additional pipes
+
 ### 3.3.0
 * adds `map_threads|mt` option to `bwa_mem.pl` to allow more control of parallel processing in one shot submission.
 * adds `bwa_pl|l` option to `bwa_mem.pl` to allow preload of different malloc libraries.
