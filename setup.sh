@@ -285,6 +285,7 @@ else
   env HTSLIB=$SETUP_DIR/htslib make -C c -j$CPU prefix=$INST_PATH
   cp bin/bam_stats $INST_PATH/bin/.
   cp bin/reheadSQ $INST_PATH/bin/.
+  cp bin/diff_bams $INST_PATH/bin/.
   touch $SETUP_DIR/bam_stats.success
   make -C c clean
 fi
