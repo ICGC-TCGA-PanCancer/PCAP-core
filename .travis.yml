@@ -39,8 +39,8 @@ before_script:
 
 script:
  - ./setup.sh ~/wtsi-opt
- - ~/wtsi-opt/bin/samtools view # dump usage to show intact
- - ~/wtsi-opt/bin/diff_bams -h
- - ~/wtsi-opt/bin/reheadSQ -h
- - ~/wtsi-opt/bin/bam_stats -h
- - ~/wtsi-opt/bin/bwa_mem.pl -h
+ - $HOME/wtsi-opt/bin/samtools view # dump usage to show intact
+ - $HOME/wtsi-opt/bin/diff_bams -h
+ - $HOME/wtsi-opt/bin/reheadSQ -h
+ - $HOME/wtsi-opt/bin/bam_stats -h
+ - perl -I $HOME/wtsi-opt/lib/perl5 ~/wtsi-opt/bin/bwa_mem.pl -h
