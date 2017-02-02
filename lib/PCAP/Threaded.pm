@@ -58,6 +58,10 @@ sub new {
   my $self = {'threads' => $max_threads,
               'join_interval' => 1,};
   bless $self, $class;
+
+  # get core count for optional auto-back off when oversubscribed
+  $self->init_cores();
+
   return $self;
 }
 
@@ -73,6 +77,30 @@ sub enable_out_err {
 
 sub use_out_err {
   return $OUT_ERR;
+}
+
+sub init_cores {
+  my $self = shift;
+  if($ENV{PCAP_THREADED_LOADBACKOFF}) {
+    my ($cpus, $se, $ex) = capture { system('grep -c ^processor /proc/cpuinfo'); };
+    chomp $cpus;
+    $self->{'system_cpus'} = $cpus;
+  }
+  return 1;
+}
+
+sub need_backoff {
+  my $self = shift;
+  my $ret = 0;
+  # don't want to change normal behaviour
+  if($ENV{PCAP_THREADED_LOADBACKOFF}) {
+    my($uptime, $se, $ex) = capture { system('uptime'); };
+    chomp $uptime;
+    # probably only need 1-min but grab them all
+    my ($one_min, $five_min, $fifteen_min) = $uptime =~ /load average: ([[:digit:]+.[:digit:]+]), ([[:digit:]+.[:digit:]+]), ([[:digit:]+.[:digit:]+])$/;
+    $ret = 1 if($one_min > $self->{'system_cpus'});
+  }
+  return $ret;
 }
 
 sub add_function {
@@ -116,6 +144,10 @@ sub run {
     my $index = 1;
     while($index <= $iterations) {
       while(threads->list(threads::all()) < $thread_count && $index <= $iterations) {
+        while($self->need_backoff) {
+          warn "Excessive load average, take a break... have a Kit-Kat!\n";
+          sleep 20;
+        }
         threads->create($function_ref, $index++, @params);
         last if($index > $iterations);
       }
