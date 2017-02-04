@@ -70,7 +70,9 @@ sub rg_line_for_output {
       $rg_line =~ s/\tID:[^\t]+/\tID:$uuid/;
     }
     if(defined $sample) {
-      $rg_line =~ s/\tSM:[^\t]+/\tSM:$sample/;
+      unless($rg_line =~ s/\tSM:[^\t]+/\tSM:$sample/) {
+        $rg_line .= "\tSM:$sample";
+      }
     }
     $rg_line =~ s/\t/\\t/g;
   }
