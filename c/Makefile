@@ -71,18 +71,18 @@ all: clean pre make_htslib_tmp $(BAM_STATS_TARGET) $(BAM2BG_TARGET) $(BAM2BW_TAR
 	@echo  bam_stats and reheadSQ compiled.
 
 $(BAM_STATS_TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(LIBS) ./bam_stats.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(CAT_INCLUDES) -o $(BAM_STATS_TARGET) $(OBJS) $(LFLAGS) $(CAT_LFLAGS) $(LIBS) ./bam_stats.c
 
 $(SQ_TARGET):
 	$(CC) $(CFLAGS) ./reheadSQ.c -o $(SQ_TARGET)
 
 $(BAM_DIFF):
-	$(CC) $(CFLAGS) $(INCLUDES) -o $(BAM_DIFF) $(OBJS) $(LFLAGS) $(LIBS) ./diff_bams.c
+	$(CC) $(CFLAGS) $(INCLUDES) $(CAT_INCLUDES) -o $(BAM_DIFF) $(OBJS) $(LFLAGS) $(CAT_LFLAGS) $(LIBS) ./diff_bams.c
 
 
 #Unit Tests
 test: $(BAM_STATS_TARGET)
-test: CFLAGS += $(INCLUDES) $(OBJS) $(LFLAGS) $(LIBS)
+test: CFLAGS += $(INCLUDES) $(CAT_INCLUDES) $(OBJS) $(LFLAGS) $(CAT_LFLAGS) $(LIBS)
 test: $(TESTS)
 	sh ./c_tests/runtests.sh
 
@@ -112,7 +112,7 @@ valgrind:
 # the rule(a .c file) and $@: the name of the target of the rule (a .o file)
 # (see the gnu make manual section about automatic variables)
 .c.o:
-	$(CC) $(CFLAGS) $(INCLUDES) -c $<  -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) $(CAT_INCLUDES) -c $<  -o $@
 
 clean:
 	@echo clean

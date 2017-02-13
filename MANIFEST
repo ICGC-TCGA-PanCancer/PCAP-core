@@ -25,6 +25,7 @@ c/c_tests/runtests.sh
 c/c_tests/tests_log
 c/dbg.h
 c/diff_bams.c
+c/htslib_tmp/libhts.a
 c/khash.h
 c/reheadSQ.c
 CHANGES.md
