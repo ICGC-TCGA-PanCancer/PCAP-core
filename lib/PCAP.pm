@@ -27,7 +27,7 @@ use FindBin qw($Bin);
 use File::Which qw(which);
 # don't use autodie, only core perl in here
 
-our $VERSION = '3.5.1';
+our $VERSION = '3.5.2';
 our @EXPORT = qw($VERSION _which);
 
 const my $LICENSE =>
